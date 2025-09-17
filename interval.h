@@ -123,25 +123,25 @@ namespace interval {
 
         // transfer operations
 
-        [[nodiscard]] interval operator+(const T val) const {interval b; plus_in(b, val); return b;}
+        [[nodiscard]] interval operator+(const T val) const requires std::is_arithmetic_v<T> {interval b; plus_in(b, val); return b;}
         friend interval & operator+=(interval &a, const T val)
                 {interval b; a.plus_in(b, val); a = std::move(b); return a;}
 
-        [[nodiscard]] interval operator-(const T val) const {interval b; plus_in(b, -val); return b;}
+        [[nodiscard]] interval operator-(const T val) const requires std::is_arithmetic_v<T> {interval b; plus_in(b, -val); return b;}
         friend interval & operator-=(interval &a, const T val) {
             static_assert(std::is_arithmetic<T>(), "you cannot do transfer operations with strings");
             interval b; a.plus_in(b, -val); a = std::move(b); return a; // because I use -val, in strings it is error
         }
 
-        [[nodiscard]] interval operator*(const T val) const {interval b; multiply_in(b, val); return b;}
+        [[nodiscard]] interval operator*(const T val) const requires std::is_arithmetic_v<T> {interval b; multiply_in(b, val); return b;}
         friend interval & operator*=(interval &a, const T val)
                 {interval b; a.multiply_in(b, val); a = std::move(b); return a;}
 
-        [[nodiscard]] interval operator/(const T val) const {interval b; division_in(b, val); return b;}
+        [[nodiscard]] interval operator/(const T val) const requires std::is_arithmetic_v<T> {interval b; division_in(b, val); return b;}
         friend interval & operator/=(interval &a, const T val)
                 {interval b; a.division_in(b, val); a = std::move(b); return a;}
 
-        [[nodiscard]] interval operator%(const T val) const {interval b; remainder_in(b, val); return b;}
+        [[nodiscard]] interval operator%(const T val) const requires std::is_integral_v<T> {interval b; remainder_in(b, val); return b;}
         friend interval & operator%=(interval &a, const T val)
         {interval b; a.remainder_in(b, val); a = std::move(b); return a;}
 
@@ -179,10 +179,7 @@ namespace interval {
          */
         [[nodiscard]] std::optional<T> any() const {
             if (!points.empty()) return points.begin()->second; // if there is any point: return it
-            if constexpr (std::is_arithmetic<T>()) {
-                return get_any_for_number(intervals); // try to return something in intervals
-            }
-            return get_any_for_not_number(intervals); // try to return something in intervals
+            return get_any_in(intervals); // try to return something in intervals
         }
 
         /**
@@ -245,7 +242,7 @@ namespace interval {
          * function will swap their automatically
          */
         [[nodiscard]] interval custom_transfer(const std::function<T(const T&)> &fun,
-                                               const T MINUS_INF, const T PLUS_INF) const {
+                                               const T& MINUS_INF, const T& PLUS_INF) const {
             interval b;
             custom_transfer_in(b, fun, MINUS_INF, PLUS_INF);
             return b;
@@ -451,8 +448,7 @@ namespace interval {
             for (auto &it : points) buf.remove_point(it);
         }
 
-        void plus_in(interval &buf, const T &val) const {
-            static_assert(std::is_arithmetic<T>(), "you cannot do transfer operations with strings");
+        void plus_in(interval &buf, const T &val) const requires std::is_arithmetic_v<T> {
             // if point was -INF or +INF, recover will return second elem to {}
             for (auto &[fst, snd] : intervals) {
                 buf.intervals.emplace(recover(std::make_pair(fst.first, fst.second + val)),
@@ -463,8 +459,7 @@ namespace interval {
             }
         }
 
-        void multiply_in(interval &buf, const T &val) const {
-            static_assert(std::is_arithmetic<T>(), "you cannot multiply strings");
+        void multiply_in(interval &buf, const T &val) const requires std::is_arithmetic_v<T> {
             // if point was -INF or +INF second elem if set to 0 -> 0 * val = 0
             if (val == 0) {
                 if (!intervals.empty() || !points.empty()) {
@@ -485,8 +480,7 @@ namespace interval {
             }
         }
 
-        void division_in(interval &buf, const T &val) const {
-            static_assert(std::is_arithmetic<T>(), "you cannot divide with strings");
+        void division_in(interval &buf, const T &val) const requires std::is_arithmetic_v<T> {
             // if point was -INF or +INF second elem if set to 0 -> 0 / val = 0
             for (auto &[fst, snd] : intervals) {
                 auto a = std::make_pair(fst.first, fst.second / val),
@@ -499,8 +493,7 @@ namespace interval {
             }
         }
 
-        void remainder_in(interval &buf, const T &val) const {
-            static_assert(std::is_arithmetic<T>(), "you cannot divide with strings");
+        void remainder_in(interval &buf, const T &val) const requires std::is_integral_v<T> {
             for (auto &[fst, snd] : intervals) {
                 auto len = snd.second - fst.second;
                 // fst.first != 1 || snd.first != 1 -> -INF or +INF -> there is interval with len > val
@@ -569,20 +562,26 @@ namespace interval {
             std::string out;
 
             // convert (0; T-type elem) to "-INF" and (2; T-type elem) to "+INF". (1; T-type elem) prints normally
-            auto data = [this](const inner_type &p)->std::string {
+            auto data = [](const inner_type &p)->std::string {
                 switch (p.first) {
                     case 0:
                         return "-INF";
                     case 2:
                         return "+INF";
                     default:
+                        {
+                            if constexpr (std::is_arithmetic_v<T>)
+                            {
+
+                            }
+                        }
                         return spec_to_string(p.second);
                 }
             };
 
             // check empty data
             if (empty()) {
-                out += "*Empty*\n";
+                out += "*Empty*";
                 return out;
             }
 
@@ -642,8 +641,7 @@ namespace interval {
         }
 
 
-        template <typename T2>
-        [[nodiscard]] static std::string spec_to_string(const T2 &a) {
+        [[nodiscard]] static std::string spec_to_string(const T &a) requires (!std::is_same_v<std::string, T>) {
             std::stringstream ss; // emulate standard output
             ss << a;
             return ss.str();
@@ -652,7 +650,7 @@ namespace interval {
             return "\"" + a + "\""; // for strings
         }
 
-        [[nodiscard]] typename std::set<std::pair<inner_type, inner_type>>::iterator
+        [[nodiscard]] std::set<std::pair<inner_type, inner_type>>::iterator
         get_interval_that_include_this_point(const inner_type &point) const {
             auto x = intervals.upper_bound({point, maximal<T>()}); // get interval (>point; x2)
             if (x != intervals.begin()) {
@@ -676,9 +674,8 @@ namespace interval {
             intervals.erase(f);
         }
 
-        template <typename T2>
-        [[nodiscard]] std::optional<T2> get_any_for_number // for degrees
-                (const std::set<std::pair<std::pair<int, T2>, std::pair<int, T2>>> &a) const {
+        [[nodiscard]] std::optional<T> get_any_in // for degrees
+                (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>> &a) const requires std::is_arithmetic_v<T> {
             for (auto &i : a) {
                 if (i.first.first == 0 && i.second.first == 2) return {}; // (-INF; +INF) -> 0
                 // i.second.second - 1 < i.second.second and i.first.second + 1 > i.first.second
@@ -695,8 +692,9 @@ namespace interval {
             return std::nullopt;
         }
 
-        [[nodiscard]] static std::optional<std::string> get_any_for_not_number // for string
-                (const std::set<std::pair<std::pair<int, std::string>, std::pair<int, std::string>>> &a) {
+        [[nodiscard]] static std::optional<std::string> get_any_in // for string
+                (const std::set<std::pair<std::pair<int, std::string>, std::pair<int, std::string>>> &a)
+                    requires std::is_same_v<std::string, T> {
             for (const auto &[fst, snd] : a) {
                 if (fst.first == 0 && snd.first == 2) return "aboba"; // (-INF; +INF) -> "aboba"
                 if (fst.first == 0 && snd.first == 1 && snd.second > "a") return "a";
@@ -712,10 +710,10 @@ namespace interval {
             return std::nullopt;
         }
 
-        template <typename T2>
-        [[nodiscard]] static std::optional<T2> get_any_for_not_number // non-number types
-        (const std::set<std::pair<std::pair<int, T2>, std::pair<int, T2>>> &a) {
-            if (a.size() == 1 && a.begin()->first.first == 0 && a.begin()->second.first == 2) return T2{};
+        [[nodiscard]] static std::optional<T> get_any_in // non-number types
+        (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>> &a)
+                    requires (!std::is_same_v<std::string, T> and !std::is_arithmetic_v<T>) {
+            if (a.size() == 1 && a.begin()->first.first == 0 && a.begin()->second.first == 2) return T{};
             return std::nullopt; // for unknown type I don`t know what I need to do
         }
 
@@ -739,5 +737,18 @@ namespace interval {
     };
 
 } // interval
+
+// template class interval::interval<int8_t>;
+// template class interval::interval<int16_t>;
+template class interval::interval<int32_t>;
+template class interval::interval<int64_t>;
+// template class interval::interval<u_int8_t>;
+// template class interval::interval<u_int16_t>;
+template class interval::interval<u_int32_t>;
+template class interval::interval<u_int64_t>;
+template class interval::interval<float>;
+template class interval::interval<double>;
+template class interval::interval<long double>;
+template class interval::interval<std::string>;
 
 #endif //interval_H
