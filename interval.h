@@ -160,7 +160,7 @@ namespace interval {
         /**
          * @brief return any elem that is in data
          *
-         * function returns @c std::optional, because returning value does not always exists
+         * function returns @c std::optional, because returning value does not always exist
          *
          * @tableofcontents if there is any point, it will be returned
          *
@@ -172,7 +172,7 @@ namespace interval {
          * @tableofcontents if T is std::string, smart algorithm will try to found any string in intervals,
          * considering, that string may have only capital english letters
          *
-         * @tableofcontents if T - other type, or smart algorithm will not found any elem in data,
+         * @tableofcontents if T - other type, or smart algorithm will not find any elem in data,
          * will be returned @c std::nullopt
          *
          * for custom types and algorithms consider to use this function with additional arguments
@@ -188,7 +188,7 @@ namespace interval {
         /**
          * @brief return any elem that is in data
          *
-         * function returns @c std::optional, because returning value does not always exists
+         * function returns @c std::optional, because returning value does not always exist
          *
          * @brief function gets 3 lambda functions that must return @c std::optional<T>
          *
@@ -261,20 +261,20 @@ namespace interval {
          * @arg lambda: return new value of point in normal view,
          * gets one const T& argument - last value of point
          *
-         * point cannot be -INF or +INF, so it processing standard.
+         * point cannot be -INF or +INF, so it`s processing standard.
          *
          * in text before @c inner_type is std::pair\<int, T\>. Value of first elem:
          *
-         * @tableofcontents 0: -INF. second elem will became T{} automatically
+         * @tableofcontents 0: -INF. second elem will become T{} automatically
          * @tableofcontents 1: standard value. second elem has necessary value
-         * @tableofcontents 2: +INF. second elem will became T{} automatically
+         * @tableofcontents 2: +INF. second elem will become T{} automatically
          * @tableofcontents other: it is undefined behavior, will throw @c std::range_error automatically
          *
          * if first value of interval become more, than second,
-         * will be throw @c std::overflow_error automatically, because it is not normal.
+         * will be thrown @c std::overflow_error automatically, because it is not normal.
          *
          * if first value of interval is equal to second,
-         * this interval will not added
+         * this interval will not be added
          */
         [[nodiscard]] interval _custom_transfer(
                 const std::function<std::pair<inner_type, inner_type>
