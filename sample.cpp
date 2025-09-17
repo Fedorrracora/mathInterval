@@ -51,7 +51,7 @@
 int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
-    using tt = int64_t; // type of value interval
+    using tt = std::string; // type of value interval
     std::vector<interval::interval<tt>> vec(1);
     auto print = [&vec] {
         for (auto i = 0; i < vec.size(); ++i) {
@@ -264,27 +264,27 @@ int main() {
         if (cmd == "mr") {
             tt a;
             std::cin >> a;
-            vec[i] += a;
+            // vec[i] += a;
         }
         if (cmd == "ml") {
             tt a;
             std::cin >> a;
-            vec[i] -= a;
+            // vec[i] -= a;
         }
         if (cmd == "mp") {
             tt a;
             std::cin >> a;
-            vec[i] *= a;
+            // vec[i] *= a;
         }
         if (cmd == "md") {
             tt a;
             std::cin >> a;
-            vec[i] /= a;
+            // vec[i] /= a;
         }
         if (cmd == "ms") {
             tt a;
             std::cin >> a;
-            vec[i] %= a;
+            // vec[i] %= a;
         }
 
         if (cmd == "exit") break;
