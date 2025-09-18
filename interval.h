@@ -75,6 +75,13 @@ namespace interval {
         /// clear multitude data
         void clear() {points.clear(); intervals.clear();}
 
+        [[nodiscard]] bool in(const inp_type &a) const
+        {return points.count(to_point(a)) || get_interval_that_include_this_point(to_point(a)) != intervals.end();}
+
+        [[nodiscard]] bool in(const inp_type &a, const inp_type &b) const {
+            return check_in(to_point(a), to_point(b));
+        }
+
         // math operations
 
         /// a | b
@@ -555,6 +562,17 @@ namespace interval {
             }
         }
 
+        [[nodiscard]] bool check_in(const inner_type &a, const inner_type &b) const {
+            if (b < a) throw std::logic_error("interval overlaps intervals");
+            if (a == b) return true;
+            auto x = intervals.upper_bound(std::make_pair(a, maximal<T>()));
+            if (x == intervals.begin()) return false;
+            --x;
+            if (x->first <= a && x->second >= b) {
+                return true;
+            }
+            return false;
+        }
     private:
         [[nodiscard]] std::string print_in() const {
             auto point_iter = points.begin();
@@ -569,12 +587,6 @@ namespace interval {
                     case 2:
                         return "+INF";
                     default:
-                        {
-                            if constexpr (std::is_arithmetic_v<T>)
-                            {
-
-                            }
-                        }
                         return spec_to_string(p.second);
                 }
             };

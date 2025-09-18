@@ -51,7 +51,7 @@
 int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr);
-    using tt = std::string; // type of value interval
+    using tt = long long; // type of value interval
     std::vector<interval::interval<tt>> vec(1);
     auto print = [&vec] {
         for (auto i = 0; i < vec.size(); ++i) {
@@ -68,7 +68,7 @@ int main() {
     };
     std::cout << "for get help: print \"help\"\n";
     print();
-    std::cout << "now you work with index 1\n";
+    std::cout << "\nnow you work with index 1\n";
     std::cout << "> " << std::flush;
     std::string cmd;
     int64_t i = 0;
@@ -92,6 +92,8 @@ int main() {
             std::cout << "ri x y: remove interval (x; y) from current interval\n";
             std::cout << "rv: change this interval to (-INF; +INF) / this interval (math style)\n";
             std::cout << "ga: get any element in this interval\n";
+            std::cout << "in x: print yes if x in this interval\n";
+            std::cout << "il x y: print yes if interval (x, y) in this interval\n";
             std::cout << "\n";
             std::cout << "functions ai and ri can add -INF and +INF using symbols l and r in the end of command\n";
             std::cout << "for example\n";
@@ -264,27 +266,37 @@ int main() {
         if (cmd == "mr") {
             tt a;
             std::cin >> a;
-            // vec[i] += a;
+             vec[i] += a;
         }
         if (cmd == "ml") {
             tt a;
             std::cin >> a;
-            // vec[i] -= a;
+             vec[i] -= a;
         }
         if (cmd == "mp") {
             tt a;
             std::cin >> a;
-            // vec[i] *= a;
+             vec[i] *= a;
         }
         if (cmd == "md") {
             tt a;
             std::cin >> a;
-            // vec[i] /= a;
+             vec[i] /= a;
         }
         if (cmd == "ms") {
             tt a;
             std::cin >> a;
-            // vec[i] %= a;
+             vec[i] %= a;
+        }
+        if (cmd == "in") {
+            tt a;
+            std::cin >> a;
+            std::cout << (vec[i].in(a) ? "yes\n":"no\n");
+        }
+        if (cmd == "il") {
+            tt a, b;
+            std::cin >> a >> b;
+            std::cout << (vec[i].in(a, b) ? "yes\n":"no\n");
         }
 
         if (cmd == "exit") break;
