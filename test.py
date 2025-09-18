@@ -2,9 +2,9 @@
 # sys.path.append("libs")
 import mathInterval
 
-a = mathInterval.abc_double()
-print(a.print())
+a = mathInterval.mathInterval_float()
+print(a)
 a.add_interval(0, 1)
-print(a.print())
-print(dir(mathInterval.abc_double))
+print(a)
+print(dir(mathInterval.mathInterval_float))
 print(str(a))

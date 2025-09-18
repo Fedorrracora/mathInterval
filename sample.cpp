@@ -56,7 +56,7 @@ int main() {
     auto print = [&vec] {
         for (auto i = 0; i < vec.size(); ++i) {
             std::cout << i + 1 << ": ";
-            std::cout << vec[i].print();
+            std::cout << vec[i].print() << '\n';
         }
     };
     auto index_not_exist = [&vec](int64_t a, int64_t b) {
