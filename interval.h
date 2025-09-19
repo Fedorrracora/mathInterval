@@ -17,18 +17,13 @@ namespace interval {
 //    [[nodiscard]] std::pair<int, T> minimal() noexcept {return {0, {}};}
 
     template <typename T>
-    struct raw_constant {
-        [[nodiscard]] virtual std::pair<int, T> data() const noexcept = 0;
+    struct minimal {
+        [[nodiscard]] static std::pair<int, T> data() noexcept {return {0, {}};}
     };
 
     template <typename T>
-    struct minimal : public raw_constant<T> {
-        [[nodiscard]] std::pair<int, T> data() const noexcept override {return {0, {}};}
-    };
-
-    template <typename T>
-    struct maximal : public raw_constant<T> {
-        [[nodiscard]] std::pair<int, T> data() const noexcept override {return {2, {}};}
+    struct maximal {
+        [[nodiscard]] static std::pair<int, T> data() noexcept {return {2, {}};}
     };
 
 
@@ -43,7 +38,7 @@ namespace interval {
     public:
         using inner_type = std::pair<int, T>;
         // structure can receive data with T type and inner_type (for interval::minimal and interval::maximal)
-        using inp_type = std::variant<T, minimal<T>, maximal<T>, inner_type>;
+        using inp_type = std::variant<minimal<T>, maximal<T>, T, inner_type>;
 
         interval() = default;
         ~interval() = default;
@@ -309,22 +304,37 @@ namespace interval {
         }
 
     protected:
-        std::set<inner_type> points;
-        std::set<std::pair<inner_type, inner_type>> intervals;
+
+        struct pair_less {
+            bool operator()(const inner_type& a, const inner_type& b) const noexcept {
+                if (a.first != b.first) return a.first < b.first;
+                if (a.first != 1) return false;
+                return std::less<T>()(a.second, b.second);
+            }
+            bool operator()(const std::pair<inner_type, inner_type>& a, const std::pair<inner_type, inner_type>& b) const noexcept {
+                if (a.first.first != b.first.first) return a.first.first < b.first.first;
+                if (a.first.first != 1) return false;
+                if (!(a.first < b.first || b.first < a.first)) {
+                    if (a.second.first != b.second.first) return a.second.first < b.second.first;
+                    if (a.second.first != 1) return false;
+                }
+                return std::less()(a, b);
+            }
+        };
+
+        std::set<inner_type, pair_less> points;
+        std::set<std::pair<inner_type, inner_type>, pair_less> intervals;
 
         /// convert T-type object to pair inner-type {1; T-type elem};
         /// if object already have inner_type, do nothing
         [[nodiscard]] static constexpr inner_type to_point(const inp_type &a) {
-            auto x = std::get_if<T>(&a);
-            if (x != nullptr) return {1, std::get<T>(a)};
             auto y = std::get_if<minimal<T>>(&a);
             if (y != nullptr) return y->data();
             auto z = std::get_if<maximal<T>>(&a);
             if (z != nullptr) return z->data();
+            auto x = std::get_if<T>(&a);
+            if (x != nullptr) return {1, std::get<T>(a)};
             return std::get<inner_type>(a);
-//            auto x = std::get_if<T>(&a);
-//            if (x == nullptr) return std::get<inner_type>(a);
-//            return {1, std::get<T>(a)};
         }
 
         /// convert second index among -INF and +INF to {}
@@ -397,7 +407,7 @@ namespace interval {
             intervals.emplace(f, s);
 
             // (f; s) + {s} + (s; x) = (f; x)
-            x = intervals.find({f, s});
+            x = intervals.lower_bound({f, s});
             y = x;
             ++y;
             if (y != intervals.end()) {
@@ -624,7 +634,7 @@ namespace interval {
             }
 
             // create a buffer to convert {x1}; {x2} to {x1; x2} and (x1; x2) + {x1} to [x1; x2)
-            std::vector<typename std::set<inner_type>::iterator> point_buffer;
+            std::vector<typename std::set<inner_type, pair_less>::iterator> point_buffer;
 
             // print a buffer to "{x1; x2; x3; ...; xk}" and clear buffer
             auto print_buffer = [&data, &point_buffer, &out] {
@@ -688,7 +698,7 @@ namespace interval {
             return "\"" + a + "\""; // for strings
         }
 
-        [[nodiscard]] std::set<std::pair<inner_type, inner_type>>::iterator
+        [[nodiscard]] std::set<std::pair<inner_type, inner_type>, pair_less>::iterator
         get_interval_that_include_this_point(const inner_type &point) const {
             auto x = intervals.upper_bound({point, maximal<T>().data()}); // get interval (>point; x2)
             if (x != intervals.begin()) {
@@ -713,7 +723,7 @@ namespace interval {
         }
 
         [[nodiscard]] std::optional<T> get_any_in // for degrees
-                (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>> &a) const requires std::is_arithmetic_v<T> {
+                (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>, pair_less> &a) const requires std::is_arithmetic_v<T> {
             for (auto &i : a) {
                 if (i.first.first == 0 && i.second.first == 2) return {}; // (-INF; +INF) -> 0
                 // i.second.second - 1 < i.second.second and i.first.second + 1 > i.first.second
@@ -731,7 +741,7 @@ namespace interval {
         }
 
         [[nodiscard]] static std::optional<std::string> get_any_in // for string
-                (const std::set<std::pair<std::pair<int, std::string>, std::pair<int, std::string>>> &a)
+                (const std::set<std::pair<std::pair<int, std::string>, std::pair<int, std::string>>, pair_less> &a)
                     requires std::is_same_v<std::string, T> {
             for (const auto &[fst, snd] : a) {
                 if (fst.first == 0 && snd.first == 2) return "aboba"; // (-INF; +INF) -> "aboba"
@@ -749,14 +759,14 @@ namespace interval {
         }
 
         [[nodiscard]] static std::optional<T> get_any_in // non-number types
-        (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>> &a)
+        (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>, pair_less> &a)
                     requires (!std::is_same_v<std::string, T> and !std::is_arithmetic_v<T>) {
             if (a.size() == 1 && a.begin()->first.first == 0 && a.begin()->second.first == 2) return T{};
             return std::nullopt; // for unknown type I don`t know what I need to do
         }
 
         [[nodiscard]] static std::optional<T> get_any_functional
-                (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>> &a,
+                (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>, pair_less> &a,
                 const std::function<std::optional<T>(const T&)> &MINUS_INF_x,
                 const std::function<std::optional<T>(const T&)> &x_PLUS_INF,
                 const std::function<std::optional<T>(const T&, const T&)> &x_y) {

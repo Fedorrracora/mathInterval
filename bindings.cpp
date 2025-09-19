@@ -7,11 +7,27 @@
 namespace py = pybind11;
 template<typename T>
 void bind_abc(py::module_ &m, const char* class_name) {
-    py::class_<interval::interval<T>>(m, class_name)
+    using Interval = interval::interval<T>;
+    using Min = interval::minimal<T>;
+    using Max = interval::maximal<T>;
+
+    auto min_cls = py::class_<Min>(m, std::string("_").append(class_name).append("_minimal").c_str())
         .def(py::init<>())
-        .def("add_interval", &interval::interval<T>::add_interval)
-        .def("__str__", &interval::interval<T>::print)
-        .def("add_point", &interval::interval<T>::add_point);
+        .def("__repr__", [](const Min&) { return "<minimal>"; });
+
+    auto max_cls = py::class_<Max>(m, std::string("_").append(class_name).append("_maximal").c_str())
+        .def(py::init<>())
+        .def("__repr__", [](const Max&) { return "<maximal>"; });
+
+    py::class_<Interval> cls(m, class_name);
+    cls.def(py::init<>())
+        .def("__str__", &Interval::print)
+        .def("add_interval", &Interval::add_interval)
+        .def("add_point", &Interval::add_point)
+        .def("remove_interval", &Interval::remove_interval)
+        .def("remove_point", &Interval::remove_point);
+    cls.def_property_readonly_static("minimal", [](const py::object&) { return Min(); });
+    cls.def_property_readonly_static("maximal", [](const py::object&) { return Max(); });
 }
 
 PYBIND11_MODULE(mathInterval, m) {
@@ -19,4 +35,5 @@ PYBIND11_MODULE(mathInterval, m) {
     bind_abc<long long>(m, "mathInterval_int");
     bind_abc<long double>(m, "mathInterval_float");
     bind_abc<std::string>(m, "mathInterval_str");
+    bind_abc<py::object>(m, "mathInterval");
 }

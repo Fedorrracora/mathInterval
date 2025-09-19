@@ -41,7 +41,7 @@ if(PYBIND11_STUBGEN_EXECUTABLE)
         COMMAND ${CMAKE_COMMAND} -E copy
                 ${CMAKE_SOURCE_DIR}/base/setup.py
                 ${PY_BUILD}/mathInterval/setup.py
-        COMMENT "Упаковка Python-модуля в ${PY_BUILD}"
+        COMMENT "Packing Python-module in ${PY_BUILD}"
     )
 else()
     message(WARNING "pybind11-stubgen not found. Skipping stub generation.")
@@ -58,7 +58,7 @@ else()
         COMMAND ${CMAKE_COMMAND} -E copy
                 ${CMAKE_SOURCE_DIR}/base/setup.py
                 ${PY_BUILD}/mathInterval/setup.py
-        COMMENT "Упаковка Python-модуля в ${PY_BUILD}"
+        COMMENT "Packing Python-module in ${PY_BUILD}"
     )
 endif()
 
