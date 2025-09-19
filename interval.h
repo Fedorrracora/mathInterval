@@ -13,18 +13,37 @@
 namespace interval {
 
 /// return always minimal element in any interval
+//    template <typename T>
+//    [[nodiscard]] std::pair<int, T> minimal() noexcept {return {0, {}};}
+
     template <typename T>
-    [[nodiscard]] std::pair<int, T> minimal() noexcept {return {0, {}};}
-/// return always maximal element in any interval
+    struct raw_constant {
+        [[nodiscard]] virtual std::pair<int, T> data() const noexcept = 0;
+    };
+
     template <typename T>
-    [[nodiscard]] std::pair<int, T> maximal() noexcept {return {2, {}};}
+    struct minimal : public raw_constant<T> {
+        [[nodiscard]] std::pair<int, T> data() const noexcept override {return {0, {}};}
+    };
+
+    template <typename T>
+    struct maximal : public raw_constant<T> {
+        [[nodiscard]] std::pair<int, T> data() const noexcept override {return {2, {}};}
+    };
+
+
+
+
+    /// return always maximal element in any interval
+//    template <typename T>
+//    [[nodiscard]] std::pair<int, T> maximal() noexcept {return {2, {}};}
 
     template<typename T>
     class interval {
     public:
         using inner_type = std::pair<int, T>;
         // structure can receive data with T type and inner_type (for interval::minimal and interval::maximal)
-        using inp_type = std::variant<T, inner_type>;
+        using inp_type = std::variant<T, minimal<T>, maximal<T>, inner_type>;
 
         interval() = default;
         ~interval() = default;
@@ -295,10 +314,17 @@ namespace interval {
 
         /// convert T-type object to pair inner-type {1; T-type elem};
         /// if object already have inner_type, do nothing
-        [[nodiscard]] inner_type to_point(const inp_type &a) const {
+        [[nodiscard]] static constexpr inner_type to_point(const inp_type &a) {
             auto x = std::get_if<T>(&a);
-            if (x == nullptr) return std::get<inner_type>(a);
-            return {1, std::get<T>(a)};
+            if (x != nullptr) return {1, std::get<T>(a)};
+            auto y = std::get_if<minimal<T>>(&a);
+            if (y != nullptr) return y->data();
+            auto z = std::get_if<maximal<T>>(&a);
+            if (z != nullptr) return z->data();
+            return std::get<inner_type>(a);
+//            auto x = std::get_if<T>(&a);
+//            if (x == nullptr) return std::get<inner_type>(a);
+//            return {1, std::get<T>(a)};
         }
 
         /// convert second index among -INF and +INF to {}
@@ -448,7 +474,7 @@ namespace interval {
         }
 
         void invert_in(interval &buf) const {
-            buf.add_interval_in(minimal<T>(), maximal<T>());
+            buf.add_interval_in(minimal<T>().data(), maximal<T>().data());
             for (auto &it : intervals) {
                 buf.remove_interval(it.first, it.second);
             }
@@ -565,7 +591,7 @@ namespace interval {
         [[nodiscard]] bool check_in(const inner_type &a, const inner_type &b) const {
             if (b < a) throw std::logic_error("interval overlaps intervals");
             if (a == b) return true;
-            auto x = intervals.upper_bound(std::make_pair(a, maximal<T>()));
+            auto x = intervals.upper_bound(std::make_pair(a, maximal<T>().data()));
             if (x == intervals.begin()) return false;
             --x;
             if (x->first <= a && x->second >= b) {
@@ -664,7 +690,7 @@ namespace interval {
 
         [[nodiscard]] std::set<std::pair<inner_type, inner_type>>::iterator
         get_interval_that_include_this_point(const inner_type &point) const {
-            auto x = intervals.upper_bound({point, maximal<T>()}); // get interval (>point; x2)
+            auto x = intervals.upper_bound({point, maximal<T>().data()}); // get interval (>point; x2)
             if (x != intervals.begin()) {
                 --x; // interval (x1; <=point)
                 if (x->second > point && x->first < point) return x;
@@ -752,15 +778,15 @@ namespace interval {
 
 // template class interval::interval<int8_t>;
 // template class interval::interval<int16_t>;
-template class interval::interval<int32_t>;
+//template class interval::interval<int32_t>;
 template class interval::interval<int64_t>;
 // template class interval::interval<u_int8_t>;
 // template class interval::interval<u_int16_t>;
-template class interval::interval<u_int32_t>;
-template class interval::interval<u_int64_t>;
-template class interval::interval<float>;
-template class interval::interval<double>;
-template class interval::interval<long double>;
-template class interval::interval<std::string>;
+//template class interval::interval<u_int32_t>;
+//template class interval::interval<u_int64_t>;
+//template class interval::interval<float>;
+//template class interval::interval<double>;
+//template class interval::interval<long double>;
+//template class interval::interval<std::string>;
 
 #endif //interval_H
