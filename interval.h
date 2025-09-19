@@ -12,26 +12,17 @@
 
 namespace interval {
 
-/// return always minimal element in any interval
-//    template <typename T>
-//    [[nodiscard]] std::pair<int, T> minimal() noexcept {return {0, {}};}
-
+    /// return always minimal element in any interval
     template <typename T>
     struct minimal {
         [[nodiscard]] static std::pair<int, T> data() noexcept {return {0, {}};}
     };
 
+    /// return always maximal element in any interval
     template <typename T>
     struct maximal {
         [[nodiscard]] static std::pair<int, T> data() noexcept {return {2, {}};}
     };
-
-
-
-
-    /// return always maximal element in any interval
-//    template <typename T>
-//    [[nodiscard]] std::pair<int, T> maximal() noexcept {return {2, {}};}
 
     template<typename T>
     class interval {
@@ -94,6 +85,10 @@ namespace interval {
 
         [[nodiscard]] bool in(const inp_type &a, const inp_type &b) const {
             return check_in(to_point(a), to_point(b));
+        }
+
+        [[nodiscard]] bool in(const std::pair<inp_type, inp_type> &a) const {
+            return check_in(to_point(a.first), to_point(a.second));
         }
 
         // math operations
@@ -390,7 +385,7 @@ namespace interval {
         bool add_interval_in(inner_type f, inner_type s) {
             // (a; a) == empty
             if (f == s) return false;
-            if (s < f) throw std::logic_error("interval overlaps intervals");
+            if (pair_less()(s, f)) throw std::logic_error("interval overlaps intervals");
             auto x = get_interval_that_include_this_point(f), y = get_interval_that_include_this_point(s);
             if (x == y && x != intervals.end()) return false;
             // (x1; x2); (x3; x4) + (f; s) = (x1; x2); (x3; x4) + (x1; s) if {f} in (x1; x2)
@@ -438,7 +433,7 @@ namespace interval {
         bool remove_interval_in(const inner_type &f, const inner_type &s) {
             // (a; a) == empty
             if (f == s) return false;
-            if (s < f) throw std::logic_error("interval overlaps intervals");
+            if (pair_less()(s, f)) throw std::logic_error("interval overlaps intervals");
             auto x = get_interval_that_include_this_point(f), y = get_interval_that_include_this_point(s);
             bool ret = false;
 
@@ -599,7 +594,7 @@ namespace interval {
         }
 
         [[nodiscard]] bool check_in(const inner_type &a, const inner_type &b) const {
-            if (b < a) throw std::logic_error("interval overlaps intervals");
+            if (pair_less()(b, a)) throw std::logic_error("interval overlaps intervals");
             if (a == b) return true;
             auto x = intervals.upper_bound(std::make_pair(a, maximal<T>().data()));
             if (x == intervals.begin()) return false;
@@ -703,7 +698,7 @@ namespace interval {
             auto x = intervals.upper_bound({point, maximal<T>().data()}); // get interval (>point; x2)
             if (x != intervals.begin()) {
                 --x; // interval (x1; <=point)
-                if (x->second > point && x->first < point) return x;
+                if (pair_less()(point, x->second) && pair_less()(x->first, point)) return x;
             }
             return intervals.end();
         }

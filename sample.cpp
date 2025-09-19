@@ -296,7 +296,7 @@ int main() {
         if (cmd == "il") {
             tt a, b;
             std::cin >> a >> b;
-            std::cout << (vec[i].in(a, b) ? "yes\n":"no\n");
+            // std::cout << (vec[i].in(a, b) ? "yes\n":"no\n");
         }
 
         if (cmd == "exit") break;

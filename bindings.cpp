@@ -22,10 +22,14 @@ void bind_abc(py::module_ &m, const char* class_name) {
     py::class_<Interval> cls(m, class_name);
     cls.def(py::init<>())
         .def("__str__", &Interval::print)
+        .def("__contains__", static_cast<bool (Interval::*)(const typename Interval::inp_type&) const>(&Interval::in))
         .def("add_interval", &Interval::add_interval)
         .def("add_point", &Interval::add_point)
         .def("remove_interval", &Interval::remove_interval)
-        .def("remove_point", &Interval::remove_point);
+        .def("remove_point", &Interval::remove_point)
+        .def("empty", &Interval::empty)
+        .def("clear", &Interval::clear)
+    ;
     cls.def_property_readonly_static("minimal", [](const py::object&) { return Min(); });
     cls.def_property_readonly_static("maximal", [](const py::object&) { return Max(); });
 }
