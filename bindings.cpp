@@ -1,12 +1,14 @@
 //
 // Created by fedor on 17.09.2025.
 //
+#include <format>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/functional.h>
 #include "interval.h"
 namespace py = pybind11;
 template<typename T>
-void bind_abc(py::module_ &m, const char* class_name) {
+void bind_abc(py::module_ &m, const char* class_name, const std::string& py_type) {
     using Interval = interval::interval<T>;
     using Min = interval::minimal<T>;
     using Max = interval::maximal<T>;
@@ -37,6 +39,11 @@ void bind_abc(py::module_ &m, const char* class_name) {
         .def("__isub__", [](Interval &a, const Interval &b) {return a -= b;}, py::is_operator())
         .def("__mul__", [](const Interval &a, const Interval &b) {return a * b;}, py::is_operator())
         .def("__imul__", [](Interval &a, const Interval &b) {return a *= b;}, py::is_operator())
+        .def("any", static_cast<std::optional<T> (Interval::*)() const>(&Interval::any))
+        .def("any", static_cast<std::optional<T> (Interval::*)(
+                const std::function<std::optional<T>(const T&)> &,
+                const std::function<std::optional<T>(const T&)> &,
+                const std::function<std::optional<T>(const T&, const T&)> &) const>(&Interval::any))
     ;
     if constexpr (std::is_arithmetic_v<T>) cls
         .def("__add__", [](const Interval &a, const T &b) {return a + b;}, py::is_operator())
@@ -49,6 +56,8 @@ void bind_abc(py::module_ &m, const char* class_name) {
     if constexpr (std::is_integral_v<T>) cls
         .def("__floordiv__", [](const Interval &a, const T &b) {return a / b;}, py::is_operator())
         .def("__ifloordiv__", [](Interval &a, const T &b) {return a /= b;}, py::is_operator())
+        .def("__mod__", [](const Interval &a, const T &b) {return a % b;}, py::is_operator())
+        .def("__imod__", [](Interval &a, const T &b) {return a %= b;}, py::is_operator())
     ;
     if constexpr (std::is_arithmetic_v<T> && !std::is_integral_v<T>) cls
         .def("__truediv__", [](const Interval &a, const T &b) {return a / b;}, py::is_operator())
@@ -60,8 +69,8 @@ void bind_abc(py::module_ &m, const char* class_name) {
 
 PYBIND11_MODULE(mathInterval, m) {
     m.doc() = "Python bindings for mathInterval<T>";
-    bind_abc<long long>(m, "mathInterval_int");
-    bind_abc<long double>(m, "mathInterval_float");
-    bind_abc<std::string>(m, "mathInterval_str");
-    bind_abc<py::object>(m, "mathInterval");
+    bind_abc<long long>(m, "mathInterval_int", "int");
+    bind_abc<long double>(m, "mathInterval_float", "float");
+    bind_abc<std::string>(m, "mathInterval_str", "string");
+    bind_abc<py::object>(m, "mathInterval", "Any");
 }
