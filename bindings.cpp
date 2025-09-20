@@ -35,12 +35,24 @@ void bind_abc(py::module_ &m, const char* class_name) {
         .def("__iadd__", [](Interval &a, const Interval &b) {return a += b;}, py::is_operator())
         .def("__sub__", [](const Interval &a, const Interval &b) {return a - b;}, py::is_operator())
         .def("__isub__", [](Interval &a, const Interval &b) {return a -= b;}, py::is_operator())
+        .def("__mul__", [](const Interval &a, const Interval &b) {return a * b;}, py::is_operator())
+        .def("__imul__", [](Interval &a, const Interval &b) {return a *= b;}, py::is_operator())
     ;
     if constexpr (std::is_arithmetic_v<T>) cls
         .def("__add__", [](const Interval &a, const T &b) {return a + b;}, py::is_operator())
         .def("__iadd__", [](Interval &a, const T &b) {return a += b;}, py::is_operator())
         .def("__sub__", [](const Interval &a, const T &b) {return a - b;}, py::is_operator())
         .def("__isub__", [](Interval &a, const T &b) {return a -= b;}, py::is_operator())
+        .def("__mul__", [](const Interval &a, const T &b) {return a * b;}, py::is_operator())
+        .def("__imul__", [](Interval &a, const T &b) {return a *= b;}, py::is_operator())
+    ;
+    if constexpr (std::is_integral_v<T>) cls
+        .def("__floordiv__", [](const Interval &a, const T &b) {return a / b;}, py::is_operator())
+        .def("__ifloordiv__", [](Interval &a, const T &b) {return a /= b;}, py::is_operator())
+    ;
+    if constexpr (std::is_arithmetic_v<T> && !std::is_integral_v<T>) cls
+        .def("__truediv__", [](const Interval &a, const T &b) {return a / b;}, py::is_operator())
+        .def("__itruediv__", [](Interval &a, const T &b) {return a /= b;}, py::is_operator())
     ;
     cls.def_property_readonly_static("minimal", [](const py::object&) { return Min(); });
     cls.def_property_readonly_static("maximal", [](const py::object&) { return Max(); });

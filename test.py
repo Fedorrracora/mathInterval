@@ -6,8 +6,9 @@ b.add_interval(5, 10)
 a.add_interval(a.minimal, 0)
 print(a)
 print(b)
-a += 3
+a *= 2
 print(a)
-print(a.contains(a.minimal, 2))
-print(a.contains(1, 7))
-print(a.contains(7, a.maximal))
+a //= 10000000000000
+print(a)
+# a //= 0
+# print(a)

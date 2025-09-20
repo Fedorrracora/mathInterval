@@ -313,7 +313,12 @@ namespace interval {
                     if (a.second.first != 1) return false;
                     return a.second.second < b.second.second;
                 }
-                return std::less()(a, b);
+                if (!(a.first < b.first || b.first < a.first)) {
+                    if (a.second.first != b.second.first) return a.second.first < b.second.first;
+                    if (a.second.first != 1) return false;
+                    return a.second.second < b.second.second;
+                }
+                return a.first < b.first;
             }
         };
 
@@ -508,10 +513,10 @@ namespace interval {
                 return;
             }
             for (auto &[fst, snd] : intervals) {
-                auto a = std::make_pair(fst.first, fst.second * val),
-                     b = std::make_pair(snd.first, snd.second * val);
+                auto a = std::make_pair(val < 0 ? 2 - fst.first:fst.first, fst.second * val),
+                     b = std::make_pair(val < 0 ? 2 - snd.first:snd.first, snd.second * val);
                 // if val < 0: fst < snd -> a > b
-                buf.intervals.emplace(std::min(a, b), std::max(a, b));
+                if (a != b) buf.intervals.emplace(std::min(a, b), std::max(a, b));
             }
             for (auto &i : points) {
                 buf.points.insert(std::make_pair(i.first, i.second * val));
@@ -521,10 +526,10 @@ namespace interval {
         void division_in(interval &buf, const T &val) const requires std::is_arithmetic_v<T> {
             // if point was -INF or +INF second elem if set to 0 -> 0 / val = 0
             for (auto &[fst, snd] : intervals) {
-                auto a = std::make_pair(fst.first, fst.second / val),
-                     b = std::make_pair(snd.first, snd.second / val);
+                auto a = std::make_pair(val < 0 ? 2 - fst.first:fst.first, fst.second / val),
+                     b = std::make_pair(val < 0 ? 2 - snd.first:snd.first, snd.second / val);
                 // if val < 0: fst < snd -> a > b
-                buf.intervals.emplace(std::min(a, b), std::max(a, b));
+                if (a != b) buf.intervals.emplace(std::min(a, b), std::max(a, b));
             }
             for (auto &i : points) {
                 buf.points.insert(std::make_pair(i.first, i.second / val));
