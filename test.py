@@ -1,27 +1,13 @@
-# import sys
-# sys.path.append("libs")
-import mathInterval
+from mathInterval import mathInterval_int as itr
 
-a = mathInterval.mathInterval() # использует py::object
-a.add_interval(a.minimal, 2)
-a.add_interval(5, 8)
-a.add_interval(15, a.maximal)
+a, b = itr(), itr()
+a.add_interval(3, 8)
+b.add_interval(5, 10)
+a.add_interval(a.minimal, 0)
 print(a)
-print(6 in a)
-print(2 in a)
-print(0 in a)
-print(a.maximal in a)
-print(a.empty())
-a.add_interval(2, 15)
-print(a)
-a.add_interval(1, 16)
-print(a)
-a.clear()
-print(a)
-
-print(dir(mathInterval.mathInterval))
-b = mathInterval.mathInterval_int()
-b.add_interval(b.minimal, 2)
-b.add_interval(5, 8)
-b.add_interval(15, b.maximal)
 print(b)
+a += 3
+print(a)
+print(a.contains(a.minimal, 2))
+print(a.contains(1, 7))
+print(a.contains(7, a.maximal))

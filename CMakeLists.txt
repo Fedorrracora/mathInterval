@@ -44,7 +44,7 @@ if(PYBIND11_STUBGEN_EXECUTABLE)
         COMMENT "Packing Python-module in ${PY_BUILD}"
     )
 else()
-    message(WARNING "pybind11-stubgen not found. Skipping stub generation.")
+    message(WARNING "pybind11-stubgen not found. Skipping stub generation (highlighting in IDEs will not work).")
     add_custom_command(
         TARGET mathInterval POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory
@@ -56,7 +56,7 @@ else()
                 ${CMAKE_SOURCE_DIR}/base/__init__.py
                 ${PY_BUILD}/mathInterval/mathInterval/__init__.py
         COMMAND ${CMAKE_COMMAND} -E copy
-                ${CMAKE_SOURCE_DIR}/base/setup.py
+                ${CMAKE_SOURCE_DIR}/base/setup_without_stubgen.py
                 ${PY_BUILD}/mathInterval/setup.py
         COMMENT "Packing Python-module in ${PY_BUILD}"
     )

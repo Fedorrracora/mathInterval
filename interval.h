@@ -308,10 +308,10 @@ namespace interval {
             }
             bool operator()(const std::pair<inner_type, inner_type>& a, const std::pair<inner_type, inner_type>& b) const noexcept {
                 if (a.first.first != b.first.first) return a.first.first < b.first.first;
-                if (a.first.first != 1) return false;
-                if (!(a.first < b.first || b.first < a.first)) {
+                if (a.first.first != 1) {
                     if (a.second.first != b.second.first) return a.second.first < b.second.first;
                     if (a.second.first != 1) return false;
+                    return a.second.second < b.second.second;
                 }
                 return std::less()(a, b);
             }
