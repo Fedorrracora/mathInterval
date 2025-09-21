@@ -39,33 +39,98 @@ void bind_abc(py::module_ &m, const char* class_name) {
         .def("__isub__", [](Interval &a, const Interval &b) {return a -= b;}, py::is_operator(), "a = a / b (in math style)")
         .def("__mul__", [](const Interval &a, const Interval &b) {return a * b;}, py::is_operator(), "a & b")
         .def("__imul__", [](Interval &a, const Interval &b) {return a *= b;}, py::is_operator(), "a &= b")
-        .def("any", [](const Interval &a) {return a.any(true);})
-        .def("any", static_cast<std::optional<T> (Interval::*)(
-                const std::function<std::optional<T>(const T&)> &,
-                const std::function<std::optional<T>(const T&)> &,
-                const std::function<std::optional<T>(const T&, const T&)> &) const>(&Interval::any), R"doc(
+        .def("any", [](const Interval &a) {return a.any(true);}, R"doc(
 ### any
+
 Return any element that is in data.
 
-The function returns `std::optional`, because the returning value does not always exist.
+The function can return `None`, because the returning value does not always exist.
 
 ---
 
 - If there is any point, it will be returned.
-- If there is an interval `(-INF; +INF)`, the function will return `T{}`.
-- If `T` is an integer or a non-integer digit,
+- If there is an interval `(-INF; +INF)`, the function will return `None`.
+- If it is `mathInterval_int` or `mathInterval_float`,
   a smart algorithm will try to find any number in the intervals.
-- If `T` is `std::string`,
+- If it is `mathInterval_str`,
   a smart algorithm will try to find any string in the intervals,
   considering that a string may contain only **capital English letters**.
-- If `T` is another type, or if the smart algorithm does not find any element in data,
-  the function will return `std::nullopt`.
+- If it is standard `mathInterval`, or if the algorithm does not find any element in data,
+  the function will return `None`.
+
+---
 
 For custom types and algorithms, consider using this function with additional arguments.
 )doc")
-        .def("custom_transfer", static_cast<Interval (Interval::*)(const std::function<T(const T&)> &) const>(&Interval::custom_transfer))
+        .def("any", static_cast<std::optional<T> (Interval::*)(
+                const std::function<std::optional<T>(const T&)> &,
+                const std::function<std::optional<T>(const T&)> &,
+                const std::function<std::optional<T>(const T&, const T&)> &, T) const>(&Interval::any), R"doc(
+### any()
+
+Return any element that is in data.
+
+The function can return `None`, because the returning value does not always exist.
+
+This function takes **three lambda functions** and **one value**:
+
+---
+
+- **First lambda** – called if there is an interval `(-INF; x)`,
+  receives one argument (x).
+- **Second lambda** – called if there is an interval `(x; +INF)`,
+  receives one argument (x).
+- **Third lambda** – called if there is an interval `(x; y)`,
+  receives two arguments (x, y).
+- **Value** - result for interval `(-INF, +INF)`
+
+---
+
+A lambdas may return `None`, if the interval has no integer value.
+
+⚠️ **Warning:**
+You must yourself detect that the returning value lies inside the interval.
+)doc")
+        .def("custom_transfer", static_cast<Interval (Interval::*)(const std::function<T(const T&)> &) const>(&Interval::custom_transfer), R"doc(
+### custom_transfer()
+
+Transfer all elements that are in this multitude and return a new multitude.
+
+The function takes **one lambda function**.
+`-INF` and `+INF` remain unchanged.
+
+---
+
+- **Lambda** – returns a new value of a point/border of an interval,
+  receives one argument - old value of a point/border of an interval.
+
+---
+
+If the first value of an interval becomes greater than the second,
+the function will swap them automatically.
+)doc")
         .def("custom_transfer", static_cast<Interval (Interval::*)
-                (const std::function<T(const T&)> &, const T&, const T&) const>(&Interval::custom_transfer))
+                (const std::function<T(const T&)> &, const T&, const T&) const>(&Interval::custom_transfer), R"doc(
+### custom_transfer()
+
+Transfer all elements that are in this multitude and return a new multitude.
+
+The function takes **one lambda function**
+and **two values** – the converted values of `-INF` and `+INF`.
+New values cannot themselves be `-INF` or `+INF`.
+
+---
+
+- **Lambda** – returns a new value of a point/border of an interval,
+  receives one argument - old value of a point/border of an interval.
+- **First value** – new value of the border of the interval, that begins from `-INF` - old value of a border of an interval.
+- **Second value** – new value of the border of the interval, that ends with `+INF` - old value of a border of an interval.
+
+---
+
+If the first value of an interval becomes greater than the second,
+the function will swap them automatically.
+)doc")
     ;
     if constexpr (std::is_arithmetic_v<T>) cls
         .def("__add__", [](const Interval &a, const T &b) {return a + b;}, py::is_operator(), "returns a new multitude with the points shifted forward by the distance val")

@@ -186,6 +186,7 @@ namespace interval {
 
         /**
         ### any
+
         Return any element that is in this multitude.
 
         The function returns `std::optional`, because the returning value does not always exist.
@@ -202,6 +203,8 @@ namespace interval {
         - If `T` is another type, or if the smart algorithm does not find any element in data,
           the function will return `std::nullopt`.
 
+        ---
+
         For custom types and algorithms, consider using this function with additional arguments.
          */
         [[nodiscard]] std::optional<T> any(bool flag = false) const {
@@ -213,44 +216,59 @@ namespace interval {
         }
 
         /**
-         * @brief return any elem that is in data
-         *
-         * function returns @c std::optional, because returning value does not always exist
-         *
-         * @brief function gets 3 lambda functions that must return @c std::optional<T>
-         *
-         * @arg first lambda: return if there is interval (-INF; x), gets one const T& argument
-         *
-         * @arg second lambda: return if there is interval (x; +INF), gets one const T& argument
-         *
-         * @arg third lambda: return if there is interval (x; y), gets two const T& arguments
-         *
-         * if there is interval (-INF; +INF), will be returned T{}.
-         *
-         * because there lambdas returns std::optional, lambda can return @c std::nullopt,
-         * if this interval has not any integer value
-         *
-         * @warning Please note, that you ourselves detect, that returning value is on interval.
-         * Do not forget to monitor for overflows
+        ### any()
+
+        Return any element that is in data.
+
+        The function returns `std::optional`, because the returning value does not always exist.
+
+        This function takes **three lambda functions**, each of which must return `std::optional<T>`,
+        and **one `T` value**:
+
+        ---
+
+        - **First lambda** – called if there is an interval `(-INF; x)`,
+          receives one `const T&` argument.
+        - **Second lambda** – called if there is an interval `(x; +INF)`,
+          receives one `const T&` argument.
+        - **Third lambda** – called if there is an interval `(x; y)`,
+          receives two `const T&` arguments.
+        - **Value** - result for interval `(-INF, +INF)`
+
+        ---
+
+        Because the lambdas return `std::optional`, a lambda may return `std::nullopt`
+        if the interval has no integer value.
+
+        ⚠️ **Warning:**
+        You must yourself detect that the returning value lies inside the interval.
+        Do not forget to monitor for overflows.
          */
         [[nodiscard]] std::optional<T> any(
             const std::function<std::optional<T>(const T&)> &MINUS_INF_x,
             const std::function<std::optional<T>(const T&)> &x_PLUS_INF,
-            const std::function<std::optional<T>(const T&, const T&)> &x_y) const {
+            const std::function<std::optional<T>(const T&, const T&)> &x_y, const T MINUS_INF_PLUS_INF) const {
             if (!points.empty()) return points.begin()->second; // if there is any point: return it
-            return get_any_functional(intervals, MINUS_INF_x, x_PLUS_INF, x_y);
+            return get_any_functional(intervals, MINUS_INF_x, x_PLUS_INF, x_y, MINUS_INF_PLUS_INF);
         }
 
         /**
-         * @brief transfer all elem that is in data. return new @c interval::interval
-         *
-         * function gets 1 lambda function that must return T.
-         * -INF and +INF remain unchanged
-         *
-         * @arg lambda: return new value of point / border of interval, gets one const T& argument
-         *
-         * if first value of interval become more, than second,
-         * function will swap their automatically
+        ### custom_transfer()
+
+        Transfer all elements that are in this multitude and return a new `interval::interval`.
+
+        The function takes **one lambda function**, that must return `T`.
+        `-INF` and `+INF` remain unchanged.
+
+        ---
+
+        - **Lambda** – returns a new value of a point/border of an interval,
+          receives one `const T&` argument.
+
+        ---
+
+        If the first value of an interval becomes greater than the second,
+        the function will swap them automatically.
          */
         [[nodiscard]] interval custom_transfer(const std::function<T(const T&)> &fun) const {
             interval b;
@@ -258,18 +276,25 @@ namespace interval {
             return b;
         }
         /**
-         * @brief transfer all elem that is in data. return new @c interval::interval
-         *
-         * function gets 1 lambda function (that must return T)
-         * and 2 values - result of conversion -INF and +INF.
-         * new values can not be -INF and +INF
-         *
-         * @arg lambda: return new value of point / border of interval, gets one const T& argument
-         * @arg raw value: new value of border of interval that begin from -INF
-         * @arg raw value: new value of border of interval that end with +INF
-         *
-         * if first value of interval become more, than second,
-         * function will swap their automatically
+        ### custom_transfer()
+
+        Transfer all elements that are in this multitude and return a new `interval::interval`.
+
+        The function takes **one lambda function**, that must return `T`,
+        and **two values** – the converted values of `-INF` and `+INF`.
+        New values cannot themselves be `-INF` or `+INF`.
+
+        ---
+
+        - **Lambda** – returns a new value of a point/border of an interval,
+          receives one `const T&` argument.
+        - **First value** – new value of the border of the interval, that begins from `-INF`.
+        - **Second value** – new value of the border of the interval, that ends with `+INF`.
+
+        ---
+
+        If the first value of an interval becomes greater than the second,
+        the function will swap them automatically.
          */
         [[nodiscard]] interval custom_transfer(const std::function<T(const T&)> &fun,
                                                const T& MINUS_INF, const T& PLUS_INF) const {
@@ -278,30 +303,51 @@ namespace interval {
             return b;
         }
         /**
-         * @brief transfer all elem that is in data. return new @c interval::interval
-         *
-         * @warning this function is need to work with raw memory
-         *
-         * function gets 2 lambda functions
-         * @arg lambda: return new value of interval in raw view (std::pair\<inner_type, inner_type\>),
-         * gets one const std::pair\<inner_type, inner_type\>& argument - last value of interval
-         * @arg lambda: return new value of point in normal view,
-         * gets one const T& argument - last value of point
-         *
-         * point cannot be -INF or +INF, so it`s processing standard.
-         *
-         * in text before @c inner_type is std::pair\<int, T\>. Value of first elem:
-         *
-         * @tableofcontents 0: -INF. second elem will become T{} automatically
-         * @tableofcontents 1: standard value. second elem has necessary value
-         * @tableofcontents 2: +INF. second elem will become T{} automatically
-         * @tableofcontents other: it is undefined behavior, will throw @c std::range_error automatically
-         *
-         * if first value of interval become more, than second,
-         * will be thrown @c std::overflow_error automatically, because it is not normal.
-         *
-         * if first value of interval is equal to second,
-         * this interval will not be added
+        ### _custom_transfer()
+
+        Transfer all elements that are in data and return a new `interval::interval`.
+
+        ⚠️ **Warning:**
+        This function is intended to work with **raw memory**.
+
+        The function takes **two lambda functions**:
+
+        ---
+
+        - **First lambda** – returns a new value of an interval in raw view
+          (`std::pair<inner_type, inner_type>`),
+          receives one `const std::pair<inner_type, inner_type>&` argument
+          (the last value of the interval).
+        - **Second lambda** – returns a new value of a point in normal view,
+          receives one `const T&` argument (the last value of the point).
+
+        ---
+
+        A point cannot be `-INF` or `+INF`, so it is processed in the standard way.
+
+        Here `inner_type` is `std::pair<int, T>`.
+        Meaning of the **first element** of `inner_type`:
+
+        | Value | Meaning | Second element |
+
+        |------:|--------|-----------------|
+
+        | `0`   | `-INF` | becomes `T{}` automatically |
+
+        | `1`   | standard value | holds the necessary value |
+
+        | `2`   | `+INF` | becomes `T{}` automatically |
+
+        | other | **undefined behavior** → throws `std::range_error` |
+
+        Additional conditions:
+
+        ---
+
+        - If the first value of an interval becomes **greater** than the second,
+          an `std::overflow_error` is thrown automatically (invalid interval).
+        - If the first value of an interval is **equal** to the second,
+          this interval will **not** be added.
          */
         [[nodiscard]] interval _custom_transfer(
                 const std::function<std::pair<inner_type, inner_type>
@@ -783,9 +829,9 @@ namespace interval {
                 (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>, pair_less> &a,
                 const std::function<std::optional<T>(const T&)> &MINUS_INF_x,
                 const std::function<std::optional<T>(const T&)> &x_PLUS_INF,
-                const std::function<std::optional<T>(const T&, const T&)> &x_y) {
+                const std::function<std::optional<T>(const T&, const T&)> &x_y, const T& MINUS_INF_PLUS_INF) {
             for (auto &i : a) {
-                if (i.first.first == 0 && i.second.first == 2) return {}; // (-INF; +INF) -> 0
+                if (i.first.first == 0 && i.second.first == 2) return MINUS_INF_PLUS_INF; // (-INF; +INF)
                 if (i.first.first == 0 && i.second.first == 1)
                     if (auto x = MINUS_INF_x(i.second.second); x.has_value()) return x; // (-INF; x)
                 if (i.first.first == 1 && i.second.first == 2)
