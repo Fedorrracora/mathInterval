@@ -387,6 +387,7 @@ namespace interval {
 
         /// convert T-type object to pair inner-type {1; T-type elem};
         /// if object already have inner_type, do nothing
+        /// if object is interval::minimal or interval::maximal, return their data
         [[nodiscard]] static constexpr inner_type to_point(const inp_type &a) {
             auto y = std::get_if<minimal<T>>(&a);
             if (y != nullptr) return y->data();
@@ -450,7 +451,7 @@ namespace interval {
         bool add_interval_in(inner_type f, inner_type s) {
             // (a; a) == empty
             if (f == s) return false;
-            if (pair_less()(s, f)) throw std::logic_error("interval overlaps intervals");
+            if (pair_less()(s, f)) throw std::logic_error("right border of interval is less than left");
             auto x = get_interval_that_include_this_point(f), y = get_interval_that_include_this_point(s);
             if (x == y && x != intervals.end()) return false;
             // (x1; x2); (x3; x4) + (f; s) = (x1; x2); (x3; x4) + (x1; s) if {f} in (x1; x2)
@@ -498,7 +499,7 @@ namespace interval {
         bool remove_interval_in(const inner_type &f, const inner_type &s) {
             // (a; a) == empty
             if (f == s) return false;
-            if (pair_less()(s, f)) throw std::logic_error("interval overlaps intervals");
+            if (pair_less()(s, f)) throw std::logic_error("right border of interval is less than left");
             auto x = get_interval_that_include_this_point(f), y = get_interval_that_include_this_point(s);
             bool ret = false;
 
@@ -584,7 +585,7 @@ namespace interval {
         }
 
         void division_in(interval &buf, const T &val) const requires std::is_arithmetic_v<T> {
-            // if point was -INF or +INF second elem if set to 0 -> 0 / val = 0
+            // if point was -INF or +INF, second elem if set to 0 -> 0 / val = 0
             for (auto &[fst, snd] : intervals) {
                 auto a = std::make_pair(val < 0 ? 2 - fst.first:fst.first, fst.second / val),
                      b = std::make_pair(val < 0 ? 2 - snd.first:snd.first, snd.second / val);
@@ -659,7 +660,7 @@ namespace interval {
         }
 
         [[nodiscard]] bool check_in(const inner_type &a, const inner_type &b) const {
-            if (pair_less()(b, a)) throw std::logic_error("interval overlaps intervals");
+            if (pair_less()(b, a)) throw std::logic_error("right border of interval is less than left");
             if (a == b) return true;
             auto x = intervals.upper_bound(std::make_pair(a, maximal<T>().data()));
             if (x == intervals.begin()) return false;
