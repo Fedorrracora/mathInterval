@@ -28,7 +28,7 @@ namespace interval {
     class interval {
     public:
         using inner_type = std::pair<int, T>;
-        // structure can receive data with T type and inner_type (for interval::minimal and interval::maximal)
+        // structure can receive data with minimal<T>, maximal<T>, T type and inner_type
         using inp_type = std::variant<minimal<T>, maximal<T>, T, inner_type>;
 
         interval() = default;
@@ -80,13 +80,15 @@ namespace interval {
         /// clear multitude data
         void clear() {points.clear(); intervals.clear();}
 
+        /// return true if this point in multitude, else return false
         [[nodiscard]] bool in(const inp_type &a) const
         {return points.count(to_point(a)) || get_interval_that_include_this_point(to_point(a)) != intervals.end();}
 
-        [[nodiscard]] bool in(const inp_type &a, const inp_type &b) const {
-            return check_in(to_point(a), to_point(b));
-        }
+        /// return true if interval (a, b) in multitude, else return false
+        [[nodiscard]] bool in(const inp_type &a, const inp_type &b) const
+        {return check_in(to_point(a), to_point(b));}
 
+        /// return true if interval in multitude, else return false
         [[nodiscard]] bool in(const std::pair<inp_type, inp_type> &a) const {
             return check_in(to_point(a.first), to_point(a.second));
         }
@@ -139,31 +141,40 @@ namespace interval {
 
         // transfer operations
 
+        /// returns a new multitude with the points shifted forward by the distance val
         [[nodiscard]] interval operator+(const T val) const requires std::is_arithmetic_v<T> {interval b; plus_in(b, val); return b;}
+        /// shift the points forward by a distance of val
         friend interval & operator+=(interval &a, const T val)
                 {interval b; a.plus_in(b, val); a = std::move(b); return a;}
 
+        /// returns a new multitude with the points shifted backward by the distance val
         [[nodiscard]] interval operator-(const T val) const requires std::is_arithmetic_v<T> {interval b; plus_in(b, -val); return b;}
+        /// shift the points backward by a distance of val
         friend interval & operator-=(interval &a, const T val) {
-            static_assert(std::is_arithmetic<T>(), "you cannot do transfer operations with strings");
             interval b; a.plus_in(b, -val); a = std::move(b); return a; // because I use -val, in strings it is error
         }
 
+        /// returns a new multitude with the points multiplied by a factor of val
         [[nodiscard]] interval operator*(const T val) const requires std::is_arithmetic_v<T> {interval b; multiply_in(b, val); return b;}
+        /// multiplies the points of a multitude by a factor of val
         friend interval & operator*=(interval &a, const T val)
                 {interval b; a.multiply_in(b, val); a = std::move(b); return a;}
 
+        /// returns a new multitude with the points divided by a factor of val
         [[nodiscard]] interval operator/(const T val) const requires std::is_arithmetic_v<T> {interval b; division_in(b, val); return b;}
+        /// divides the points of a multitude by a factor of val
         friend interval & operator/=(interval &a, const T val)
                 {interval b; a.division_in(b, val); a = std::move(b); return a;}
 
+        /// returns a new multitude with points taken as the remainder of the division by val
         [[nodiscard]] interval operator%(const T val) const requires std::is_integral_v<T> {interval b; remainder_in(b, val); return b;}
+        /// replaces the points with the remainder of the division by val
         friend interval & operator%=(interval &a, const T val)
         {interval b; a.remainder_in(b, val); a = std::move(b); return a;}
 
         // advanced operations
 
-        /// returns (-INF; +INF) / this multitude
+        /// returns the multitude that is the inverse of the given one
         [[nodiscard]] interval invert() const {
             interval buf;
             invert_in(buf);
@@ -174,27 +185,30 @@ namespace interval {
         [[nodiscard]] std::string print() const {return print_in();}
 
         /**
-         * @brief return any elem that is in data
-         *
-         * function returns @c std::optional, because returning value does not always exist
-         *
-         * @tableofcontents if there is any point, it will be returned
-         *
-         * @tableofcontents if there is interval (-INF; +INF), will be returned T{}
-         *
-         * @tableofcontents if T is integer or not-integer digit,
-         * smart algorithm will try to found any number in intervals
-         *
-         * @tableofcontents if T is std::string, smart algorithm will try to found any string in intervals,
-         * considering, that string may have only capital english letters
-         *
-         * @tableofcontents if T - other type, or smart algorithm will not find any elem in data,
-         * will be returned @c std::nullopt
-         *
-         * for custom types and algorithms consider to use this function with additional arguments
+        ### any
+        Return any element that is in this multitude.
+
+        The function returns `std::optional`, because the returning value does not always exist.
+
+        ---
+
+        - If there is any point, it will be returned.
+        - If there is an interval `(-INF; +INF)`, the function will return `T{}`. If the flag is true, will return `std::nullopt`.
+        - If `T` is an integer or a non-integer digit,
+          a smart algorithm will try to find any number in the intervals.
+        - If `T` is `std::string`,
+          a smart algorithm will try to find any string in the intervals,
+          considering that a string may contain only **capital English letters**.
+        - If `T` is another type, or if the smart algorithm does not find any element in data,
+          the function will return `std::nullopt`.
+
+        For custom types and algorithms, consider using this function with additional arguments.
          */
-        [[nodiscard]] std::optional<T> any() const {
+        [[nodiscard]] std::optional<T> any(bool flag = false) const {
             if (!points.empty()) return points.begin()->second; // if there is any point: return it
+            if (flag && in(minimal<T>(), maximal<T>())) {
+                return std::nullopt;
+            }
             return get_any_in(intervals); // try to return something in intervals
         }
 
@@ -562,23 +576,23 @@ namespace interval {
         void custom_transfer_in(interval &buf, const std::function<T(const T&)> &fun) const {
             // if point was -INF or +INF, recover will return second elem to {}
             for (auto &[fst, snd] : intervals) {
-                auto x = recover(std::make_pair(fst.first, fun(fst.second)));
-                auto y = recover(std::make_pair(snd.first, fun(snd.second)));
+                auto x = recover(std::make_pair(fst.first, fst.first == 1 ? fun(fst.second):fst.second));
+                auto y = recover(std::make_pair(snd.first, snd.first == 1 ? fun(snd.second):snd.second));
                 buf.add_interval_in(std::min(x, y), std::max(x, y));
             }
             for (auto &i : points) {
-                buf.add_point_in(recover(std::make_pair(i.first, fun(i.second))));
+                buf.add_point_in(recover(std::make_pair(i.first, i.first == 1 ? fun(i.second):i.second)));
             }
         }
 
         void custom_transfer_in(interval &buf, const std::function<T(const T&)> &fun, const T& a, const T& b) const {
             for (auto &[fst, snd] : intervals) {
-                auto x = (fst.first == 0 ? std::make_pair(1, a):std::make_pair(fst.first, fun(fst.second)));
-                auto y = (snd.first == 2 ? std::make_pair(1, b):std::make_pair(snd.first, fun(snd.second)));
+                auto x = (fst.first != 1 ? std::make_pair(1, a):std::make_pair(fst.first, fun(fst.second)));
+                auto y = (snd.first != 1 ? std::make_pair(1, b):std::make_pair(snd.first, fun(snd.second)));
                 buf.add_interval_in(std::min(x, y), std::max(x, y));
             }
             for (auto &i : points) {
-                buf.add_point_in(recover(std::make_pair(i.first, fun(i.second))));
+                buf.add_point_in(recover(std::make_pair(i.first, i.first == 1 ? fun(i.second):i.second)));
             }
         }
         void custom_transfer_in(interval &buf,
@@ -604,7 +618,7 @@ namespace interval {
             auto x = intervals.upper_bound(std::make_pair(a, maximal<T>().data()));
             if (x == intervals.begin()) return false;
             --x;
-            if (x->first <= a && x->second >= b) {
+            if (!pair_less()(a, x->first) && !pair_less()(x->second, b)) {
                 return true;
             }
             return false;
