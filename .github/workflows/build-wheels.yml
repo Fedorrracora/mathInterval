@@ -18,6 +18,8 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]  # Linux/ARM/Windows/macOS
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Set up Python
         uses: actions/setup-python@v5
