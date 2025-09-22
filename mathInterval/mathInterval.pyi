@@ -1,5 +1,19 @@
 """
-Python bindings for mathInterval<T>
+
+mathInterval
+============
+
+C++ interval arithmetic exposed to Python.
+
+This module provides classes and algorithms for working
+with mathematical multitudes. It supports:
+
+- Construction of multitudes with finite or infinite bounds.
+- Smart search algorithms using user-provided lambdas.
+- Conversion and custom transfer of interval data.
+- Executing multiple operators between multitudes.
+
+All classes and functions are documented with Python-style docstrings.
 """
 from __future__ import annotations
 import collections.abc

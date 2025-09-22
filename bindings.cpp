@@ -155,7 +155,22 @@ the function will swap them automatically.
 }
 
 PYBIND11_MODULE(mathInterval, m) {
-    m.doc() = "Python bindings for mathInterval<T>";
+    m.doc() = R"doc(
+mathInterval
+============
+
+C++ interval arithmetic exposed to Python.
+
+This module provides classes and algorithms for working
+with mathematical multitudes. It supports:
+
+- Construction of multitudes with finite or infinite bounds.
+- Smart search algorithms using user-provided lambdas.
+- Conversion and custom transfer of interval data.
+- Executing multiple operators between multitudes.
+
+All classes and functions are documented with Python-style docstrings.
+)doc";
     bind_abc<long long>(m, "mathInterval_int");
     bind_abc<long double>(m, "mathInterval_float");
     bind_abc<std::string>(m, "mathInterval_str");
