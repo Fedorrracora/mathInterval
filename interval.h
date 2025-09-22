@@ -95,12 +95,12 @@ namespace interval {
 
         // math operations
 
-        /// a | b
+        /// returns a new multitude containing the union of the elements of the previous multitudes
         [[nodiscard]] friend interval operator+(interval a, const interval &b) {
             a += b;
             return a;
         }
-        /// a |= b
+        /// adds elements of another multitude
         interval &operator+=(const interval &b) {
             if (this == &b) return *this;
             for (auto &i : b.points) add_point_in(i);
@@ -108,12 +108,12 @@ namespace interval {
             return *this;
         }
 
-        /// a / b (in math style)
+        /// returns a new multitude containing the difference of the elements of the previous multitudes
         [[nodiscard]] friend interval operator-(interval a, const interval &b) {
             a -= b;
             return a;
         }
-        /// a = a / b (in math style)
+        /// remove elements of another multitude
         interval &operator-=(const interval &b) {
             if (this == &b) {
                 clear();
@@ -124,7 +124,7 @@ namespace interval {
             return *this;
         }
 
-        /// a & b
+        /// returns a new multitude containing the intersection of the elements of the previous multitudes
         [[nodiscard]] friend interval operator*(const interval &a, const interval &b) {
             interval x, y, z;
             a.invert_in(x), b.invert_in(y);
@@ -132,7 +132,7 @@ namespace interval {
             x.invert_in(z);
             return z;
         }
-        /// a &= b
+        /// intersect elements with another multitude
         friend interval &operator*=(interval &a, const interval &b) {
             if (&a == &b) return a;
             a = a * b;

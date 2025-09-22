@@ -33,12 +33,12 @@ void bind_abc(py::module_ &m, const char* class_name) {
         .def("empty", &Interval::empty, "return true if this multitude is empty, else return false")
         .def("clear", &Interval::clear, "clear multitude data")
         .def("inverse", &Interval::invert, "returns the multitude that is the inverse of the given one")
-        .def("__add__", [](const Interval &a, const Interval &b) {return a + b;}, py::is_operator(), "a | b")
-        .def("__iadd__", [](Interval &a, const Interval &b) {return a += b;}, py::is_operator(), "a |= b")
-        .def("__sub__", [](const Interval &a, const Interval &b) {return a - b;}, py::is_operator(), "a / b (in math style)")
-        .def("__isub__", [](Interval &a, const Interval &b) {return a -= b;}, py::is_operator(), "a = a / b (in math style)")
-        .def("__mul__", [](const Interval &a, const Interval &b) {return a * b;}, py::is_operator(), "a & b")
-        .def("__imul__", [](Interval &a, const Interval &b) {return a *= b;}, py::is_operator(), "a &= b")
+        .def("__add__", [](const Interval &a, const Interval &b) {return a + b;}, py::is_operator(), "returns a new multitude containing the union of the elements of the previous multitudes")
+        .def("__iadd__", [](Interval &a, const Interval &b) {return a += b;}, py::is_operator(), "adds elements of another multitude")
+        .def("__sub__", [](const Interval &a, const Interval &b) {return a - b;}, py::is_operator(), "returns a new multitude containing the difference of the elements of the previous multitudes")
+        .def("__isub__", [](Interval &a, const Interval &b) {return a -= b;}, py::is_operator(), "remove elements of another multitude")
+        .def("__mul__", [](const Interval &a, const Interval &b) {return a * b;}, py::is_operator(), "returns a new multitude containing the intersection of the elements of the previous multitudes")
+        .def("__imul__", [](Interval &a, const Interval &b) {return a *= b;}, py::is_operator(), "intersect elements with another multitude")
         .def("any", [](const Interval &a) {return a.any(true);}, R"doc(
 ### any
 
