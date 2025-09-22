@@ -10,13 +10,32 @@ on:
 
 jobs:
   build_wheels:
-    name: Build ${{ matrix.os }} wheels
+    name: Build ${{ matrix.os }} ${{ matrix.cibw_archs }} wheels
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]  # Linux/Windows/macOS
-        arch: [x86_64, aarch64]
+        include:
+          # ---- Linux ----
+          - os: ubuntu-latest
+            cibw_archs: x86_64
+            cibw_env: CIBW_ARCHS_LINUX
+          - os: ubuntu-latest
+            cibw_archs: aarch64    # ARM64 через QEMU
+            cibw_env: CIBW_ARCHS_LINUX
+
+          # ---- macOS ----
+          - os: macos-latest
+            cibw_archs: x86_64
+            cibw_env: CIBW_ARCHS_MACOS
+          - os: macos-latest
+            cibw_archs: arm64
+            cibw_env: CIBW_ARCHS_MACOS
+
+          # ---- Windows ----
+          - os: windows-latest
+            cibw_archs: AMD64
+            cibw_env: CIBW_ARCHS_WINDOWS
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,16 +51,15 @@ jobs:
 
       - name: Build wheels
         run: |
-          echo "Building wheels for ${{ matrix.os }} / ${{ matrix.arch }}"
+          echo "Building wheels for ${{ matrix.os }} arch=${{ matrix.cibw_archs }}"
           python -m cibuildwheel --output-dir wheelhouse
         env:
+          ${{ matrix.cibw_env }}: ${{ matrix.cibw_archs }}
+          CIBW_SKIP: "pp* *-musllinux*"
           CIBW_BUILD_VERBOSITY: 1
-          CIBW_ARCHS_LINUX: ${{ matrix.arch }}   # Linux: x86_64 / aarch64
-          CIBW_ARCHS_MACOS: ${{ matrix.arch }}   # macOS: x86_64 / arm64
-          CIBW_ARCHS_WINDOWS: x86_64             # Windows пока только x86_64
 
       - name: Upload wheels (GitHub Artifacts)
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-${{ matrix.os }}-${{ matrix.arch }}
+          name: wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}
           path: wheelhouse/*.whl
