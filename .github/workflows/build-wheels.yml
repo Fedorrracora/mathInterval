@@ -61,7 +61,6 @@ jobs:
           python -m cibuildwheel --output-dir wheelhouse
         env:
           ${{ matrix.cibw_env }}: ${{ matrix.cibw_archs }}
-          CIBW_SKIP: "pp* *-musllinux*"
           CIBW_BUILD_VERBOSITY: 1
 
       - name: Upload wheels (GitHub Artifacts)
