@@ -64,7 +64,7 @@ class mathInterval:
     minimal: typing.ClassVar[_mathInterval_minimal]  # value = <minimal>
     def __add__(self, arg0: mathInterval) -> mathInterval:
         """
-        a | b
+        returns a new multitude containing the union of the elements of the previous multitudes
         """
     def __contains__(self, arg0: mathInterval._mathInterval_minimal | mathInterval._mathInterval_maximal | typing.Any | tuple[typing.SupportsInt, typing.Any]) -> bool:
         """
@@ -72,21 +72,21 @@ class mathInterval:
         """
     def __iadd__(self, arg0: mathInterval) -> mathInterval:
         """
-        a |= b
+        adds elements of another multitude
         """
     def __imul__(self, arg0: mathInterval) -> mathInterval:
         """
-        a &= b
+        intersect elements with another multitude
         """
     def __init__(self) -> None:
         ...
     def __isub__(self, arg0: mathInterval) -> mathInterval:
         """
-        a = a / b (in math style)
+        remove elements of another multitude
         """
     def __mul__(self, arg0: mathInterval) -> mathInterval:
         """
-        a & b
+        returns a new multitude containing the intersection of the elements of the previous multitudes
         """
     def __str__(self) -> str:
         """
@@ -94,7 +94,7 @@ class mathInterval:
         """
     def __sub__(self, arg0: mathInterval) -> mathInterval:
         """
-        a / b (in math style)
+        returns a new multitude containing the difference of the elements of the previous multitudes
         """
     def add_interval(self, arg0: mathInterval._mathInterval_minimal | mathInterval._mathInterval_maximal | typing.Any | tuple[typing.SupportsInt, typing.Any], arg1: mathInterval._mathInterval_minimal | mathInterval._mathInterval_maximal | typing.Any | tuple[typing.SupportsInt, typing.Any]) -> bool:
         """
@@ -230,7 +230,7 @@ class mathInterval_float:
     @typing.overload
     def __add__(self, arg0: mathInterval_float) -> mathInterval_float:
         """
-        a | b
+        returns a new multitude containing the union of the elements of the previous multitudes
         """
     @typing.overload
     def __add__(self, arg0: typing.SupportsFloat) -> mathInterval_float:
@@ -244,7 +244,7 @@ class mathInterval_float:
     @typing.overload
     def __iadd__(self, arg0: mathInterval_float) -> mathInterval_float:
         """
-        a |= b
+        adds elements of another multitude
         """
     @typing.overload
     def __iadd__(self, arg0: typing.SupportsFloat) -> mathInterval_float:
@@ -254,7 +254,7 @@ class mathInterval_float:
     @typing.overload
     def __imul__(self, arg0: mathInterval_float) -> mathInterval_float:
         """
-        a &= b
+        intersect elements with another multitude
         """
     @typing.overload
     def __imul__(self, arg0: typing.SupportsFloat) -> mathInterval_float:
@@ -266,7 +266,7 @@ class mathInterval_float:
     @typing.overload
     def __isub__(self, arg0: mathInterval_float) -> mathInterval_float:
         """
-        a = a / b (in math style)
+        remove elements of another multitude
         """
     @typing.overload
     def __isub__(self, arg0: typing.SupportsFloat) -> mathInterval_float:
@@ -280,7 +280,7 @@ class mathInterval_float:
     @typing.overload
     def __mul__(self, arg0: mathInterval_float) -> mathInterval_float:
         """
-        a & b
+        returns a new multitude containing the intersection of the elements of the previous multitudes
         """
     @typing.overload
     def __mul__(self, arg0: typing.SupportsFloat) -> mathInterval_float:
@@ -294,7 +294,7 @@ class mathInterval_float:
     @typing.overload
     def __sub__(self, arg0: mathInterval_float) -> mathInterval_float:
         """
-        a / b (in math style)
+        returns a new multitude containing the difference of the elements of the previous multitudes
         """
     @typing.overload
     def __sub__(self, arg0: typing.SupportsFloat) -> mathInterval_float:
@@ -439,7 +439,7 @@ class mathInterval_int:
     @typing.overload
     def __add__(self, arg0: mathInterval_int) -> mathInterval_int:
         """
-        a | b
+        returns a new multitude containing the union of the elements of the previous multitudes
         """
     @typing.overload
     def __add__(self, arg0: typing.SupportsInt) -> mathInterval_int:
@@ -457,7 +457,7 @@ class mathInterval_int:
     @typing.overload
     def __iadd__(self, arg0: mathInterval_int) -> mathInterval_int:
         """
-        a |= b
+        adds elements of another multitude
         """
     @typing.overload
     def __iadd__(self, arg0: typing.SupportsInt) -> mathInterval_int:
@@ -475,7 +475,7 @@ class mathInterval_int:
     @typing.overload
     def __imul__(self, arg0: mathInterval_int) -> mathInterval_int:
         """
-        a &= b
+        intersect elements with another multitude
         """
     @typing.overload
     def __imul__(self, arg0: typing.SupportsInt) -> mathInterval_int:
@@ -487,7 +487,7 @@ class mathInterval_int:
     @typing.overload
     def __isub__(self, arg0: mathInterval_int) -> mathInterval_int:
         """
-        a = a / b (in math style)
+        remove elements of another multitude
         """
     @typing.overload
     def __isub__(self, arg0: typing.SupportsInt) -> mathInterval_int:
@@ -501,7 +501,7 @@ class mathInterval_int:
     @typing.overload
     def __mul__(self, arg0: mathInterval_int) -> mathInterval_int:
         """
-        a & b
+        returns a new multitude containing the intersection of the elements of the previous multitudes
         """
     @typing.overload
     def __mul__(self, arg0: typing.SupportsInt) -> mathInterval_int:
@@ -515,7 +515,7 @@ class mathInterval_int:
     @typing.overload
     def __sub__(self, arg0: mathInterval_int) -> mathInterval_int:
         """
-        a / b (in math style)
+        returns a new multitude containing the difference of the elements of the previous multitudes
         """
     @typing.overload
     def __sub__(self, arg0: typing.SupportsInt) -> mathInterval_int:
@@ -655,7 +655,7 @@ class mathInterval_str:
     minimal: typing.ClassVar[_mathInterval_str_minimal]  # value = <minimal>
     def __add__(self, arg0: mathInterval_str) -> mathInterval_str:
         """
-        a | b
+        returns a new multitude containing the union of the elements of the previous multitudes
         """
     def __contains__(self, arg0: mathInterval._mathInterval_str_minimal | mathInterval._mathInterval_str_maximal | str | tuple[typing.SupportsInt, str]) -> bool:
         """
@@ -663,21 +663,21 @@ class mathInterval_str:
         """
     def __iadd__(self, arg0: mathInterval_str) -> mathInterval_str:
         """
-        a |= b
+        adds elements of another multitude
         """
     def __imul__(self, arg0: mathInterval_str) -> mathInterval_str:
         """
-        a &= b
+        intersect elements with another multitude
         """
     def __init__(self) -> None:
         ...
     def __isub__(self, arg0: mathInterval_str) -> mathInterval_str:
         """
-        a = a / b (in math style)
+        remove elements of another multitude
         """
     def __mul__(self, arg0: mathInterval_str) -> mathInterval_str:
         """
-        a & b
+        returns a new multitude containing the intersection of the elements of the previous multitudes
         """
     def __str__(self) -> str:
         """
@@ -685,7 +685,7 @@ class mathInterval_str:
         """
     def __sub__(self, arg0: mathInterval_str) -> mathInterval_str:
         """
-        a / b (in math style)
+        returns a new multitude containing the difference of the elements of the previous multitudes
         """
     def add_interval(self, arg0: mathInterval._mathInterval_str_minimal | mathInterval._mathInterval_str_maximal | str | tuple[typing.SupportsInt, str], arg1: mathInterval._mathInterval_str_minimal | mathInterval._mathInterval_str_maximal | str | tuple[typing.SupportsInt, str]) -> bool:
         """

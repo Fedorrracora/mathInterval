@@ -5,4 +5,8 @@ build-backend = "scikit_build_core.build"
 [project]
 name = "mathInterval"
 version = "0.1.0"
+description = "Fast C++ interval math bindings"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+authors = [{ name="Fedorrracora", email="valyanskiy.f2009@yandex.ru"}]
 requires-python = ">=3.8"
