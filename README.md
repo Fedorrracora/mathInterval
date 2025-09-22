@@ -31,6 +31,11 @@ using standard C++ mechanisms (`#include "interval.h"`).
 The package **is not yet published** on PyPI, but you can build
 and install it manually:
 
+> ⚠️ Before building, make sure that the **build** module for `pip` is installed:
+> ```bash
+> pip install build
+> ```
+
 ```bash
 git clone https://github.com/Fedorrracora/mathInterval --recurse-submodules
 cd mathInterval

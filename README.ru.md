@@ -30,6 +30,11 @@
 
 Пакет пока **не опубликован** на PyPI, но его можно собрать и установить вручную:
 
+> ⚠️ Перед сборкой убедитесь, что установлен модуль **build** для `pip`:
+> ```bash
+> pip install build
+> ```
+
 ```bash
 git clone https://github.com/Fedorrracora/mathInterval --recurse-submodules
 cd mathInterval
