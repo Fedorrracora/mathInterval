@@ -10,6 +10,3 @@ readme = "README.md"
 license = { text = "Apache-2.0" }
 authors = [{ name="Fedorrracora", email="valyanskiy.f2009@yandex.ru"}]
 requires-python = ">=3.8"
-
-[tool.scikit-build]
-include = ["README.ru.md"]
