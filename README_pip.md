@@ -1,0 +1,56 @@
+# mathInterval
+
+C++ interval arithmetic exposed to Python.  
+It can also be used directly in C++.
+
+This module provides classes and algorithms for working
+with mathematical intervals (multitudes). It supports:
+
+- Construction of intervals with finite or infinite bounds.
+- Smart search algorithms using user-provided lambdas.
+- Conversion and custom transfer of interval data.
+- Execution of arithmetic operators between intervals.
+
+All classes and functions include Python-style docstrings,
+which can be viewed via `help()` in a Python console.
+
+In C++, each function is documented directly in the header
+(`interval.h`) before its declaration.
+
+## Installation
+
+### C++
+
+Copy the `interval.h` file to your project and include it
+using standard C++ mechanisms (`#include "interval.h"`).
+
+### Python
+
+The package **is not yet published** on PyPI, but you can build
+and install it manually:
+
+> ⚠️ Before building, make sure that the **build** module for `pip` is installed:
+> ```bash
+> pip install build
+> ```
+
+```bash
+git clone https://github.com/Fedorrracora/mathInterval --recurse-submodules
+cd mathInterval
+python -m build
+pip install dist/*.whl
+```
+
+### Tip:
+
+To build a universal wheel you may use:
+
+```bash
+cibuildwheel --platform auto
+```
+
+## Uninstallation (Python)
+
+```bash
+pip uninstall mathInterval
+```
