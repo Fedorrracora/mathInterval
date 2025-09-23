@@ -28,8 +28,11 @@ using standard C++ mechanisms (`#include "interval.h"`).
 
 ### Python
 
-The package **is not yet published** on PyPI, but you can build
-and install it manually:
+```bash
+pip install mathInterval
+```
+
+Also, you can build and install the library manually:
 
 > ⚠️ Before building, make sure that the **build** module for `pip` is installed:
 > ```bash

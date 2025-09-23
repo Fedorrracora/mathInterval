@@ -26,8 +26,8 @@ using standard C++ mechanisms (`#include "interval.h"`).
 
 ### Python
 
-The package **is not yet published** on PyPI, but you can build
-and install it manually:
+The package may be downloaded on PyPI. Also, you can build
+and install library manually:
 
 > ⚠️ Before building, make sure that the **build** module for `pip` is installed:
 > ```bash
