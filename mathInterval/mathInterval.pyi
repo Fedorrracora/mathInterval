@@ -216,6 +216,10 @@ class mathInterval:
         """
         returns the multitude that is the inverse of the given one
         """
+    def points_only(self) -> bool:
+        """
+        return true if multitude has only separate points (or empty), else return false
+        """
     def remove_interval(self, arg0: mathInterval._mathInterval_minimal | mathInterval._mathInterval_maximal | typing.Any | tuple[typing.SupportsInt, typing.Any], arg1: mathInterval._mathInterval_minimal | mathInterval._mathInterval_maximal | typing.Any | tuple[typing.SupportsInt, typing.Any]) -> bool:
         """
         returns false if all this interval was not inside this multitude, else return true
@@ -424,6 +428,10 @@ class mathInterval_float:
     def inverse(self) -> mathInterval_float:
         """
         returns the multitude that is the inverse of the given one
+        """
+    def points_only(self) -> bool:
+        """
+        return true if multitude has only separate points (or empty), else return false
         """
     def remove_interval(self, arg0: mathInterval._mathInterval_float_minimal | mathInterval._mathInterval_float_maximal | typing.SupportsFloat | tuple[typing.SupportsInt, typing.SupportsFloat], arg1: mathInterval._mathInterval_float_minimal | mathInterval._mathInterval_float_maximal | typing.SupportsFloat | tuple[typing.SupportsInt, typing.SupportsFloat]) -> bool:
         """
@@ -642,6 +650,10 @@ class mathInterval_int:
         """
         returns the multitude that is the inverse of the given one
         """
+    def points_only(self) -> bool:
+        """
+        return true if multitude has only separate points (or empty), else return false
+        """
     def remove_interval(self, arg0: mathInterval._mathInterval_int_minimal | mathInterval._mathInterval_int_maximal | typing.SupportsInt | tuple[typing.SupportsInt, typing.SupportsInt], arg1: mathInterval._mathInterval_int_minimal | mathInterval._mathInterval_int_maximal | typing.SupportsInt | tuple[typing.SupportsInt, typing.SupportsInt]) -> bool:
         """
         returns false if all this interval was not inside this multitude, else return true
@@ -806,6 +818,10 @@ class mathInterval_str:
     def inverse(self) -> mathInterval_str:
         """
         returns the multitude that is the inverse of the given one
+        """
+    def points_only(self) -> bool:
+        """
+        return true if multitude has only separate points (or empty), else return false
         """
     def remove_interval(self, arg0: mathInterval._mathInterval_str_minimal | mathInterval._mathInterval_str_maximal | str | tuple[typing.SupportsInt, str], arg1: mathInterval._mathInterval_str_minimal | mathInterval._mathInterval_str_maximal | str | tuple[typing.SupportsInt, str]) -> bool:
         """
