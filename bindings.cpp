@@ -31,6 +31,7 @@ void bind_abc(py::module_ &m, const char* class_name) {
         .def("remove_interval", &Interval::remove_interval, "returns false if all this interval was not inside this multitude, else return true")
         .def("remove_point", &Interval::remove_point, "returns false if this point was not inside this multitude, else return true")
         .def("empty", &Interval::empty, "return true if this multitude is empty, else return false")
+        .def("points_only", &Interval::points_only, "return true if multitude has only separate points (or empty), else return false")
         .def("clear", &Interval::clear, "clear multitude data")
         .def("inverse", &Interval::invert, "returns the multitude that is the inverse of the given one")
         .def("__add__", [](const Interval &a, const Interval &b) {return a + b;}, py::is_operator(), "returns a new multitude containing the union of the elements of the previous multitudes")

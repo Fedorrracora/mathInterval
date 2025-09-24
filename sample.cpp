@@ -92,6 +92,7 @@ int main() {
             std::cout << "ri x y: remove interval (x; y) from current interval\n";
             std::cout << "rv: change this interval to (-INF; +INF) / this interval (math style)\n";
             std::cout << "ga: get any element in this interval\n";
+            std::cout << "po: print yes if this multitude has only separate points\n";
             std::cout << "in x: print yes if x in this interval\n";
             std::cout << "il x y: print yes if interval (x, y) in this interval\n";
             std::cout << "\n";
@@ -297,6 +298,10 @@ int main() {
             tt a, b;
             std::cin >> a >> b;
             std::cout << (vec[i].in(a, b) ? "yes\n":"no\n");
+        }
+        if (cmd == "po")
+        {
+            std::cout << (vec[i].points_only() ? "yes\n":"no\n");
         }
 
         if (cmd == "exit") break;

@@ -93,6 +93,11 @@ namespace interval {
             return check_in(to_point(a.first), to_point(a.second));
         }
 
+        /// return true if multitude has only separate points (or empty), else return false
+        [[nodiscard]] bool points_only() const {
+            return intervals.empty();
+        }
+
         // math operations
 
         /// returns a new multitude containing the union of the elements of the previous multitudes
