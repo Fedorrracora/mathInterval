@@ -1,4 +1,8 @@
 # mathInterval
+[![PyPI](https://img.shields.io/pypi/v/mathInterval)](https://pypi.org/project/mathInterval/)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![C++](https://img.shields.io/badge/C++-20-blue.svg)]()
+[![Python](https://img.shields.io/badge/Python-3.8+-green.svg)]()
 
 C++ interval arithmetic exposed to Python.  
 It can also be used directly in C++.

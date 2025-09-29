@@ -182,8 +182,8 @@ with mathematical multitudes. It supports:
 
 All classes and functions are documented with Python-style docstrings.
 )doc";
-    bind_abc<long long>(m, "mathInterval_int");
-    bind_abc<long double>(m, "mathInterval_float");
-    bind_abc<std::string>(m, "mathInterval_str");
-    bind_abc<py::object>(m, "mathInterval");
+    bind_abc<long long>(m, "Interval_int");
+    bind_abc<long double>(m, "Interval_float");
+    bind_abc<std::string>(m, "Interval_str");
+    bind_abc<py::object>(m, "Interval");
 }

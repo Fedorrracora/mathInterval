@@ -644,6 +644,7 @@ namespace interval {
         }
 
         void remainder_in(interval &buf, const T &val) const requires std::is_integral_v<T> {
+            if (val <= 0) throw std::logic_error("the coefficient of the remainder of the division <= 0");
             for (auto &[fst, snd] : intervals) {
                 auto len = snd.second - fst.second;
                 // fst.first != 1 || snd.first != 1 -> -INF or +INF -> there is interval with len > val
