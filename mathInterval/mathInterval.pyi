@@ -66,13 +66,27 @@ class mathInterval:
         """
         returns a new multitude containing the union of the elements of the previous multitudes
         """
+    def __and__(self, arg0: mathInterval) -> mathInterval:
+        """
+        returns a new multitude containing the intersection of the elements of the previous multitudes
+        """
+    @typing.overload
     def __contains__(self, arg0: mathInterval._mathInterval_minimal | mathInterval._mathInterval_maximal | typing.Any | tuple[typing.SupportsInt, typing.Any]) -> bool:
         """
         return true if this point in multitude, else return false
         """
+    @typing.overload
+    def __contains__(self, arg0: mathInterval) -> bool:
+        """
+        return true if this multitude is subset of another multitude, else return false
+        """
     def __iadd__(self, arg0: mathInterval) -> mathInterval:
         """
         adds elements of another multitude
+        """
+    def __iand__(self, arg0: mathInterval) -> mathInterval:
+        """
+        intersect elements with another multitude
         """
     def __imul__(self, arg0: mathInterval) -> mathInterval:
         """
@@ -80,13 +94,25 @@ class mathInterval:
         """
     def __init__(self) -> None:
         ...
+    def __ior__(self, arg0: mathInterval) -> mathInterval:
+        """
+        adds elements of another multitude
+        """
     def __isub__(self, arg0: mathInterval) -> mathInterval:
         """
         remove elements of another multitude
         """
+    def __ixor__(self, arg0: mathInterval) -> mathInterval:
+        """
+         generating symmetric difference with elements of another multitude
+        """
     def __mul__(self, arg0: mathInterval) -> mathInterval:
         """
         returns a new multitude containing the intersection of the elements of the previous multitudes
+        """
+    def __or__(self, arg0: mathInterval) -> mathInterval:
+        """
+        returns a new multitude containing the union of the elements of the previous multitudes
         """
     def __str__(self) -> str:
         """
@@ -95,6 +121,10 @@ class mathInterval:
     def __sub__(self, arg0: mathInterval) -> mathInterval:
         """
         returns a new multitude containing the difference of the elements of the previous multitudes
+        """
+    def __xor__(self, arg0: mathInterval) -> mathInterval:
+        """
+        returns a new multitude containing the symmetric difference of the elements of the previous multitudes
         """
     def add_interval(self, arg0: mathInterval._mathInterval_minimal | mathInterval._mathInterval_maximal | typing.Any | tuple[typing.SupportsInt, typing.Any], arg1: mathInterval._mathInterval_minimal | mathInterval._mathInterval_maximal | typing.Any | tuple[typing.SupportsInt, typing.Any]) -> bool:
         """
@@ -216,6 +246,18 @@ class mathInterval:
         """
         returns the multitude that is the inverse of the given one
         """
+    def isdisjoint(self, arg0: mathInterval) -> bool:
+        """
+        return true if these multitudes has no common points, else return false
+        """
+    def issubset(self, arg0: mathInterval) -> bool:
+        """
+        return true if this multitude is subset of another multitude, else return false
+        """
+    def issuperset(self, arg0: mathInterval) -> bool:
+        """
+        return true if this multitude is subset of another multitude, else return false
+        """
     def points_only(self) -> bool:
         """
         return true if multitude has only separate points (or empty), else return false
@@ -241,9 +283,19 @@ class mathInterval_float:
         """
         returns a new multitude with the points shifted forward by the distance val
         """
+    def __and__(self, arg0: mathInterval_float) -> mathInterval_float:
+        """
+        returns a new multitude containing the intersection of the elements of the previous multitudes
+        """
+    @typing.overload
     def __contains__(self, arg0: mathInterval._mathInterval_float_minimal | mathInterval._mathInterval_float_maximal | typing.SupportsFloat | tuple[typing.SupportsInt, typing.SupportsFloat]) -> bool:
         """
         return true if this point in multitude, else return false
+        """
+    @typing.overload
+    def __contains__(self, arg0: mathInterval_float) -> bool:
+        """
+        return true if this multitude is subset of another multitude, else return false
         """
     @typing.overload
     def __iadd__(self, arg0: mathInterval_float) -> mathInterval_float:
@@ -254,6 +306,10 @@ class mathInterval_float:
     def __iadd__(self, arg0: typing.SupportsFloat) -> mathInterval_float:
         """
         shift the points forward by a distance of val
+        """
+    def __iand__(self, arg0: mathInterval_float) -> mathInterval_float:
+        """
+        intersect elements with another multitude
         """
     @typing.overload
     def __imul__(self, arg0: mathInterval_float) -> mathInterval_float:
@@ -267,6 +323,10 @@ class mathInterval_float:
         """
     def __init__(self) -> None:
         ...
+    def __ior__(self, arg0: mathInterval_float) -> mathInterval_float:
+        """
+        adds elements of another multitude
+        """
     @typing.overload
     def __isub__(self, arg0: mathInterval_float) -> mathInterval_float:
         """
@@ -281,6 +341,10 @@ class mathInterval_float:
         """
         divides the points of a multitude by a factor of val
         """
+    def __ixor__(self, arg0: mathInterval_float) -> mathInterval_float:
+        """
+         generating symmetric difference with elements of another multitude
+        """
     @typing.overload
     def __mul__(self, arg0: mathInterval_float) -> mathInterval_float:
         """
@@ -290,6 +354,10 @@ class mathInterval_float:
     def __mul__(self, arg0: typing.SupportsFloat) -> mathInterval_float:
         """
         returns a new multitude with the points multiplied by a factor of val
+        """
+    def __or__(self, arg0: mathInterval_float) -> mathInterval_float:
+        """
+        returns a new multitude containing the union of the elements of the previous multitudes
         """
     def __str__(self) -> str:
         """
@@ -308,6 +376,10 @@ class mathInterval_float:
     def __truediv__(self, arg0: typing.SupportsFloat) -> mathInterval_float:
         """
         returns a new multitude with the points divided by a factor of val
+        """
+    def __xor__(self, arg0: mathInterval_float) -> mathInterval_float:
+        """
+        returns a new multitude containing the symmetric difference of the elements of the previous multitudes
         """
     def add_interval(self, arg0: mathInterval._mathInterval_float_minimal | mathInterval._mathInterval_float_maximal | typing.SupportsFloat | tuple[typing.SupportsInt, typing.SupportsFloat], arg1: mathInterval._mathInterval_float_minimal | mathInterval._mathInterval_float_maximal | typing.SupportsFloat | tuple[typing.SupportsInt, typing.SupportsFloat]) -> bool:
         """
@@ -429,6 +501,18 @@ class mathInterval_float:
         """
         returns the multitude that is the inverse of the given one
         """
+    def isdisjoint(self, arg0: mathInterval_float) -> bool:
+        """
+        return true if these multitudes has no common points, else return false
+        """
+    def issubset(self, arg0: mathInterval_float) -> bool:
+        """
+        return true if this multitude is subset of another multitude, else return false
+        """
+    def issuperset(self, arg0: mathInterval_float) -> bool:
+        """
+        return true if this multitude is subset of another multitude, else return false
+        """
     def points_only(self) -> bool:
         """
         return true if multitude has only separate points (or empty), else return false
@@ -454,9 +538,19 @@ class mathInterval_int:
         """
         returns a new multitude with the points shifted forward by the distance val
         """
+    def __and__(self, arg0: mathInterval_int) -> mathInterval_int:
+        """
+        returns a new multitude containing the intersection of the elements of the previous multitudes
+        """
+    @typing.overload
     def __contains__(self, arg0: mathInterval._mathInterval_int_minimal | mathInterval._mathInterval_int_maximal | typing.SupportsInt | tuple[typing.SupportsInt, typing.SupportsInt]) -> bool:
         """
         return true if this point in multitude, else return false
+        """
+    @typing.overload
+    def __contains__(self, arg0: mathInterval_int) -> bool:
+        """
+        return true if this multitude is subset of another multitude, else return false
         """
     def __floordiv__(self, arg0: typing.SupportsInt) -> mathInterval_int:
         """
@@ -471,6 +565,10 @@ class mathInterval_int:
     def __iadd__(self, arg0: typing.SupportsInt) -> mathInterval_int:
         """
         shift the points forward by a distance of val
+        """
+    def __iand__(self, arg0: mathInterval_int) -> mathInterval_int:
+        """
+        intersect elements with another multitude
         """
     def __ifloordiv__(self, arg0: typing.SupportsInt) -> mathInterval_int:
         """
@@ -492,6 +590,10 @@ class mathInterval_int:
         """
     def __init__(self) -> None:
         ...
+    def __ior__(self, arg0: mathInterval_int) -> mathInterval_int:
+        """
+        adds elements of another multitude
+        """
     @typing.overload
     def __isub__(self, arg0: mathInterval_int) -> mathInterval_int:
         """
@@ -501,6 +603,10 @@ class mathInterval_int:
     def __isub__(self, arg0: typing.SupportsInt) -> mathInterval_int:
         """
         shift the points backward by a distance of val
+        """
+    def __ixor__(self, arg0: mathInterval_int) -> mathInterval_int:
+        """
+         generating symmetric difference with elements of another multitude
         """
     def __mod__(self, arg0: typing.SupportsInt) -> mathInterval_int:
         """
@@ -516,6 +622,10 @@ class mathInterval_int:
         """
         returns a new multitude with the points multiplied by a factor of val
         """
+    def __or__(self, arg0: mathInterval_int) -> mathInterval_int:
+        """
+        returns a new multitude containing the union of the elements of the previous multitudes
+        """
     def __str__(self) -> str:
         """
         return string with all data in mathematical style
@@ -529,6 +639,10 @@ class mathInterval_int:
     def __sub__(self, arg0: typing.SupportsInt) -> mathInterval_int:
         """
         returns a new multitude with the points shifted backward by the distance val
+        """
+    def __xor__(self, arg0: mathInterval_int) -> mathInterval_int:
+        """
+        returns a new multitude containing the symmetric difference of the elements of the previous multitudes
         """
     def add_interval(self, arg0: mathInterval._mathInterval_int_minimal | mathInterval._mathInterval_int_maximal | typing.SupportsInt | tuple[typing.SupportsInt, typing.SupportsInt], arg1: mathInterval._mathInterval_int_minimal | mathInterval._mathInterval_int_maximal | typing.SupportsInt | tuple[typing.SupportsInt, typing.SupportsInt]) -> bool:
         """
@@ -650,6 +764,18 @@ class mathInterval_int:
         """
         returns the multitude that is the inverse of the given one
         """
+    def isdisjoint(self, arg0: mathInterval_int) -> bool:
+        """
+        return true if these multitudes has no common points, else return false
+        """
+    def issubset(self, arg0: mathInterval_int) -> bool:
+        """
+        return true if this multitude is subset of another multitude, else return false
+        """
+    def issuperset(self, arg0: mathInterval_int) -> bool:
+        """
+        return true if this multitude is subset of another multitude, else return false
+        """
     def points_only(self) -> bool:
         """
         return true if multitude has only separate points (or empty), else return false
@@ -669,13 +795,27 @@ class mathInterval_str:
         """
         returns a new multitude containing the union of the elements of the previous multitudes
         """
+    def __and__(self, arg0: mathInterval_str) -> mathInterval_str:
+        """
+        returns a new multitude containing the intersection of the elements of the previous multitudes
+        """
+    @typing.overload
     def __contains__(self, arg0: mathInterval._mathInterval_str_minimal | mathInterval._mathInterval_str_maximal | str | tuple[typing.SupportsInt, str]) -> bool:
         """
         return true if this point in multitude, else return false
         """
+    @typing.overload
+    def __contains__(self, arg0: mathInterval_str) -> bool:
+        """
+        return true if this multitude is subset of another multitude, else return false
+        """
     def __iadd__(self, arg0: mathInterval_str) -> mathInterval_str:
         """
         adds elements of another multitude
+        """
+    def __iand__(self, arg0: mathInterval_str) -> mathInterval_str:
+        """
+        intersect elements with another multitude
         """
     def __imul__(self, arg0: mathInterval_str) -> mathInterval_str:
         """
@@ -683,13 +823,25 @@ class mathInterval_str:
         """
     def __init__(self) -> None:
         ...
+    def __ior__(self, arg0: mathInterval_str) -> mathInterval_str:
+        """
+        adds elements of another multitude
+        """
     def __isub__(self, arg0: mathInterval_str) -> mathInterval_str:
         """
         remove elements of another multitude
         """
+    def __ixor__(self, arg0: mathInterval_str) -> mathInterval_str:
+        """
+         generating symmetric difference with elements of another multitude
+        """
     def __mul__(self, arg0: mathInterval_str) -> mathInterval_str:
         """
         returns a new multitude containing the intersection of the elements of the previous multitudes
+        """
+    def __or__(self, arg0: mathInterval_str) -> mathInterval_str:
+        """
+        returns a new multitude containing the union of the elements of the previous multitudes
         """
     def __str__(self) -> str:
         """
@@ -698,6 +850,10 @@ class mathInterval_str:
     def __sub__(self, arg0: mathInterval_str) -> mathInterval_str:
         """
         returns a new multitude containing the difference of the elements of the previous multitudes
+        """
+    def __xor__(self, arg0: mathInterval_str) -> mathInterval_str:
+        """
+        returns a new multitude containing the symmetric difference of the elements of the previous multitudes
         """
     def add_interval(self, arg0: mathInterval._mathInterval_str_minimal | mathInterval._mathInterval_str_maximal | str | tuple[typing.SupportsInt, str], arg1: mathInterval._mathInterval_str_minimal | mathInterval._mathInterval_str_maximal | str | tuple[typing.SupportsInt, str]) -> bool:
         """
@@ -818,6 +974,18 @@ class mathInterval_str:
     def inverse(self) -> mathInterval_str:
         """
         returns the multitude that is the inverse of the given one
+        """
+    def isdisjoint(self, arg0: mathInterval_str) -> bool:
+        """
+        return true if these multitudes has no common points, else return false
+        """
+    def issubset(self, arg0: mathInterval_str) -> bool:
+        """
+        return true if this multitude is subset of another multitude, else return false
+        """
+    def issuperset(self, arg0: mathInterval_str) -> bool:
+        """
+        return true if this multitude is subset of another multitude, else return false
         """
     def points_only(self) -> bool:
         """
