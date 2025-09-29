@@ -83,6 +83,7 @@ int main() {
             std::cout << "gi: print index with whom I work\n";
             std::cout << "cp: add interval that is equal this\n";
             std::cout << "eo x y: print yes if x-th interval == y-th interval\n";
+            std::cout << "if x y: x-th interval in y-th interval\n";
             std::cout << "\n";
 
             std::cout << "work with current interval:\n";
@@ -107,9 +108,11 @@ int main() {
             std::cout << "pn x y: add interval with value x-th interval | y-th interval\n";
             std::cout << "mn x y: add interval with value x-th interval - y-th interval\n";
             std::cout << "an x y: add interval with value x-th interval & y-th interval\n";
+            std::cout << "sd x y: add interval with value x-th interval ^ y-th interval\n";
             std::cout << "pf x y: x-th interval |= y-th interval\n";
             std::cout << "mf x y: x-th interval -= y-th interval\n";
             std::cout << "af x y: x-th interval &= y-th interval\n";
+            std::cout << "sf x y: x-th interval ^= y-th interval\n";
             std::cout << "\n";
 
             std::cout << "transfer operations\n";
@@ -233,6 +236,14 @@ int main() {
             i = static_cast<int64_t>(vec.size());
             vec.push_back(vec[a] * vec[b]);
         }
+        if (cmd == "sd") {
+            int64_t a, b;
+            std::cin >> a >> b;
+            --a, --b;
+            if (index_not_exist(a, b)) goto point;
+            i = static_cast<int64_t>(vec.size());
+            vec.push_back(vec[a] ^ vec[b]);
+        }
         if (cmd == "pf") {
             int64_t a, b;
             std::cin >> a >> b;
@@ -257,12 +268,27 @@ int main() {
             vec[a] *= vec[b];
             i = a;
         }
+        if (cmd == "sf") {
+            int64_t a, b;
+            std::cin >> a >> b;
+            --a, --b;
+            if (index_not_exist(a, b)) goto point;
+            vec[a] ^= vec[b];
+            i = a;
+        }
         if (cmd == "eo") {
             int64_t a, b;
             std::cin >> a >> b;
             --a, --b;
             if (index_not_exist(a, b)) goto point;
             std::cout << (vec[a] == vec[b] ? "yes\n" : "no\n");
+        }
+        if (cmd == "if") {
+            int64_t a, b;
+            std::cin >> a >> b;
+            --a, --b;
+            if (index_not_exist(a, b)) goto point;
+            std::cout << (vec[a].in(vec[b]) ? "yes\n" : "no\n");
         }
         if (cmd == "mr") {
             tt a;

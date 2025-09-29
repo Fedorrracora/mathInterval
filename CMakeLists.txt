@@ -9,6 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(extern/pybind11)
 
+add_executable(mathIntervalCpp sample.cpp)
+
 pybind11_add_module(mathInterval bindings.cpp)
 
 install(TARGETS mathInterval

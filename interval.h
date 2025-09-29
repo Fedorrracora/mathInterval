@@ -93,6 +93,25 @@ namespace interval {
             return check_in(to_point(a.first), to_point(a.second));
         }
 
+        /// return true if this multitude is subset of another multitude, else return false
+        [[nodiscard]] bool in(const interval &b) const {
+            return *this * b == *this;
+        }
+        /// return true if this multitude is subset of another multitude, else return false
+        [[nodiscard]] bool issubset(const interval &b) const {
+            return this->in(b);
+        }
+
+        /// return true if another multitude is subset of this multitude, else return false
+        [[nodiscard]] bool issuperset(const interval &b) const {
+            return b.in(*this);
+        }
+
+        /// return true if these multitudes has no common points, else return false
+        [[nodiscard]] bool isdisjoint(const interval &b) const {
+            return (*this * b).empty();
+        }
+
         /// return true if multitude has only separate points (or empty), else return false
         [[nodiscard]] bool points_only() const {
             return intervals.empty();
@@ -105,6 +124,8 @@ namespace interval {
             a += b;
             return a;
         }
+        /// returns a new multitude containing the union of the elements of the previous multitudes
+        [[nodiscard]] friend interval operator|(const interval &a, const interval &b) {return a + b;}
         /// adds elements of another multitude
         interval &operator+=(const interval &b) {
             if (this == &b) return *this;
@@ -112,6 +133,8 @@ namespace interval {
             for (auto &i : b.intervals) add_interval_in(i.first, i.second);
             return *this;
         }
+        /// adds elements of another multitude
+        interval &operator|=(const interval &b) {return this->operator+=(b);}
 
         /// returns a new multitude containing the difference of the elements of the previous multitudes
         [[nodiscard]] friend interval operator-(interval a, const interval &b) {
@@ -137,12 +160,30 @@ namespace interval {
             x.invert_in(z);
             return z;
         }
+        /// returns a new multitude containing the intersection of the elements of the previous multitudes
+        [[nodiscard]] friend interval operator&(const interval &a, const interval &b) {return a * b;}
         /// intersect elements with another multitude
         friend interval &operator*=(interval &a, const interval &b) {
             if (&a == &b) return a;
             a = a * b;
             return a;
         }
+        /// intersect elements with another multitude
+        friend interval &operator&=(interval &a, const interval &b) {return a *= b;}
+
+        /// returns a new multitude containing the symmetric difference of the elements of the previous multitudes
+        [[nodiscard]] friend interval operator^(const interval &a, const interval &b) {
+            return a + b - a * b;
+        }
+
+        /// generating symmetric difference with elements of another multitude
+        friend interval &operator^=(interval &a, const interval &b) {
+            auto buf = a * b;
+            a += b;
+            return a -= buf;
+        }
+
+
 
         // transfer operations
 
