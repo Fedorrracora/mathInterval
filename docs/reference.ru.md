@@ -179,6 +179,35 @@
 
 ---
 
+# Исключения и ошибки
+## C++ 
+### _custom_transfer(func1, func2)
+
+- Ошибка `std::range_error` при нарушении формата inner_type
+
+### add_interval(x, y) и remove_interval(x, y)
+
+- Ошибка `std::range_error`, если интервал имеет отрицательную длину
+
+### Операторы % и %=
+
+- Ошибка `std::logic_error`, если коэффициент остатка от деления <= 0
+
+### in(x, y)
+
+- Ошибка `std::logic_error`, если интервал имеет отрицательную длину
+
+## Python
+
+### Все те же ошибки, но 
+- `std::range_error` заменяется на `IndexError`
+- `std::logic_error` заменяется на `RuntimeError`
+
+### Если содержимые объекты не имеют оператор `<`
+- Ошибка `TypeError`
+
+---
+
 # Пример
 ## C++
 ```cpp
