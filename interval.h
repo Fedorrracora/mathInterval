@@ -221,7 +221,7 @@ namespace interval {
         // advanced operations
 
         /// returns the multitude that is the inverse of the given one
-        [[nodiscard]] interval invert() const {
+        [[nodiscard]] interval inverse() const {
             interval buf;
             invert_in(buf);
             return buf;
@@ -896,8 +896,8 @@ namespace interval {
 
 // template class interval::interval<int8_t>;
 // template class interval::interval<int16_t>;
-//template class interval::interval<int32_t>;
-template class interval::interval<int64_t>;
+// template class interval::interval<int32_t>;
+// template class interval::interval<int64_t>;
 // template class interval::interval<u_int8_t>;
 // template class interval::interval<u_int16_t>;
 //template class interval::interval<u_int32_t>;

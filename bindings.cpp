@@ -37,7 +37,7 @@ void bind_abc(py::module_ &m, const char* class_name) {
         .def("empty", &Interval::empty, "return true if this multitude is empty, else return false")
         .def("points_only", &Interval::points_only, "return true if multitude has only separate points (or empty), else return false")
         .def("clear", &Interval::clear, "clear multitude data")
-        .def("inverse", &Interval::invert, "returns the multitude that is the inverse of the given one")
+        .def("inverse", &Interval::inverse, "returns the multitude that is the inverse of the given one")
         .def("__add__", [](const Interval &a, const Interval &b) {return a + b;}, py::is_operator(), "returns a new multitude containing the union of the elements of the previous multitudes")
         .def("__or__", [](const Interval &a, const Interval &b) {return a + b;}, py::is_operator(), "returns a new multitude containing the union of the elements of the previous multitudes")
         .def("__iadd__", [](Interval &a, const Interval &b) {return a += b;}, py::is_operator(), "adds elements of another multitude")

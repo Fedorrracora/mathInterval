@@ -1,13 +1,6 @@
-name: Build wheels
-
+name: Build only linux wheels (for debug)
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  release:
-    types: [published]    # при публикации релиза
-
+  workflow_dispatch:
 jobs:
   pybind11_stubgen:
     name: Build pybind11 stubgen
@@ -41,32 +34,8 @@ jobs:
 
   build_wheels:
     needs: pybind11_stubgen
-    name: Build ${{ matrix.os }} ${{ matrix.cibw_archs }} wheels
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # ---- Linux ----
-          - os: ubuntu-latest
-            cibw_archs: x86_64
-            cibw_env: CIBW_ARCHS_LINUX
-          - os: ubuntu-latest
-            cibw_archs: aarch64    # ARM64 через QEMU
-            cibw_env: CIBW_ARCHS_LINUX
-
-          # ---- macOS ----
-          - os: macos-latest
-            cibw_archs: x86_64
-            cibw_env: CIBW_ARCHS_MACOS
-          - os: macos-latest
-            cibw_archs: arm64
-            cibw_env: CIBW_ARCHS_MACOS
-
-          # ---- Windows ----
-          - os: windows-latest
-            cibw_archs: AMD64
-            cibw_env: CIBW_ARCHS_WINDOWS
+    name: build_wheels
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -80,12 +49,6 @@ jobs:
       - name: setup stubgen file
         run: mv mathInterval.pyi mathInterval/mathInterval.pyi
 
-      - name: Set up QEMU
-        if: matrix.cibw_archs == 'aarch64'
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: arm64
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -96,14 +59,14 @@ jobs:
 
       - name: Build wheels
         run: |
-          echo "Building wheels for ${{ matrix.os }} arch=${{ matrix.cibw_archs }}"
+          echo "Building wheels"
           python -m cibuildwheel --output-dir wheelhouse
         env:
-          ${{ matrix.cibw_env }}: ${{ matrix.cibw_archs }}
+          CIBW_BUILD: "*manylinux*"
           CIBW_BUILD_VERBOSITY: 1
 
       - name: Upload wheels (GitHub Artifacts)
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}
+          name: wheels
           path: wheelhouse/*.whl

@@ -18,7 +18,7 @@ int main() {
 
     auto c = a * b;
     std::cout << c.print() << "\n"; // (2; 3) U {5}
-    std::cout << c.invert().print() << "\n"; // (-INF; 2] U [3; 5) U (5; +INF)
+    std::cout << c.inverse().print() << "\n"; // (-INF; 2] U [3; 5) U (5; +INF)
     c.clear();
     c.add_interval(1, 4);
     // This is one implementation of the any() function for integers.
@@ -41,7 +41,7 @@ int main() {
     c.add_point(71);
     c.add_point(90);
     c.add_point(9);
-    std::cout << c.print() << "\n"; // (-INF; 3) U {9} U (12; 50) U (56; 70) U {71} U [90; +INF)
+    std::cout << c.print() << "\n"; // (-INF; 3) U {9} U (12; 50] U (56; 70) U {71} U [90; +INF)
     // This function shifts all points of the multitude by 4 to the right,
     // limiting the range of values to 0 - 100
     // Essentially the same as
