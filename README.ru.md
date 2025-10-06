@@ -46,6 +46,7 @@ pip install mathInterval
 ```bash
 git clone https://github.com/Fedorrracora/mathInterval --recurse-submodules
 cd mathInterval
+./load_stubgen.sh
 python -m build
 pip install dist/*.whl
 ```

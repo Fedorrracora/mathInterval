@@ -4,6 +4,8 @@
 [![C++](https://img.shields.io/badge/C++-20-blue.svg)]()
 [![Python](https://img.shields.io/badge/Python-3.8+-green.svg)]()
 
+[🇷🇺 Читать на русском (на Github)](https://github.com/Fedorrracora/mathInterval/blob/main/README.ru.md)
+
 C++ interval arithmetic exposed to Python.  
 It can also be used directly in C++.
 
@@ -41,6 +43,7 @@ and install library manually:
 ```bash
 git clone https://github.com/Fedorrracora/mathInterval --recurse-submodules
 cd mathInterval
+./load_stubgen.sh
 python -m build
 pip install dist/*.whl
 ```
