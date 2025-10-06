@@ -58,6 +58,10 @@ To build a universal wheel you may use:
 cibuildwheel --platform auto
 ```
 
+## Usage
+
+[You can view the full reference here](docs/reference.md)
+
 ## Uninstallation (Python)
 
 ```bash

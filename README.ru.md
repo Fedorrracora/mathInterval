@@ -58,6 +58,10 @@ pip install dist/*.whl
 cibuildwheel --platform auto
 ```
 
+## Использование
+
+[Вы можете посмотреть полную документацию тут](docs/reference.ru.md)
+
 ## Удаление (Python)
 
 ```bash

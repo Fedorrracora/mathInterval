@@ -53,6 +53,10 @@ To build a universal wheel you may use:
 cibuildwheel --platform auto
 ```
 
+## Usage
+
+[You can view the full reference here (on GitHub)](https://github.com/Fedorrracora/mathInterval/blob/main/docs/reference.md)
+
 ## Uninstallation (Python)
 
 ```bash
