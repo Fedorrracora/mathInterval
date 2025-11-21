@@ -45,7 +45,7 @@
                               .--  %
                                   ==        Ð§Ñ ÑÐ¼Ð¾ÑÑÐ¸ÑÑ
 */
-#include "interval.h"
+#include "../interval.h"
 #include <bits/stdc++.h>
 
 int main() {
@@ -206,7 +206,7 @@ int main() {
                 vec[i].remove_interval(interval::minimal<tt>(), interval::maximal<tt>());
         }
         if (cmd == "rv") {
-            vec[i] = vec[i].invert();
+            vec[i] = vec[i].inverse();
         }
         if (cmd == "ga") {
             if (auto x = vec[i].any(); x.has_value()) std::cout << x.value() << '\n';
