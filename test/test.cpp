@@ -1,6 +1,6 @@
 #include <iostream>
 #include <optional>
-#include "interval.h"
+#include "../include/interval.h"
 
 int main() {
     interval::interval<int> a;

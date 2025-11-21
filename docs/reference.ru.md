@@ -269,26 +269,28 @@ int main() {
 }
 ```
 ## Python
+
 ```python
-from mathInterval import Interval, Interval_int
+from src import Interval, Interval_int
+
 # Добавление точек и интервалов
 a = Interval_int()
-print(a) # *Empty*
+print(a)  # *Empty*
 a.add_point(5)
-print(a) # {5}
+print(a)  # {5}
 a.add_interval(1, 3)
-print(a) # (1; 3) U {5}
+print(a)  # (1; 3) U {5}
 
 # Пересечение множеств
 a.add_interval(a.minimal, 2)
-print(a) # (-INF; 3) U {5}
+print(a)  # (-INF; 3) U {5}
 
 b = Interval_int()
 b.add_interval(2, 10)
 
 c = a * b
-print(c) # (2; 3) U {5}
-print(c.inverse()) # (-INF; 2] U [3; 5) U (5; +INF)
+print(c)  # (2; 3) U {5}
+print(c.inverse())  # (-INF; 2] U [3; 5) U (5; +INF)
 
 # кастомные операции
 c = Interval()
@@ -300,7 +302,7 @@ d = c.any(lambda x: x - 1,
           lambda x: x + 1,
           lambda x, y: x + 1 if x + 1 < y else None,
           0)
-print(d) # 2
+print(d)  # 2
 
 # создадим какое-нибудь большое множество
 c.clear()
@@ -312,7 +314,7 @@ c.add_point(50)
 c.add_point(71)
 c.add_point(90)
 c.add_point(9)
-print(c) # (-INF; 3) U {9} U (12; 50] U (56; 70) U {71} U [90; +INF)
+print(c)  # (-INF; 3) U {9} U (12; 50] U (56; 70) U {71} U [90; +INF)
 
 # Эта функция сдвигает все точки множества на 4 вправо,
 # ограничивая диапазон значений до 0–100
@@ -326,5 +328,5 @@ print(c) # (-INF; 3) U {9} U (12; 50] U (56; 70) U {71} U [90; +INF)
 # поскольку класс Interval не поддерживает операцию +=.
 # Она есть только у Interval_int и Interval_float
 c = c.custom_transfer(lambda x: x + 4, 0, 100)
-print(c) # (0; 7) U {13} U (16; 54] U (60; 74) U {75} U [94; 100)
+print(c)  # (0; 7) U {13} U (16; 54] U (60; 74) U {75} U [94; 100)
 ```

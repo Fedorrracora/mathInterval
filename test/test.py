@@ -1,4 +1,4 @@
-from mathInterval import Interval as itr
+from src import Interval as itr
 
 a, b = itr(), itr()
 a.add_interval(a.minimal, 3)

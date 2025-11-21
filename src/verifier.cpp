@@ -1,10 +1,28 @@
-#include "verifier.h"
+#include "../include/verifier.h"
+#include <fstream>
+
 namespace verify {
     namespace {
         [[nodiscard]] constexpr bool space_skip(const char c) {
             return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\v';
         }
     }
+
+    std::string read_file(const std::string &filename) {
+        std::ifstream input(filename);
+        if (!input.is_open()) {
+            throw std::runtime_error("Could not open file " + filename);
+        }
+        std::string contents, tmp;
+        while (std::getline(input, tmp)) {
+            contents += tmp;
+            contents += '\n';
+        }
+        contents.pop_back();
+        input.close();
+        return contents;
+    }
+
     bool same(const std::string& a, const std::string& b, const bool case_sensitive, const bool boundary_sensitive, const bool whitespace_sensitive) {
         std::size_t bgnA = 0, bgnB = 0, endA = a.size(), endB = b.size();
         if (!boundary_sensitive) {

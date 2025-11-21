@@ -1,11 +1,7 @@
-//
-// Created by fedor on 17.09.2025.
-//
-#include <format>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/functional.h>
-#include "interval.h"
+#include <interval.h>
 namespace py = pybind11;
 template<typename T>
 void bind_abc(py::module_ &m, const char* class_name) {
@@ -165,7 +161,7 @@ the function will swap them automatically.
     cls.def_property_readonly_static("maximal", [](const py::object&) { return Max(); }, "return always maximal element in any interval");
 }
 
-PYBIND11_MODULE(mathInterval, m) {
+PYBIND11_MODULE(_mathInterval, m) {
     m.doc() = R"doc(
 mathInterval
 ============
