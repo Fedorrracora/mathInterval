@@ -479,6 +479,7 @@ namespace interval {
         }
 
         bool remove_point_in(const inner_type &p) {
+            if (p.first != 1) throw std::range_error("point has undefined value (-INF or +INF)"); // you cannot remove points -INF and +INF
             // (x1; x2) - {a} = (x1; a); (a; x2) if {a} in (x1, x2)
             auto x = get_interval_that_include_this_point(p);
             if (x != intervals.end()) {
