@@ -33,9 +33,14 @@ if(SKBUILD OR BUILD_PYTHON_BINDINGS)
     pybind11_add_module(_mathInterval src/bindings.cpp)
 
     target_link_libraries(_mathInterval PRIVATE mathInterval)
+
+    target_compile_definitions(_mathInterval PRIVATE INT_TYPE=long\ long FLOAT_TYPE=long\ double)
 endif()
 
 if(TESTING AND NOT SKBUILD)
+    enable_testing()
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Testing/answers DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
     #setup GoogleTest
     include(FetchContent)
     if(POLICY CMP0135)
@@ -49,12 +54,13 @@ if(TESTING AND NOT SKBUILD)
     include(GoogleTest)
 
     add_library(verify STATIC src/verifier.cpp)
+    target_include_directories(verify PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-    target_include_directories(verify PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Testing)
-
-    add_executable(test Testing/test1.cpp) # todo: add tests
-
-    target_link_libraries(test PRIVATE GTest::gtest_main)
+    add_executable(test_target
+            Testing/cpp/test1.cpp
+            Testing/cpp/test2.cpp) # todo: add tests
+    target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE verify)
+    gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
     add_executable(test_verify Testing/main_test.cpp) # todo: remove
     target_link_libraries(test_verify verify)

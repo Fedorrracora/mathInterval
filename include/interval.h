@@ -452,7 +452,7 @@ namespace interval {
         }
 
         bool add_point_in(const inner_type &p) {
-            if (p.first != 1) return false; // you cannot add points -INF and +INF
+            if (p.first != 1) throw std::range_error("point has undefined value (-INF or +INF)"); // you cannot add points -INF and +INF
 
             // (x1; a); (a; x2) + {a} = (x1; x2)
             auto x = intervals.lower_bound({p, {}});
@@ -503,6 +503,8 @@ namespace interval {
             // (x1; x2); (x3; x4) + (f; s) = (x1; x2); (x3; x4) + (x1; s) if {f} in (x1; x2)
             if (x != intervals.end()) f = x->first;
             if (y != intervals.end()) s = y->second;
+
+            if (intervals.count({f, s})) return false;
 
             // (f; x1); (x2; x3); (x4; s) + (f; s) = empty + (f; s)
             for (auto it = intervals.lower_bound({f, {}}); it != intervals.end() && it->first < s;) {

@@ -1,7 +1,14 @@
-#include "../include/verifier.h"
+#include <verifier.h>
+#include <interval.h>
 #include <bits/stdc++.h>
 int main() {
-    const std::string a = " abc a          ";
-    std::cout << std::boolalpha << verify::same(a, verify::read_file("Testing/main_test.cpp"), false, false, true);
+    interval::interval<int> a;
+    a.add_point(1);
+    a.add_point(2);
+    a.add_point(2);
+    a.add_point(-5);
+    a.add_point(0);
+    a.add_point(0);
+    std::cout << a.print();
     return 0;
 }

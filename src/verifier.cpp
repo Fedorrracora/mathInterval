@@ -1,5 +1,6 @@
-#include "../include/verifier.h"
+#include <verifier.h>
 #include <fstream>
+#include <sstream>
 
 namespace verify {
     namespace {
@@ -18,12 +19,11 @@ namespace verify {
             contents += tmp;
             contents += '\n';
         }
-        contents.pop_back();
         input.close();
         return contents;
     }
 
-    bool same(const std::string& a, const std::string& b, const bool case_sensitive, const bool boundary_sensitive, const bool whitespace_sensitive) {
+    bool same(const std::string& a, const std::string& b, const bool case_sensitive, const bool whitespace_sensitive, const bool boundary_sensitive) {
         std::size_t bgnA = 0, bgnB = 0, endA = a.size(), endB = b.size();
         if (!boundary_sensitive) {
             while (bgnA != endA && space_skip(a[bgnA    ])) ++bgnA;
@@ -49,5 +49,13 @@ namespace verify {
             ++bgnB;
         }
         return bgnA == endA && bgnB == endB;
+    }
+
+    line_checker::line_checker(std::string s) : last(last_str) {
+        contain.str(std::move(s));
+    }
+    std::string line_checker::operator()() {
+        if (!std::getline(contain, last_str)) throw std::runtime_error("Could not read line");
+        return last_str;
     }
 }
