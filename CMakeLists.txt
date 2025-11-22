@@ -58,7 +58,8 @@ if(TESTING AND NOT SKBUILD)
 
     add_executable(test_target
             Testing/cpp/test1.cpp
-            Testing/cpp/test2.cpp) # todo: add tests
+            Testing/cpp/test2.cpp
+            Testing/cpp/test3.cpp) # todo: add tests
     target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE verify)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
