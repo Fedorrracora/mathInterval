@@ -180,6 +180,10 @@ Additional conditions:
 
 - `std::range_error` if the interval has a negative length.
 
+### add_point(x) and remove_point(x)
+
+- `std::range_error` if the point is +INF or -INF.
+
 ### Operators % and %=
 
 - `std::logic_error` if the modulus coefficient is <= 0.
