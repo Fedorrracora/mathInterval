@@ -24,7 +24,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake ..
+          cmake -DBUILD_PYTHON_BINDINGS=ON ..
           make
 
       - name: generate stubgen
