@@ -22,7 +22,9 @@ jobs:
 
       - name: generate stubgen
         working-directory: build
-        run: pybind11-stubgen _mathInterval
+        run: |
+          pybind11-stubgen _mathInterval
+          mv build/stubs/_mathInterval.pyi build/stubs/mathInterval.pyi
         env:
           PYTHONPATH: $PYTHONPATH:.
 
@@ -30,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mathInterval.pyi
-          path: build/stubs/_mathInterval.pyi
+          path: build/stubs/mathInterval.pyi
 
   build_wheels:
     needs: pybind11_stubgen
