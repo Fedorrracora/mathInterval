@@ -49,7 +49,7 @@ jobs:
           name: mathInterval.pyi
 
       - name: setup stubgen file
-        run: mv mathInterval.pyi mathInterval/mathInterval.pyi
+        run: mv mathInterval.pyi src/mathInterval.pyi
 
       - name: Set up Python
         uses: actions/setup-python@v5
