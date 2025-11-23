@@ -7,8 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
-
 option(TESTING "Enable testing" OFF)
 option(CONSOLE "Enable console executable" OFF)
 option(BUILD_PYTHON_BINDINGS "Build Python bindings for development" OFF)
@@ -28,6 +26,8 @@ endif()
 if(SKBUILD OR BUILD_PYTHON_BINDINGS)
     #set(PYBIND11_USE_ABI3 ON)
     #set(PYBIND11_ABI_VERSION 3)
+    find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
+
     add_subdirectory(extern/pybind11)
 
     pybind11_add_module(_mathInterval src/bindings.cpp)
