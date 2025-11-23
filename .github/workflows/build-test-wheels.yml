@@ -24,7 +24,7 @@ jobs:
         working-directory: build
         run: |
           pybind11-stubgen _mathInterval
-          mv build/stubs/_mathInterval.pyi build/stubs/mathInterval.pyi
+          mv stubs/_mathInterval.pyi stubs/mathInterval.pyi
         env:
           PYTHONPATH: $PYTHONPATH:.
 
