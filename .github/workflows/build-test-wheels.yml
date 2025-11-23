@@ -22,7 +22,7 @@ jobs:
 
       - name: generate stubgen
         working-directory: build
-        run: pybind11-stubgen mathInterval
+        run: pybind11-stubgen _mathInterval
         env:
           PYTHONPATH: $PYTHONPATH:.
 
