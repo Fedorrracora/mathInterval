@@ -53,7 +53,7 @@ if(TESTING AND NOT SKBUILD)
     FetchContent_MakeAvailable(googletest)
     include(GoogleTest)
 
-    add_library(verify STATIC src/verifier.cpp)
+    add_library(verify SHARED src/verifier.cpp)
     target_include_directories(verify PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
     add_executable(test_target
@@ -67,6 +67,11 @@ if(TESTING AND NOT SKBUILD)
 
     add_executable(test_verify Testing/main_test.cpp) # todo: remove
     target_link_libraries(test_verify verify)
+
+    if(BUILD_PYTHON_BINDINGS)
+        pybind11_add_module(verify_python src/verifier_bindings.cpp)
+        target_link_libraries(verify_python PRIVATE verify)
+    endif()
 endif()
 
 # Python

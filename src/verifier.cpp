@@ -4,6 +4,7 @@
 
 namespace verify {
     namespace {
+        /// return true if this char can be decoded as space
         [[nodiscard]] constexpr bool space_skip(const char c) {
             return c == ' ' || c == '\n' || c == '\r' || c == '\t' || c == '\v';
         }
