@@ -2,7 +2,7 @@
 #include <interval.h>
 #include <verifier.h>
 
-TEST(CPP, multi_add) {
+TEST(ONE_SET, multi_add) {
     interval::interval<int> a;
     verify::line_checker line(verify::read_file("answers/test3.a"));
     a.add_interval(1, 10);

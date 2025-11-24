@@ -2,7 +2,7 @@
 #include <interval.h>
 #include <verifier.h>
 
-TEST(CPP, add_point) {
+TEST(ONE_SET, add_point) {
     interval::interval<int> a;
     verify::line_checker line(verify::read_file("answers/test1.a"));
     {

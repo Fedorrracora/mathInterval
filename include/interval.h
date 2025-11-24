@@ -77,6 +77,10 @@ namespace interval {
 
         /// return true if this multitude is empty, else return false
         [[nodiscard]] bool empty() const noexcept {return points.empty() && intervals.empty();}
+        /// return true if this multitude is (-INF; +INF), else return false
+        [[nodiscard]] bool full() const noexcept
+        {return intervals.size() == 1 && *intervals.begin() == std::make_pair(minimal<T>::data(), maximal<T>::data());}
+
         /// clear multitude data
         void clear() {points.clear(); intervals.clear();}
 
