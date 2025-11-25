@@ -210,6 +210,7 @@ namespace interval {
         friend interval & operator*=(interval &a, const T val)
                 {interval b; a.multiply_in(b, val); a = std::move(b); return a;}
 
+        //todo: change logic
         /// returns a new multitude with the points divided by a factor of val
         [[nodiscard]] interval operator/(const T val) const requires std::is_arithmetic_v<T> {interval b; division_in(b, val); return b;}
         /// divides the points of a multitude by a factor of val

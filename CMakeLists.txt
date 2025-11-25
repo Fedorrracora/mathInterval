@@ -61,7 +61,8 @@ if(TESTING AND NOT SKBUILD)
             Testing/cpp/test2.cpp
             Testing/cpp/test3.cpp
             Testing/cpp/test4.cpp
-            Testing/cpp/test5.cpp) # todo: add tests
+            Testing/cpp/test5.cpp
+            Testing/cpp/test6.cpp) # todo: add tests
     target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE verify)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
