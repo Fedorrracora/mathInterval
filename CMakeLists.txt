@@ -26,7 +26,19 @@ endif()
 if(SKBUILD OR BUILD_PYTHON_BINDINGS)
     #set(PYBIND11_USE_ABI3 ON)
     #set(PYBIND11_ABI_VERSION 3)
-    find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
+    find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
+
+    if(TESTING)
+        execute_process(
+                COMMAND ${Python3_EXECUTABLE} -c "import pytest"
+                RESULT_VARIABLE EXIT_CODE
+                OUTPUT_QUIET
+                ERROR_QUIET
+        )
+        if (NOT EXIT_CODE STREQUAL "0")
+            message(FATAL_ERROR "pytest is not installed. Install it using `pip install pytest` or disable testing.")
+        endif()
+    endif()
 
     add_subdirectory(extern/pybind11)
 
@@ -72,6 +84,7 @@ if(TESTING AND NOT SKBUILD)
     if(BUILD_PYTHON_BINDINGS)
         pybind11_add_module(verify_python src/verifier_bindings.cpp)
         target_link_libraries(verify_python PRIVATE verify)
+        add_test(NAME PYTHON.ONE_SET.add_point COMMAND ${Python_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
     endif()
 endif()
 
