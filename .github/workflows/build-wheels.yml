@@ -9,6 +9,36 @@ on:
     types: [published]    # при публикации релиза
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build project
+        run: |
+          mkdir build
+          cd build
+          cmake -DTESTING=ON ..
+          make
+
+      - name: Testing
+        id: test
+        continue-on-error: true
+        working-directory: build
+        run: ctest --output-junit junit-report.xml
+
+      - name: Fail job if tests failed
+        if: steps.test.outcome != 'success'
+        run: exit 1
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: build/junit-report.xml
+
   pybind11_stubgen:
     name: Build pybind11 stubgen
     runs-on: ubuntu-latest

@@ -85,6 +85,7 @@ if(TESTING AND NOT SKBUILD)
         pybind11_add_module(verify_python src/verifier_bindings.cpp)
         target_link_libraries(verify_python PRIVATE verify)
         add_test(NAME PYTHON.ONE_SET.add_point COMMAND ${Python_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.ONE_SET.add_interval COMMAND ${Python_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test2.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
     endif()
 endif()
 

@@ -289,10 +289,9 @@ namespace interval {
         ---
 
         Because the lambdas return `std::optional`, a lambda may return `std::nullopt`
-        if the interval has no integer value.
+        if the interval has no matching value.
 
         ⚠️ **Warning:**
-        You must yourself detect that the returning value lies inside the interval.
         Do not forget to monitor for overflows.
          */
         [[nodiscard]] std::optional<T> any(

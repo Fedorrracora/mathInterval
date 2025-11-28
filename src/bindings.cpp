@@ -20,32 +20,32 @@ void bind_abc(py::module_ &m, const char* class_name) {
     py::class_<Interval> cls(m, class_name);
     cls.def(py::init<>())
         .def("__str__", &Interval::print, "return string with all data in mathematical style")
-        .def("__contains__", &Interval::issubset, "return true if this multitude is subset of another multitude, else return false")
-        .def("__contains__", static_cast<bool (Interval::*)(const typename Interval::inp_type&) const>(&Interval::in), "return true if this point in multitude, else return false")
-        .def("contains", static_cast<bool (Interval::*)(const typename Interval::inp_type&, const typename Interval::inp_type&) const>(&Interval::in), "return true if interval (a, b) in multitude, else return false")
-        .def("issubset", &Interval::issubset, "return true if this multitude is subset of another multitude, else return false")
-        .def("issuperset", &Interval::issuperset, "return true if this multitude is subset of another multitude, else return false")
-        .def("isdisjoint", &Interval::isdisjoint, "return true if these multitudes has no common points, else return false")
-        .def("add_interval", &Interval::add_interval, "returns false if all this interval was inside this multitude, else return true")
-        .def("add_point", &Interval::add_point, "returns false if this point was inside this multitude, else return true. Note that the added point cannot be -INF and +INF")
-        .def("remove_interval", &Interval::remove_interval, "returns false if all this interval was not inside this multitude, else return true")
-        .def("remove_point", &Interval::remove_point, "returns false if this point was not inside this multitude, else return true. Note that the removed point cannot be -INF and +INF")
+        .def("__contains__", &Interval::issubset, py::arg("a"), "return true if this multitude is subset of another multitude, else return false")
+        .def("__contains__", static_cast<bool (Interval::*)(const typename Interval::inp_type&) const>(&Interval::in), py::arg("a"), "return true if this point in multitude, else return false")
+        .def("contains", static_cast<bool (Interval::*)(const typename Interval::inp_type&, const typename Interval::inp_type&) const>(&Interval::in), py::arg("a"), py::arg("b"), "return true if interval (a, b) in multitude, else return false")
+        .def("issubset", &Interval::issubset, py::arg("b"), "return true if this multitude is subset of another multitude, else return false")
+        .def("issuperset", &Interval::issuperset, py::arg("b"), "return true if this multitude is subset of another multitude, else return false")
+        .def("isdisjoint", &Interval::isdisjoint, py::arg("b"), "return true if these multitudes has no common points, else return false")
+        .def("add_interval", &Interval::add_interval, py::arg("a"), py::arg("b"), "returns false if all this interval was inside this multitude, else return true")
+        .def("add_point", &Interval::add_point, py::arg("a"), "returns false if this point was inside this multitude, else return true. Note that the added point cannot be -INF and +INF")
+        .def("remove_interval", &Interval::remove_interval, py::arg("a"), py::arg("b"), "returns false if all this interval was not inside this multitude, else return true")
+        .def("remove_point", &Interval::remove_point, py::arg("a"), "returns false if this point was not inside this multitude, else return true. Note that the removed point cannot be -INF and +INF")
         .def("empty", &Interval::empty, "return true if this multitude is empty, else return false")
         .def("points_only", &Interval::points_only, "return true if multitude has only separate points (or empty), else return false")
         .def("clear", &Interval::clear, "clear multitude data")
         .def("inverse", &Interval::inverse, "returns the multitude that is the inverse of the given one")
-        .def("__add__", [](const Interval &a, const Interval &b) {return a + b;}, py::is_operator(), "returns a new multitude containing the union of the elements of the previous multitudes")
-        .def("__or__", [](const Interval &a, const Interval &b) {return a + b;}, py::is_operator(), "returns a new multitude containing the union of the elements of the previous multitudes")
-        .def("__iadd__", [](Interval &a, const Interval &b) {return a += b;}, py::is_operator(), "adds elements of another multitude")
-        .def("__ior__", [](Interval &a, const Interval &b) {return a += b;}, py::is_operator(), "adds elements of another multitude")
-        .def("__sub__", [](const Interval &a, const Interval &b) {return a - b;}, py::is_operator(), "returns a new multitude containing the difference of the elements of the previous multitudes")
-        .def("__isub__", [](Interval &a, const Interval &b) {return a -= b;}, py::is_operator(), "remove elements of another multitude")
-        .def("__mul__", [](const Interval &a, const Interval &b) {return a * b;}, py::is_operator(), "returns a new multitude containing the intersection of the elements of the previous multitudes")
-        .def("__and__", [](const Interval &a, const Interval &b) {return a * b;}, py::is_operator(), "returns a new multitude containing the intersection of the elements of the previous multitudes")
-        .def("__imul__", [](Interval &a, const Interval &b) {return a *= b;}, py::is_operator(), "intersect elements with another multitude")
-        .def("__iand__", [](Interval &a, const Interval &b) {return a *= b;}, py::is_operator(), "intersect elements with another multitude")
-        .def("__xor__", [](const Interval &a, const Interval &b) {return a ^ b;}, py::is_operator(), "returns a new multitude containing the symmetric difference of the elements of the previous multitudes")
-        .def("__ixor__", [](Interval &a, const Interval &b) {return a ^= b;}, py::is_operator(), " generating symmetric difference with elements of another multitude")
+        .def("__add__", [](const Interval &a, const Interval &b) {return a + b;}, py::is_operator(), py::arg("b"), "returns a new multitude containing the union of the elements of the previous multitudes")
+        .def("__or__", [](const Interval &a, const Interval &b) {return a + b;}, py::is_operator(), py::arg("b"), "returns a new multitude containing the union of the elements of the previous multitudes")
+        .def("__iadd__", [](Interval &a, const Interval &b) {return a += b;}, py::is_operator(), py::arg("b"), "adds elements of another multitude")
+        .def("__ior__", [](Interval &a, const Interval &b) {return a += b;}, py::is_operator(), py::arg("b"), "adds elements of another multitude")
+        .def("__sub__", [](const Interval &a, const Interval &b) {return a - b;}, py::is_operator(), py::arg("b"), "returns a new multitude containing the difference of the elements of the previous multitudes")
+        .def("__isub__", [](Interval &a, const Interval &b) {return a -= b;}, py::is_operator(), py::arg("b"), "remove elements of another multitude")
+        .def("__mul__", [](const Interval &a, const Interval &b) {return a * b;}, py::is_operator(), py::arg("b"), "returns a new multitude containing the intersection of the elements of the previous multitudes")
+        .def("__and__", [](const Interval &a, const Interval &b) {return a * b;}, py::is_operator(), py::arg("b"), "returns a new multitude containing the intersection of the elements of the previous multitudes")
+        .def("__imul__", [](Interval &a, const Interval &b) {return a *= b;}, py::is_operator(), py::arg("b"), "intersect elements with another multitude")
+        .def("__iand__", [](Interval &a, const Interval &b) {return a *= b;}, py::is_operator(), py::arg("b"), "intersect elements with another multitude")
+        .def("__xor__", [](const Interval &a, const Interval &b) {return a ^ b;}, py::is_operator(), py::arg("b"), "returns a new multitude containing the symmetric difference of the elements of the previous multitudes")
+        .def("__ixor__", [](Interval &a, const Interval &b) {return a ^= b;}, py::is_operator(), py::arg("b"), " generating symmetric difference with elements of another multitude")
         .def("any", [](const Interval &a) {return a.any(true);}, R"doc(
 ### any
 
@@ -72,7 +72,7 @@ For custom types and algorithms, consider using this function with additional ar
         .def("any", static_cast<std::optional<T> (Interval::*)(
                 const std::function<std::optional<T>(const T&)> &,
                 const std::function<std::optional<T>(const T&)> &,
-                const std::function<std::optional<T>(const T&, const T&)> &, T) const>(&Interval::any), R"doc(
+                const std::function<std::optional<T>(const T&, const T&)> &, T) const>(&Interval::any), py::arg("MINUS_INF_x"), py::arg("x_PLUS_INF"), py::arg("x_y"), py::arg("MINUS_INF_PLUS_INF"), R"doc(
 ### any()
 
 Return any element that is in data.
@@ -93,12 +93,9 @@ This function takes **three lambda functions** and **one value**:
 
 ---
 
-A lambdas may return `None`, if the interval has no integer value.
-
-⚠️ **Warning:**
-You must yourself detect that the returning value lies inside the interval.
+A lambdas may return `None`, if the interval has no matching value.
 )doc")
-        .def("custom_transfer", static_cast<Interval (Interval::*)(const std::function<T(const T&)> &) const>(&Interval::custom_transfer), R"doc(
+        .def("custom_transfer", static_cast<Interval (Interval::*)(const std::function<T(const T&)> &) const>(&Interval::custom_transfer), py::arg("fun"), R"doc(
 ### custom_transfer()
 
 Transfer all elements that are in this multitude and return a new multitude.
@@ -117,7 +114,7 @@ If the first value of an interval becomes greater than the second,
 the function will swap them automatically.
 )doc")
         .def("custom_transfer", static_cast<Interval (Interval::*)
-                (const std::function<T(const T&)> &, const T&, const T&) const>(&Interval::custom_transfer), R"doc(
+                (const std::function<T(const T&)> &, const T&, const T&) const>(&Interval::custom_transfer), py::arg("fun"), py::arg("MINUS_INF"), py::arg("PLUS_INF"), R"doc(
 ### custom_transfer()
 
 Transfer all elements that are in this multitude and return a new multitude.
@@ -140,22 +137,22 @@ the function will swap them automatically.
 )doc")
     ;
     if constexpr (std::is_arithmetic_v<T>) cls
-        .def("__add__", [](const Interval &a, const T &b) {return a + b;}, py::is_operator(), "returns a new multitude with the points shifted forward by the distance val")
-        .def("__iadd__", [](Interval &a, const T &b) {return a += b;}, py::is_operator(), "shift the points forward by a distance of val")
-        .def("__sub__", [](const Interval &a, const T &b) {return a - b;}, py::is_operator(), "returns a new multitude with the points shifted backward by the distance val")
-        .def("__isub__", [](Interval &a, const T &b) {return a -= b;}, py::is_operator(), "shift the points backward by a distance of val")
-        .def("__mul__", [](const Interval &a, const T &b) {return a * b;}, py::is_operator(), "returns a new multitude with the points multiplied by a factor of val")
-        .def("__imul__", [](Interval &a, const T &b) {return a *= b;}, py::is_operator(), "multiplies the points of a multitude by a factor of val")
+        .def("__add__", [](const Interval &a, const T &b) {return a + b;}, py::is_operator(), py::arg("b"), "returns a new multitude with the points shifted forward by the distance val")
+        .def("__iadd__", [](Interval &a, const T &b) {return a += b;}, py::is_operator(), py::arg("b"), "shift the points forward by a distance of val")
+        .def("__sub__", [](const Interval &a, const T &b) {return a - b;}, py::is_operator(), py::arg("b"), "returns a new multitude with the points shifted backward by the distance val")
+        .def("__isub__", [](Interval &a, const T &b) {return a -= b;}, py::is_operator(), py::arg("b"), "shift the points backward by a distance of val")
+        .def("__mul__", [](const Interval &a, const T &b) {return a * b;}, py::is_operator(), py::arg("b"), "returns a new multitude with the points multiplied by a factor of val")
+        .def("__imul__", [](Interval &a, const T &b) {return a *= b;}, py::is_operator(), py::arg("b"), "multiplies the points of a multitude by a factor of val")
     ;
     if constexpr (std::is_integral_v<T>) cls
-        .def("__floordiv__", [](const Interval &a, const T &b) {return a / b;}, py::is_operator(), "returns a new multitude with the points divided by a factor of val")
-        .def("__ifloordiv__", [](Interval &a, const T &b) {return a /= b;}, py::is_operator(), "divides the points of a multitude by a factor of val")
-        .def("__mod__", [](const Interval &a, const T &b) {return a % b;}, py::is_operator(), "returns a new multitude with points taken as the remainder of the division by val")
-        .def("__imod__", [](Interval &a, const T &b) {return a %= b;}, py::is_operator(), "replaces the points with the remainder of the division by val")
+        .def("__floordiv__", [](const Interval &a, const T &b) {return a / b;}, py::is_operator(), py::arg("b"), "returns a new multitude with the points divided by a factor of val")
+        .def("__ifloordiv__", [](Interval &a, const T &b) {return a /= b;}, py::is_operator(), py::arg("b"), "divides the points of a multitude by a factor of val")
+        .def("__mod__", [](const Interval &a, const T &b) {return a % b;}, py::is_operator(), py::arg("b"), "returns a new multitude with points taken as the remainder of the division by val")
+        .def("__imod__", [](Interval &a, const T &b) {return a %= b;}, py::is_operator(), py::arg("b"), "replaces the points with the remainder of the division by val")
     ;
     if constexpr (std::is_arithmetic_v<T> && !std::is_integral_v<T>) cls
-        .def("__truediv__", [](const Interval &a, const T &b) {return a / b;}, py::is_operator(), "returns a new multitude with the points divided by a factor of val")
-        .def("__itruediv__", [](Interval &a, const T &b) {return a /= b;}, py::is_operator(), "divides the points of a multitude by a factor of val")
+        .def("__truediv__", [](const Interval &a, const T &b) {return a / b;}, py::is_operator(), py::arg("b"), "returns a new multitude with the points divided by a factor of val")
+        .def("__itruediv__", [](Interval &a, const T &b) {return a /= b;}, py::is_operator(), py::arg("b"), "divides the points of a multitude by a factor of val")
     ;
     cls.def_property_readonly_static("minimal", [](const py::object&) { return Min(); }, "return always minimal element in any interval");
     cls.def_property_readonly_static("maximal", [](const py::object&) { return Max(); }, "return always maximal element in any interval");

@@ -114,10 +114,10 @@ Takes two arguments.
 - **x** – result for the interval `(-INF, +INF)`.
 
 In C++, lambdas return `std::optional<T>` and take variables of type `const T&`.
-If there are no points in the given interval, `std::nullopt` can be returned.
+If there are no matching points in the given interval, `std::nullopt` can be returned.
 
 In Python, lambdas return a variable of the appropriate type.
-If there are no points in the given interval, `None` can be returned.
+If there are no matching points in the given interval, `None` can be returned.
 
 ### custom_transfer(func)
 
