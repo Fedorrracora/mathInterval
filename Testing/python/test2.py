@@ -1,4 +1,4 @@
-import mathInterval as interval
+import _mathInterval as interval
 import verify_python as verify
 
 def test_add_interval():
