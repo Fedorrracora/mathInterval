@@ -1,4 +1,4 @@
-import _mathInterval as interval
+import mathInterval as interval
 import verify_python as verify
 
 def test_add_interval():
@@ -16,4 +16,4 @@ def test_add_interval():
     b |= a.add_interval(1, 1)
     b |= a.add_interval(11, 11)
     b |= a.add_interval(-1, -1)
-    assert verify.same(str(a), line.last, True, True, False) and b, "error in step 2: adding/removing empty intervals"
+    assert verify.same(str(a), line.last, True, True, False) and not b, "error in step 2: adding/removing empty intervals"
