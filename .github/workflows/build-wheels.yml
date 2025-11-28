@@ -16,6 +16,9 @@ jobs:
         with:
           submodules: recursive
 
+      - name: install pytest
+        run: python -m pip install pytest
+
       - name: Build project
         run: |
           mkdir build
