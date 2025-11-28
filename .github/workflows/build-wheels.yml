@@ -110,7 +110,7 @@ jobs:
           name: mathInterval.pyi
 
       - name: setup stubgen file
-        run: mv mathInterval.pyi src/mathInterval.pyi
+        run: mv mathInterval.pyi src/_mathInterval.pyi
 
       - name: Set up QEMU
         if: matrix.cibw_archs == 'aarch64'
