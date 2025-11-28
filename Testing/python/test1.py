@@ -1,4 +1,4 @@
-import pytest
+from pytest import raises
 import _mathInterval as interval
 import verify_python as verify
 
@@ -18,10 +18,10 @@ def test_add_point():
     b = b or a.add_point(0)
     assert verify.same(str(a), line.last, True, True, False) and not b, "error in step 2: adding cross points"
 
-    with pytest.raises(Exception):
+    with raises(Exception):
         a.add_point(a.minimal())
 
-    with pytest.raises(Exception):
+    with raises(Exception):
         a.add_point(a.maximal())
 
     assert verify.same(str(a), line.last, True, True, False), "error in steps 3-4: throw points: saving data"
