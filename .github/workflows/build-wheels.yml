@@ -74,7 +74,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: stubs
-          path: build/stubs/_mathInterval/
+          path: build/stubs/_mathInterval
 
   build_wheels:
     needs: pybind11_stubgen
@@ -115,7 +115,7 @@ jobs:
           name: stubs
 
       - name: setup stubgen files
-        run: mv -r _mathInterval src/
+        run: mv _mathInterval src/
 
       - name: Set up QEMU
         if: matrix.cibw_archs == 'aarch64'
