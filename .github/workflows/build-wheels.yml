@@ -62,17 +62,15 @@ jobs:
 
       - name: generate stubgen
         working-directory: build
-        run: |
-          pybind11-stubgen _mathInterval
-          mv stubs/_mathInterval.pyi stubs/mathInterval.pyi
+        run: pybind11-stubgen _mathInterval
         env:
           PYTHONPATH: $PYTHONPATH:.
 
       - name: Upload stubs (GitHub Artifacts)
         uses: actions/upload-artifact@v4
         with:
-          name: mathInterval.pyi
-          path: build/stubs/mathInterval.pyi
+          name: stubs
+          path: build/stubs/_mathInterval/*.pyi
 
   build_wheels:
     needs: pybind11_stubgen
@@ -107,13 +105,13 @@ jobs:
         with:
           submodules: recursive
 
-      - name: load stubgen file
+      - name: load stubgen files
         uses: actions/download-artifact@v4
         with:
-          name: mathInterval.pyi
+          name: stubs
 
-      - name: setup stubgen file
-        run: mv mathInterval.pyi src/_mathInterval.pyi
+      - name: setup stubgen files
+        run: mv *.pyi src/*.pyi
 
       - name: Set up QEMU
         if: matrix.cibw_archs == 'aarch64'
