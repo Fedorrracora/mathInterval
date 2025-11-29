@@ -111,7 +111,7 @@ jobs:
           name: stubs
 
       - name: setup stubgen files
-        run: mv *.pyi src/*.pyi
+        run: mv *.pyi src/
 
       - name: Set up QEMU
         if: matrix.cibw_archs == 'aarch64'
