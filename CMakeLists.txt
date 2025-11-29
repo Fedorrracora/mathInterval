@@ -101,6 +101,9 @@ install(TARGETS _mathInterval
 install(FILES src/__init__.py DESTINATION ${SKBUILD_PROJECT_NAME})
 file(GLOB PYI_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.pyi")
 install(FILES ${PYI_FILES} DESTINATION ${SKBUILD_PROJECT_NAME} OPTIONAL)
+if(PYI_FILES)
+    install(FILES src/py.typed DESTINATION ${SKBUILD_PROJECT_NAME})
+endif()
 
 # C++
 else()
