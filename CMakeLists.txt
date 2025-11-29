@@ -99,7 +99,7 @@ install(TARGETS _mathInterval
         RUNTIME DESTINATION ${SKBUILD_PROJECT_NAME}
 )
 install(FILES src/__init__.py DESTINATION ${SKBUILD_PROJECT_NAME})
-install(FILES src/_mathInterval DESTINATION ${SKBUILD_PROJECT_NAME} OPTIONAL)
+install(DIRECTORY src/_mathInterval/ DESTINATION ${SKBUILD_PROJECT_NAME} OPTIONAL)
 
 # C++
 else()
