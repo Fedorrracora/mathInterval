@@ -3,9 +3,9 @@
 #include <pybind11/functional.h>
 #include <interval.h>
 namespace py = pybind11;
-template<typename T>
-void bind_abc(py::module_ &m, const char* class_name) {
-    using Interval = interval::interval<T>;
+template<typename T, typename type_policy> requires std::is_base_of_v<interval::detail::type_policy, type_policy>
+void bind_interval(py::module_ &m, const char* class_name) {
+    using Interval = interval::interval<T, type_policy>;
     using Min = interval::minimal<T>;
     using Max = interval::maximal<T>;
 
@@ -136,7 +136,7 @@ If the first value of an interval becomes greater than the second,
 the function will swap them automatically.
 )doc")
     ;
-    if constexpr (std::is_arithmetic_v<T>) cls
+    if constexpr (type_policy::template is_arithmetic_v<T>) cls
         .def("__add__", [](const Interval &a, const T &b) {return a + b;}, py::is_operator(), py::arg("b"), "returns a new multitude with the points shifted forward by the distance val")
         .def("__iadd__", [](Interval &a, const T &b) {return a += b;}, py::is_operator(), py::arg("b"), "shift the points forward by a distance of val")
         .def("__sub__", [](const Interval &a, const T &b) {return a - b;}, py::is_operator(), py::arg("b"), "returns a new multitude with the points shifted backward by the distance val")
@@ -144,13 +144,13 @@ the function will swap them automatically.
         .def("__mul__", [](const Interval &a, const T &b) {return a * b;}, py::is_operator(), py::arg("b"), "returns a new multitude with the points multiplied by a factor of val")
         .def("__imul__", [](Interval &a, const T &b) {return a *= b;}, py::is_operator(), py::arg("b"), "multiplies the points of a multitude by a factor of val")
     ;
-    if constexpr (std::is_integral_v<T>) cls
+    if constexpr (type_policy::template is_integral_v<T>) cls
         .def("__floordiv__", [](const Interval &a, const T &b) {return a / b;}, py::is_operator(), py::arg("b"), "returns a new multitude with the points divided by a factor of val")
         .def("__ifloordiv__", [](Interval &a, const T &b) {return a /= b;}, py::is_operator(), py::arg("b"), "divides the points of a multitude by a factor of val")
         .def("__mod__", [](const Interval &a, const T &b) {return a % b;}, py::is_operator(), py::arg("b"), "returns a new multitude with points taken as the remainder of the division by val")
         .def("__imod__", [](Interval &a, const T &b) {return a %= b;}, py::is_operator(), py::arg("b"), "replaces the points with the remainder of the division by val")
     ;
-    if constexpr (std::is_arithmetic_v<T> && !std::is_integral_v<T>) cls
+    if constexpr (type_policy::template is_arithmetic_v<T> && !type_policy::template is_integral_v<T>) cls
         .def("__truediv__", [](const Interval &a, const T &b) {return a / b;}, py::is_operator(), py::arg("b"), "returns a new multitude with the points divided by a factor of val")
         .def("__itruediv__", [](Interval &a, const T &b) {return a /= b;}, py::is_operator(), py::arg("b"), "divides the points of a multitude by a factor of val")
     ;
@@ -175,8 +175,17 @@ with mathematical multitudes. It supports:
 
 All classes and functions are documented with Python-style docstrings.
 )doc";
-    bind_abc<INT_TYPE>(m, "Interval_int");
-    bind_abc<FLOAT_TYPE>(m, "Interval_float");
-    bind_abc<std::string>(m, "Interval_str");
-    bind_abc<py::object>(m, "Interval");
+    const py::module_ policy_mod = m.def_submodule("policy");
+    py::class_<interval::policy::int_type_policy> IntTypePolicy(policy_mod, "IntTypePolicy", "internal stored type - int. Additional operations are available");
+    py::class_<interval::policy::float_type_policy> FloatTypePolicy(policy_mod, "FloatTypePolicy", "internal stored type - float. Additional operations are available");
+    py::class_<interval::policy::unknown_type_policy> UnknownTypePolicy(policy_mod, "UnknownTypePolicy", "may store any types with required operators");
+    bind_interval<py::object, interval::policy::unknown_type_policy>(m, "_Interval_UnknownTypePolicy");
+    bind_interval<FLOAT_TYPE, interval::policy::float_type_policy>(m, "_Interval_FloatTypePolicy");
+    bind_interval<INT_TYPE, interval::policy::int_type_policy>(m, "_Interval_IntTypePolicy");
+    m.def("Interval", [](const py::object& policy)->py::object {
+        if (policy.is(py::type::of<interval::policy::unknown_type_policy>()) || policy.is_none()) return py::cast(new interval::interval<py::object, interval::policy::unknown_type_policy>(), py::return_value_policy::take_ownership);
+        if (policy.is(py::type::of<interval::policy::float_type_policy  >())) return py::cast(new interval::interval<FLOAT_TYPE, interval::policy::float_type_policy  >(), py::return_value_policy::take_ownership);
+        if (policy.is(py::type::of<interval::policy::int_type_policy    >())) return py::cast(new interval::interval<INT_TYPE, interval::policy::int_type_policy    >(), py::return_value_policy::take_ownership);
+        throw py::type_error("Unknown policy");
+    }, py::arg("policy") = py::none());
 }

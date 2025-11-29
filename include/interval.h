@@ -1,5 +1,6 @@
 #ifndef interval_H
 #define interval_H
+#include <type_traits>
 #include <optional>
 #include <string>
 #include <utility>
@@ -11,6 +12,42 @@
 #include <functional>
 
 namespace interval {
+    namespace detail {
+        /// allow to custom detecting type
+        struct type_policy {};
+    }
+    namespace policy {
+
+
+        /// standard type detection
+        struct standard_type_policy : detail::type_policy {
+            template <typename T>
+            static constexpr bool is_arithmetic_v = std::is_arithmetic_v<T>;
+            template <typename T>
+            static constexpr bool is_integral_v = std::is_integral_v<T>;
+        };
+        /// type detects as int
+        struct int_type_policy : detail::type_policy {
+            template <typename>
+            static constexpr bool is_arithmetic_v = true;
+            template <typename>
+            static constexpr bool is_integral_v = true;
+        };
+        /// type detects as float
+        struct float_type_policy : detail::type_policy {
+            template <typename>
+            static constexpr bool is_arithmetic_v = true;
+            template <typename>
+            static constexpr bool is_integral_v = false;
+        };
+        /// type detects as unknown
+        struct unknown_type_policy : detail::type_policy {
+            template <typename>
+            static constexpr bool is_arithmetic_v = false;
+            template <typename>
+            static constexpr bool is_integral_v = false;
+        };
+    } // policy
 
     /// return always minimal element in any interval
     template <typename T>
@@ -24,7 +61,7 @@ namespace interval {
         [[nodiscard]] static std::pair<int, T> data() noexcept {return {2, {}};}
     };
 
-    template<typename T>
+    template<typename T, typename type_policy = policy::standard_type_policy> requires std::is_base_of_v<detail::type_policy, type_policy>
     class interval {
     public:
         using inner_type = std::pair<int, T>;
@@ -192,33 +229,33 @@ namespace interval {
         // transfer operations
 
         /// returns a new multitude with the points shifted forward by the distance val
-        [[nodiscard]] interval operator+(const T val) const requires std::is_arithmetic_v<T> {interval b; plus_in(b, val); return b;}
+        [[nodiscard]] interval operator+(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; plus_in(b, val); return b;}
         /// shift the points forward by a distance of val
         friend interval & operator+=(interval &a, const T val)
                 {interval b; a.plus_in(b, val); a = std::move(b); return a;}
 
         /// returns a new multitude with the points shifted backward by the distance val
-        [[nodiscard]] interval operator-(const T val) const requires std::is_arithmetic_v<T> {interval b; plus_in(b, -val); return b;}
+        [[nodiscard]] interval operator-(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; plus_in(b, -val); return b;}
         /// shift the points backward by a distance of val
         friend interval & operator-=(interval &a, const T val) {
             interval b; a.plus_in(b, -val); a = std::move(b); return a; // because I use -val, in strings it is error
         }
 
         /// returns a new multitude with the points multiplied by a factor of val
-        [[nodiscard]] interval operator*(const T val) const requires std::is_arithmetic_v<T> {interval b; multiply_in(b, val); return b;}
+        [[nodiscard]] interval operator*(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; multiply_in(b, val); return b;}
         /// multiplies the points of a multitude by a factor of val
         friend interval & operator*=(interval &a, const T val)
                 {interval b; a.multiply_in(b, val); a = std::move(b); return a;}
 
         //todo: change logic
         /// returns a new multitude with the points divided by a factor of val
-        [[nodiscard]] interval operator/(const T val) const requires std::is_arithmetic_v<T> {interval b; division_in(b, val); return b;}
+        [[nodiscard]] interval operator/(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; division_in(b, val); return b;}
         /// divides the points of a multitude by a factor of val
         friend interval & operator/=(interval &a, const T val)
                 {interval b; a.division_in(b, val); a = std::move(b); return a;}
 
         /// returns a new multitude with points taken as the remainder of the division by val
-        [[nodiscard]] interval operator%(const T val) const requires std::is_integral_v<T> {interval b; remainder_in(b, val); return b;}
+        [[nodiscard]] interval operator%(const T val) const requires type_policy::template is_integral_v<T> {interval b; remainder_in(b, val); return b;}
         /// replaces the points with the remainder of the division by val
         friend interval & operator%=(interval &a, const T val)
         {interval b; a.remainder_in(b, val); a = std::move(b); return a;}
@@ -605,7 +642,7 @@ namespace interval {
             for (auto &it : points) buf.remove_point(it);
         }
 
-        void plus_in(interval &buf, const T &val) const requires std::is_arithmetic_v<T> {
+        void plus_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
             // if point was -INF or +INF, recover will return second elem to {}
             for (auto &[fst, snd] : intervals) {
                 buf.intervals.emplace(recover(std::make_pair(fst.first, fst.second + val)),
@@ -616,7 +653,7 @@ namespace interval {
             }
         }
 
-        void multiply_in(interval &buf, const T &val) const requires std::is_arithmetic_v<T> {
+        void multiply_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
             // if point was -INF or +INF second elem if set to 0 -> 0 * val = 0
             if (val == 0) {
                 if (!intervals.empty() || !points.empty()) {
@@ -637,7 +674,7 @@ namespace interval {
             }
         }
 
-        void division_in(interval &buf, const T &val) const requires std::is_arithmetic_v<T> {
+        void division_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
             // if point was -INF or +INF, second elem if set to 0 -> 0 / val = 0
             for (auto &[fst, snd] : intervals) {
                 auto a = std::make_pair(val < 0 ? 2 - fst.first:fst.first, fst.second / val),
@@ -650,7 +687,7 @@ namespace interval {
             }
         }
 
-        void remainder_in(interval &buf, const T &val) const requires std::is_integral_v<T> {
+        void remainder_in(interval &buf, const T &val) const requires type_policy::template is_integral_v<T> {
             if (val <= 0) throw std::logic_error("the coefficient of the remainder of the division <= 0");
             for (auto &[fst, snd] : intervals) {
                 auto len = snd.second - fst.second;
@@ -838,7 +875,7 @@ namespace interval {
         }
 
         [[nodiscard]] std::optional<T> get_any_in // for degrees
-                (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>, pair_less> &a) const requires std::is_arithmetic_v<T> {
+                (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>, pair_less> &a) const requires type_policy::template is_arithmetic_v<T> {
             for (auto &i : a) {
                 if (i.first.first == 0 && i.second.first == 2) return {}; // (-INF; +INF) -> 0
                 // i.second.second - 1 < i.second.second and i.first.second + 1 > i.first.second
@@ -875,7 +912,7 @@ namespace interval {
 
         [[nodiscard]] static std::optional<T> get_any_in // non-number types
         (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>, pair_less> &a)
-                    requires (!std::is_same_v<std::string, T> and !std::is_arithmetic_v<T>) {
+                    requires (!std::is_same_v<std::string, T> and !type_policy::template is_arithmetic_v<T>) {
             if (a.size() == 1 && a.begin()->first.first == 0 && a.begin()->second.first == 2) return T{};
             return std::nullopt; // for unknown type I don`t know what I need to do
         }

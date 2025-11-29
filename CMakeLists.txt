@@ -19,6 +19,8 @@ target_include_directories(mathInterval INTERFACE
 )
 
 if(CONSOLE)
+    add_executable(TEST test/test.cpp)
+    target_link_libraries(TEST PRIVATE mathInterval)
     add_executable(mathIntervalConsole test/sample.cpp)
 endif()
 
