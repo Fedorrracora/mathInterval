@@ -19,10 +19,10 @@ def test_add_point():
     assert verify.same(str(a), line.last, True, True, False) and not b, "error in step 2: adding cross points"
 
     with raises(Exception):
-        a.add_point(a.minimal())
+        a.add_point(a.minimal)
 
     with raises(Exception):
-        a.add_point(a.maximal())
+        a.add_point(a.maximal)
 
     assert verify.same(str(a), line.last, True, True, False), "error in steps 3-4: throw points: saving data"
 
