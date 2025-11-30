@@ -70,7 +70,7 @@ jobs:
         run: cp -r src/py.typed build/stubs/py.typed
 
       - name: repair stubgen
-        run: src/repair_stubgen.sh build/stubs/__init__.pyi
+        run: src/repair_stubgen.sh build/stubs/_mathInterval/__init__.pyi
 
       - name: Upload stubs (GitHub Artifacts)
         uses: actions/upload-artifact@v4
