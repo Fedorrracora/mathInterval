@@ -2,10 +2,14 @@
 #include <interval.h>
 
 int main() {
-    interval::interval<std::string, interval::policy::int_type_policy> a;
-    a.add_interval("1", "1000");
-    a.remove_point("10");
+    interval::interval<int> a;
     std::cout << a.print() << '\n';
-    a += "0";
+    a.apply_policy(interval::policy::empty_print_policy("ads"));
+    std::cout << a.print() << '\n';
+    a.add_interval(1, 2);
+    std::cout << a.print() << '\n';
+    a.add_interval(interval::minimal<int>(), -100);
+    std::cout << a.print() << '\n';
+    a.apply_policy(interval::policy::minmax_print_policy("-", "+"));
     std::cout << a.print() << '\n';
 }

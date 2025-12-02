@@ -15,9 +15,11 @@ namespace interval {
     namespace detail {
         /// allow to custom detecting type
         struct type_policy {};
+        /// standard type for policies
+        struct standard_policy {};
     }
     namespace policy {
-
+        // type policies
 
         /// standard type detection
         struct standard_type_policy : detail::type_policy {
@@ -63,6 +65,19 @@ namespace interval {
             static constexpr bool is_integral_v = false;
             template <typename>
             static constexpr bool is_string_v = false;
+        };
+
+        // print policies
+
+        /// allows to change how an empty set prints
+        struct empty_print_policy : detail::standard_policy {
+            const std::string empty_print;
+            explicit empty_print_policy(std::string s) : empty_print(std::move(s)) {}
+        };
+        /// allows to change how prints -INF and +INF
+        struct minmax_print_policy : detail::standard_policy {
+            const std::string min, max;
+            explicit minmax_print_policy(std::string min, std::string max) : min(std::move(min)), max(std::move(max)) {}
         };
     } // policy
 
@@ -287,7 +302,7 @@ namespace interval {
         }
 
         /// return string with all data in mathematical style
-        [[nodiscard]] std::string print() const {return print_in();}
+        [[nodiscard]] std::string print() const { return print_in(); }
 
         /**
         ### any
@@ -462,6 +477,11 @@ namespace interval {
             return b;
         }
 
+        /// allow to change any not-type policy
+        void apply_policy(const policy::empty_print_policy &policy) { empty_print = policy.empty_print; }
+        /// allow to change any not-type policy
+        void apply_policy(const policy::minmax_print_policy &policy) { minmax_print = std::make_pair(policy.min, policy.max); }
+
     protected:
 
         struct pair_less {
@@ -489,6 +509,9 @@ namespace interval {
         std::set<inner_type, pair_less> points;
         std::set<std::pair<inner_type, inner_type>, pair_less> intervals;
 
+        std::optional<std::string> empty_print;
+        std::optional<std::pair<std::string, std::string>> minmax_print;
+
         /// convert T-type object to pair inner-type {1; T-type elem};
         /// if object already have inner_type, do nothing
         /// if object is interval::minimal or interval::maximal, return their data
@@ -500,13 +523,6 @@ namespace interval {
             auto x = std::get_if<T>(&a);
             if (x != nullptr) return {1, std::get<T>(a)};
             return std::get<inner_type>(a);
-        }
-
-        /// convert second index among -INF and +INF to {}
-        [[nodiscard]] static inner_type recover(const inner_type &a) {
-            if (a.first < 0 || a.first > 2) throw std::range_error("point or border of interval has undefined value");
-            if (a.first != 1) return {a.first, {}};
-            return a;
         }
 
         bool add_point_in(const inner_type &p) {
@@ -785,12 +801,12 @@ namespace interval {
             std::string out;
 
             // convert (0; T-type elem) to "-INF" and (2; T-type elem) to "+INF". (1; T-type elem) prints normally
-            auto data = [](const inner_type &p)->std::string {
+            auto data = [this](const inner_type &p)->std::string {
                 switch (p.first) {
                     case 0:
-                        return "-INF";
+                        return minmax_print.has_value() ? minmax_print.value().first : "-INF";
                     case 2:
-                        return "+INF";
+                        return minmax_print.has_value() ? minmax_print.value().second : "+INF";
                     default:
                         return spec_to_string(p.second);
                 }
@@ -798,7 +814,7 @@ namespace interval {
 
             // check empty data
             if (empty()) {
-                out += "*Empty*";
+                out += empty_print.value_or("*Empty*");
                 return out;
             }
 
@@ -857,6 +873,12 @@ namespace interval {
             return out;
         }
 
+        /// convert second index among -INF and +INF to {}
+        [[nodiscard]] static inner_type recover(const inner_type &a) {
+            if (a.first < 0 || a.first > 2) throw std::range_error("point or border of interval has undefined value");
+            if (a.first != 1) return {a.first, {}};
+            return a;
+        }
 
         [[nodiscard]] static std::string spec_to_string(const T &a) requires (!type_policy::template is_string_v<T>) {
             std::stringstream ss; // emulate standard output

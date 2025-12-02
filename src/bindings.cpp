@@ -132,6 +132,8 @@ New values cannot themselves be `-INF` or `+INF`.
 If the first value of an interval becomes greater than the second,
 the function will swap them automatically.
 )doc")
+        .def("apply_policy", static_cast<void (Interval::*)(const interval::policy::empty_print_policy&)>(&Interval::apply_policy), py::arg("policy"), "allow to change any not-type policy")
+        .def("apply_policy", static_cast<void (Interval::*)(const interval::policy::minmax_print_policy&)>(&Interval::apply_policy), py::arg("policy"), "allow to change any not-type policy")
     ;
     if constexpr (type_policy::template is_arithmetic_v<T>) cls
         .def("__add__", [](const Interval &a, const T &b) {return a + b;}, py::is_operator(), py::arg("b"), "returns a new multitude with the points shifted forward by the distance val")
@@ -176,6 +178,13 @@ All classes and functions are documented with Python-style docstrings.
     py::class_<interval::policy::int_type_policy> IntTypePolicy(policy_mod, "IntTypePolicy", "internal stored type - int. Additional operations are available");
     py::class_<interval::policy::float_type_policy> FloatTypePolicy(policy_mod, "FloatTypePolicy", "internal stored type - float. Additional operations are available");
     py::class_<interval::policy::unknown_type_policy> UnknownTypePolicy(policy_mod, "UnknownTypePolicy", "may store any types with required operators");
+
+    py::class_<interval::policy::empty_print_policy> EmptyPrintPolicy(policy_mod, "EmptyPrintPolicy", "allows to change how an empty set prints");
+    EmptyPrintPolicy.def(py::init<std::string>(), py::arg("s"));
+    py::class_<interval::policy::minmax_print_policy> MinMaxPrintPolicy(policy_mod, "MinMaxPrintPolicy", "allows to change how prints -INF and +INF");
+    MinMaxPrintPolicy.def(py::init<std::string, std::string>(), py::arg("-INF"), py::arg("+INF"));
+
+
     bind_interval<py::object, interval::policy::unknown_type_policy>(m, "_Interval_UnknownTypePolicy");
     bind_interval<FLOAT_TYPE, interval::policy::float_type_policy>(m, "_Interval_FloatTypePolicy");
     bind_interval<INT_TYPE, interval::policy::int_type_policy>(m, "_Interval_IntTypePolicy");
@@ -185,4 +194,5 @@ All classes and functions are documented with Python-style docstrings.
         if (policy.is(py::type::of<interval::policy::int_type_policy    >())) return py::cast(new interval::interval<INT_TYPE, interval::policy::int_type_policy    >(), py::return_value_policy::take_ownership);
         throw py::type_error("Unknown policy");
     }, py::arg("policy") = py::none());
+
 }
