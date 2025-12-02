@@ -25,38 +25,55 @@
 
 ## Установка
 
+Обратите внимание, что метод установки для C++ поставит библиотеку только для C++, 
+метод для Python - только для Python.
+
 ### C++
 
-Скопируйте файл `interval.h` в свой проект и подключите его
+**Вариант 1.**
+
+Скопируйте файл `src/interval.h` в свой проект и подключите его
 стандартным способом (`#include "interval.h"`).
+
+**Вариант 2.**
+
+Выполните
+```bash
+git clone https://github.com/Fedorrracora/mathInterval --recurse-submodules
+cd mathInterval
+mkdir build && cd build
+cmake ..
+make
+sudo make install
+```
+
+После этого библиотека будет стоять в системе полноценно.
+
+Теперь будет работать `#include <interval.h>`, и копировать файл внутрь проекта не придётся.
 
 ### Python
 
+**Вариант 1.**
+
+Используйте стандартный пакетный менеджер pip.
 ```bash
 pip install mathInterval
 ```
 
-Так же, вы можете собрать и установить библиотеку вручную:
+**Вариант 2.**
 
 > ⚠️ Перед сборкой убедитесь, что установлен модуль **build** для `pip`:
 > ```bash
 > pip install build
 > ```
 
+Выполните
 ```bash
 git clone https://github.com/Fedorrracora/mathInterval --recurse-submodules
 cd mathInterval
 ./load_stubgen.sh
 python -m build
 pip install dist/*.whl
-```
-
-### Совет:
-
-Чтобы собрать универсальный wheel, можно использовать:
-
-```bash
-cibuildwheel --platform auto
 ```
 
 ## Использование

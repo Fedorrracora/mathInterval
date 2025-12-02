@@ -25,35 +25,55 @@ In C++, each function is documented directly in the header
 
 ## Installation
 
+Note that the installation method for C++ will only put the library for C++,
+method for Python - only for Python.
+
 ### C++
 
-Copy the `interval.h` file to your project and include it
+**Variant 1.**
+
+Copy the `src/interval.h` file to your project and include it
 using standard C++ mechanisms (`#include "interval.h"`).
+
+**Variant 2.**
+
+Run
+```bash
+git clone https://github.com/Fedorrracora/mathInterval --recurse-submodules
+cd mathInterval
+mkdir build && cd build
+cmake ..
+make
+sudo make install
+```
+
+After that, the library will be fully installed in the system.
+
+Now `#include <interval.h>` will work, and you won't have to copy the file into the project.
 
 ### Python
 
-The package may be downloaded on PyPI. Also, you can build
-and install library manually:
+**Variant 1.**
+
+Use standard pip package manager.
+```bash
+pip install mathInterval
+```
+
+**Variant 2.**
 
 > ⚠️ Before building, make sure that the **build** module for `pip` is installed:
 > ```bash
 > pip install build
 > ```
 
+Run
 ```bash
 git clone https://github.com/Fedorrracora/mathInterval --recurse-submodules
 cd mathInterval
 ./load_stubgen.sh
 python -m build
 pip install dist/*.whl
-```
-
-### Tip:
-
-To build a universal wheel you may use:
-
-```bash
-cibuildwheel --platform auto
 ```
 
 ## Usage
