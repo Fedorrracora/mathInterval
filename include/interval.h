@@ -25,6 +25,8 @@ namespace interval {
             static constexpr bool is_arithmetic_v = std::is_arithmetic_v<T>;
             template <typename T>
             static constexpr bool is_integral_v = std::is_integral_v<T>;
+            template <typename T>
+            static constexpr bool is_string_v = std::is_same_v<std::string, T>;
         };
         /// type detects as int
         struct int_type_policy : detail::type_policy {
@@ -32,6 +34,8 @@ namespace interval {
             static constexpr bool is_arithmetic_v = true;
             template <typename>
             static constexpr bool is_integral_v = true;
+            template <typename>
+            static constexpr bool is_string_v = false;
         };
         /// type detects as float
         struct float_type_policy : detail::type_policy {
@@ -39,6 +43,17 @@ namespace interval {
             static constexpr bool is_arithmetic_v = true;
             template <typename>
             static constexpr bool is_integral_v = false;
+            template <typename>
+            static constexpr bool is_string_v = false;
+        };
+        /// type detects as string
+        struct string_type_policy : detail::type_policy {
+            template <typename>
+            static constexpr bool is_arithmetic_v = false;
+            template <typename>
+            static constexpr bool is_integral_v = false;
+            template <typename>
+            static constexpr bool is_string_v = true;
         };
         /// type detects as unknown
         struct unknown_type_policy : detail::type_policy {
@@ -46,6 +61,8 @@ namespace interval {
             static constexpr bool is_arithmetic_v = false;
             template <typename>
             static constexpr bool is_integral_v = false;
+            template <typename>
+            static constexpr bool is_string_v = false;
         };
     } // policy
 
@@ -841,13 +858,15 @@ namespace interval {
         }
 
 
-        [[nodiscard]] static std::string spec_to_string(const T &a) requires (!std::is_same_v<std::string, T>) {
+        [[nodiscard]] static std::string spec_to_string(const T &a) requires (!type_policy::template is_string_v<T>) {
             std::stringstream ss; // emulate standard output
             ss << a;
             return ss.str();
         }
-        [[nodiscard]] static std::string spec_to_string(const std::string &a) {
-            return "\"" + a + "\""; // for strings
+        [[nodiscard]] static std::string spec_to_string(const T &a) requires (type_policy::template is_string_v<T>) {
+            std::stringstream ss; // emulate standard output
+            ss << '"' << a << '"'; // for strings
+            return ss.str();
         }
 
         [[nodiscard]] std::set<std::pair<inner_type, inner_type>, pair_less>::iterator
@@ -894,7 +913,7 @@ namespace interval {
 
         [[nodiscard]] static std::optional<std::string> get_any_in // for string
                 (const std::set<std::pair<std::pair<int, std::string>, std::pair<int, std::string>>, pair_less> &a)
-                    requires std::is_same_v<std::string, T> {
+                    requires type_policy::template is_string_v<T> {
             for (const auto &[fst, snd] : a) {
                 if (fst.first == 0 && snd.first == 2) return "aboba"; // (-INF; +INF) -> "aboba"
                 if (fst.first == 0 && snd.first == 1 && snd.second > "a") return "a";
@@ -912,7 +931,7 @@ namespace interval {
 
         [[nodiscard]] static std::optional<T> get_any_in // non-number types
         (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>, pair_less> &a)
-                    requires (!std::is_same_v<std::string, T> and !type_policy::template is_arithmetic_v<T>) {
+                    requires (!type_policy::template is_string_v<T> and !type_policy::template is_arithmetic_v<T>) {
             if (a.size() == 1 && a.begin()->first.first == 0 && a.begin()->second.first == 2) return T{};
             return std::nullopt; // for unknown type I don`t know what I need to do
         }

@@ -3,8 +3,7 @@
 # Core Objects
 
 ## C++
-### interval::interval\<T\>
-
+### interval::interval\<T, [policy]\>
 **Description:** Stores a set of points and intervals. Supports open, closed, and infinite boundaries.
 * The type T must have a comparison operator `<`
 
@@ -13,23 +12,16 @@
 * `interval::minimal<T>()` — negative infinity.
 * `interval::maximal<T>()` — positive infinity.
 
-## Python
-### Interval
+### namespace interval::policy::
+**Description:** namespace for processing policies. They are described below.
 
+## Python
+### Interval([policy])
 **Description:** Stores a set of points and intervals. Supports open, closed, and infinite boundaries.
 * Can contain any data type, but all used objects must support the `<` operator.
 
-### Interval_int
-**Description:** Same as Interval, but accepts only integer numeric types.
-Due to this, additional operations are available.
-
-### Interval_float
-**Description:** Same as Interval, but accepts only floating-point numeric types.
-Due to this, additional operations are available.
-
-### Interval_str
-**Description:** Same as Interval, but accepts only strings.
-Almost useless, but has its own built-in generator for the `any` function.
+### namespace policy.
+**Description:** namespace for processing policies. They are described below.
 
 ---
 
@@ -37,7 +29,7 @@ Almost useless, but has its own built-in generator for the `any` function.
 
 | Operation in C++                                                   | Operation in Python                               | Complexity | Description                                                                                                                                                                                            |
 |--------------------------------------------------------------------|---------------------------------------------------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Creation `interval::interval<T>`                                   | Creation Interval (any variant)                   | `O(1)`     | —                                                                                                                                                                                                      |
+| Creation `interval::interval<T, [policy]>`                         | Creation `Interval(policy)`                       | `O(1)`     | —                                                                                                                                                                                                      |
 | Separate classes `interval::minimal<T>` and `interval::maximal<T>` | `minimal` and `maximal` (static class attributes) | `O(1)`     | Represent −∞ and +∞. They can be used in any function of the object.                                                                                                                                   |
 | Operators `==` and `!=`                                            | Operators `==` and `!=`                           | `O(n)`     | Compare intervals (comparing different Interval variants in Python is not allowed).                                                                                                                    |
 | `add_interval(x, y)`, `remove_interval(x, y)`                      | `add_interval(x, y)`, `remove_interval(x, y)`     | `O(log n)` | Add or remove an interval (note that interval boundaries are not included). Return true if the set changes. Note that the added interval must be valid in length (x <= y).                             |
@@ -50,7 +42,7 @@ Almost useless, but has its own built-in generator for the `any` function.
 | `in(x)` and `issubset(x)` (x - another set)                        | Operator `in` and `issubset(x)` (x - another set) | `O(n)`     | Return true if the current set is a subset of the given set (x).                                                                                                                                       |
 | `issuperset(x)` (x - another set)                                  | `issuperset(x)` (x - another set)                 | `O(n)`     | Return true if the current set is a superset of the given set (x).                                                                                                                                     |
 | `isdisjoint(x)` (x - another set)                                  | `isdisjoint(x)` (x - another set)                 | `O(n)`     | Return true if the current set has no common points with the given set (x).                                                                                                                            |
-| `points_only()`                                                    | `points_only()`                                   | `O(1)`     | Return true if the current set contains only individual points (an empty set also returns true).                                                                                                       |
+| `points_only()`                                                    | `points_only()`                                   | `O(1)`     | Return true if the current set contains only points (an empty set also returns true).                                                                                                                  |
 | Operators `+` and `\|`                                             | Operators `+` and `\|`                            | `O(n)`     | Generate the union of sets.                                                                                                                                                                            |
 | Operators `+=` and `\|=`                                           | Operators `+=` and `\|=`                          | `O(n)`     | Generate the union of sets, storing the result in the first set.                                                                                                                                       |
 | Operator `-` between two sets                                      | Operator `-` between two sets                     | `O(n)`     | Generate the difference of sets.                                                                                                                                                                       |
@@ -65,20 +57,20 @@ Almost useless, but has its own built-in generator for the `any` function.
 ---
 
 # Operations Available Only for Numeric Sets
-* In C++: `T` - numeric type (`std::is_arithmetic_v<T>` is true)
-* In Python: `Interval_int` and `Interval_float`
+* In C++: `T` - numeric type (defined by policies (described below))
+* In Python: defined by policies (described below)
 * Complexity of all operations: `O(n)`
 
-| Operation in C++                                   | Operation in Python                                                 | Description                                                                                                                                                                                                                                                                                                          |
-|----------------------------------------------------|---------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Operators `+` and `-` between a set and a number   | Operators `+` and `-` between a set and a number                    | Generate a set where elements of the current set are shifted by ±x (each point y in the set is mapped to a point equal to y ± x).                                                                                                                                                                                    |
-| Operators `+=` and `-=` between a set and a number | Operators `+=` and `-=` between a set and a number                  | Generate a set where elements of the current set are shifted by ±x (each point y in the set is mapped to a point equal to y ± x), storing the result in the first set.                                                                                                                                               |
-| Operator `*` between a set and a number            | Operator `*` between a set and a number                             | Generate a set where elements of the current set are multiplied by x (each point y in the set is mapped to a point equal to y * x). Supports x <= 0.                                                                                                                                                                 |
-| Operator `*=` between a set and a number           | Operator `*=` between a set and a number                            | Generate a set where elements of the current set are multiplied by x (each point y in the set is mapped to a point equal to y * x), storing the result in the first set. Supports x <= 0.                                                                                                                            |
-| Operator `/` between a set and a number            | Operator `/` in `Interval_float`; Operator `//` in `Interval_int`   | Generate a set where elements of the current set are divided by x (each point y in the set is mapped to a point equal to y / x). Supports x < 0. Division by 0 is not allowed.                                                                                                                                       |
-| Operator `/=` between a set and a number           | Operator `/=` in `Interval_float`; Operator `//=` in `Interval_int` | Generate a set where elements of the current set are divided by x (each point y in the set is mapped to a point equal to y / x), storing the result in the first set. Supports x < 0. Division by 0 is not allowed.                                                                                                  |
-| Operator `%` between a set and a number            | Operator `%` between a set and a number                             | Works only in integer sets (`std::is_integral_v<T>` is true in C++, `Interval_int` in Python). Generates a set where elements of the current set are replaced with the remainder of division by x (each point y in the set is mapped to a point equal to y % x). x must be > 0.                                      |
-| Operator `%=` between a set and a number           | Operator `%=` between a set and a number                            | Works only in integer sets (`std::is_integral_v<T>` is true in C++, `Interval_int` in Python). Generates a set where elements of the current set are replaced with the remainder of division by x (each point y in the set is mapped to a point equal to y % x), storing the result in the first set. x must be > 0. |
+| Operation in C++                                   | Operation in Python                                                 | Description                                                                                                                                                                                                                                                             |
+|----------------------------------------------------|---------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Operators `+` and `-` between a set and a number   | Operators `+` and `-` between a set and a number                    | Generate a set where elements of the current set are shifted by ±x (each point y in the set is mapped to a point equal to y ± x).                                                                                                                                       |
+| Operators `+=` and `-=` between a set and a number | Operators `+=` and `-=` between a set and a number                  | Generate a set where elements of the current set are shifted by ±x (each point y in the set is mapped to a point equal to y ± x), storing the result in the first set.                                                                                                  |
+| Operator `*` between a set and a number            | Operator `*` between a set and a number                             | Generate a set where elements of the current set are multiplied by x (each point y in the set is mapped to a point equal to y * x). Supports x <= 0.                                                                                                                    |
+| Operator `*=` between a set and a number           | Operator `*=` between a set and a number                            | Generate a set where elements of the current set are multiplied by x (each point y in the set is mapped to a point equal to y * x), storing the result in the first set. Supports x <= 0.                                                                               |
+| Operator `/` between a set and a number            | Operator `/` in `Interval_float`; Operator `//` in `Interval_int`   | Generate a set where elements of the current set are divided by x (each point y in the set is mapped to a point equal to y / x). Supports x < 0. Division by 0 is not allowed.                                                                                          |
+| Operator `/=` between a set and a number           | Operator `/=` in `Interval_float`; Operator `//=` in `Interval_int` | Generate a set where elements of the current set are divided by x (each point y in the set is mapped to a point equal to y / x), storing the result in the first set. Supports x < 0. Division by 0 is not allowed.                                                     |
+| Operator `%` between a set and a number            | Operator `%` between a set and a number                             | Works only in integer sets (defined by policies). Generates a set where elements of the current set are replaced with the remainder of division by x (each point y in the set is mapped to a point equal to y % x). x must be > 0.                                      |
+| Operator `%=` between a set and a number           | Operator `%=` between a set and a number                            | Works only in integer sets (defined by policies). Generates a set where elements of the current set are replaced with the remainder of division by x (each point y in the set is mapped to a point equal to y % x), storing the result in the first set. x must be > 0. |
 
 ---
 
@@ -95,9 +87,9 @@ In C++ only: can be called with `any(true)`. The difference is described below.
 In C++, returns `std::optional<T>`, as a point may not always be found. In Python, `None` is returned in such cases.
 
 - If a known point exists, it will be returned.
-- In C++ only: If the set equals the interval (-INF, +INF) and `any()` (not `any(true)`) is called, `T{}` will be returned.
+- In C++ only: If the set equals the interval (-INF, +INF) and simple `any()` is called, `T{}` will be returned. If `any(true)` is called, `std::nullopt` will be returned.
 - If the set is numeric, the built-in algorithm will search for points within the set's intervals.
-- If the set is a string set, the built-in algorithm will search for points within the set's intervals. Strings must contain only lowercase English letters.
+- In C++ only: If the set is a string set, the built-in algorithm will search for points within the set's intervals. Strings must contain only lowercase English letters.
 
 ### any(func1, func2, func3, x)
 
@@ -171,26 +163,43 @@ Additional conditions:
 
 ---
 
+# Policy
+
+## Type policies
+**Description:** Allows you to override how the type detects.
+* The availability of additional operations depends on this. They are described above.
+* In C++, the policy goes as the second argument in the template when creating an object. In Python, policy comes as a single element in the constructor.
+* In C++, this can be useful for wrapper classes. The object must have all the same operations as the type that T claims to be.
+* In Python, type policies play a more important role. If you apply a policy of a certain type to an `interval()` object, it will only be able to have that type inside. Only in this case, additional operations will be available.
+* You need to understand that type policies exist only for convenience. Any operation that depends on type policies can be done through advanced operations (described above).
+
+### Default values
+* In C++ - `interval::policy::standard_type_policy`.
+* In Python - `policy.UnknownTypePolicy`.
+
+| Operation in C++                         | Operation in Python        | Description                                                                                                                                                            |
+|------------------------------------------|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `interval::policy::standard_type_policy` | -                          | A standard policy for type handling. That the type is numeric is defined by `std::<T>is_arithmetic_v`. That the type is integer is defined by `std::<T>is_integral_v`. |
+| `interval::policy::unknown_type_policy`  | `policy.UnknownTypePolicy` | In C++, the policy says that the type is unknown. It will not have numeric set operations. In Python, it is used as the default.                                       |
+| `interval::policy::int_type_policy`      | `policy.IntTypePolicy`     | In C++, the policy says that the type is a numeric integer. In Python, it opens up the possibilities of numeric integer sets.                                          |
+| `interval::policy::float_type_policy`    | `policy.FloatTypePolicy`   | In C++, the policy says that the type is a numeric non-integer. In Python, it opens up the possibilities of numeric non-integer sets.                                  |
+| `interval::policy::string_type_policy`   | -                          | In C++, the policy says that the type is a string. Almost useless, but has a built-in generator for `any()`                                                            |
+
 # Exceptions and Errors
 ## C++
 ### _custom_transfer(func1, func2)
-
 - `std::range_error` if the format of inner_type is violated.
 
 ### add_interval(x, y) and remove_interval(x, y)
-
 - `std::range_error` if the interval has a negative length.
 
 ### add_point(x) and remove_point(x)
-
 - `std::range_error` if the point is +INF or -INF.
 
 ### Operators % and %=
-
 - `std::logic_error` if the modulus coefficient is <= 0.
 
 ### in(x, y)
-
 - `std::logic_error` if the interval has a negative length.
 
 ## Python
@@ -202,11 +211,14 @@ Additional conditions:
 ### If contained objects do not have the `<` operator:
 - `TypeError`
 
+### If you pass an unknown object to the `Interval([policy])` constructor, rather than type policy
+- `TypeError`
+
 ---
 
 # Example
 ## C++
-```cpp
+```c++
 #include <iostream>
 #include <optional>
 #include "interval.h"
@@ -276,10 +288,10 @@ int main() {
 ## Python
 
 ```python
-from mathInterval import Interval, Interval_int
+from mathInterval import Interval, policy
 
 # Adding points and intervals
-a = Interval_int()
+a = Interval(policy.IntTypePolicy)
 print(a)  # *Empty*
 a.add_point(5)
 print(a)  # {5}
@@ -290,7 +302,7 @@ print(a)  # (1; 3) U {5}
 a.add_interval(a.minimal, 2)
 print(a)  # (-INF; 3) U {5}
 
-b = Interval_int()
+b = Interval(policy.IntTypePolicy)
 b.add_interval(2, 10)
 
 c = a * b
@@ -302,7 +314,7 @@ c = Interval()
 c.add_interval(1, 4)
 # This is one of the implementations of the any() function for integers.
 # It will always return some point in the set if it exists.
-# Note - it works in the Interval class (not Interval_int)
+# Note - it works in the Interval class without adding IntTypePolicy
 d = c.any(lambda x: x - 1,
           lambda x: x + 1,
           lambda x, y: x + 1 if x + 1 < y else None,
@@ -328,10 +340,10 @@ print(c)  # (-INF; 3) U {9} U (12; 50] U (56; 70) U {71} U [90; +INF)
 # x = Interval()
 # x.add_interval(0, 100)
 # c &= x
-# Note - it works in the Interval class (not Interval_int)
+# Note - it works in the Interval class without adding IntTypePolicy
 # However, the implementation written above will not work,
-# since the Interval class does not support the += operation.
-# It is only available in Interval_int and Interval_float
+# because the Interval class does not support the += operation.
+# It is only available only when applying numeric policies
 c = c.custom_transfer(lambda x: x + 4, 0, 100)
 print(c)  # (0; 7) U {13} U (16; 54] U (60; 74) U {75} U [94; 100)
 ```

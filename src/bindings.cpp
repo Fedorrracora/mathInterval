@@ -57,11 +57,8 @@ The function can return `None`, because the returning value does not always exis
 
 - If there is any point, it will be returned.
 - If there is an interval `(-INF; +INF)`, the function will return `None`.
-- If it is `Interval_int` or `Interval_float`,
+- If activated `policy.IntTypePolicy` or `policy.FloatTypePolicy`,
   a smart algorithm will try to find any number in the intervals.
-- If it is `Interval_str`,
-  a smart algorithm will try to find any string in the intervals,
-  considering that a string may contain only **capital English letters**.
 - If it is standard `Interval`, or if the algorithm does not find any element in data,
   the function will return `None`.
 
