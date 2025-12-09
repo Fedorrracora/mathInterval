@@ -103,6 +103,7 @@ install(DIRECTORY src/_mathInterval/ DESTINATION ${SKBUILD_PROJECT_NAME}/_mathIn
 
 # C++
 else()
+message(STATUS "Building done. Now run `sudo make install`")
 install(FILES include/interval.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mathInterval)
 install(TARGETS mathInterval EXPORT mathIntervalTargets)
 install(EXPORT mathIntervalTargets FILE mathIntervalTargets.cmake NAMESPACE mathInterval:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)

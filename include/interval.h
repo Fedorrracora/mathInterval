@@ -667,12 +667,36 @@ namespace interval {
             return ret;
         }
 
+        // void invert_in(interval &buf) const {
+        //     buf.add_interval_in(minimal<T>().data(), maximal<T>().data());
+        //     for (auto &it : intervals) {
+        //         buf.remove_interval(it.first, it.second);
+        //     }
+        //     for (auto &it : points) buf.remove_point(it);
+        // }
+
         void invert_in(interval &buf) const {
-            buf.add_interval_in(minimal<T>().data(), maximal<T>().data());
-            for (auto &it : intervals) {
-                buf.remove_interval(it.first, it.second);
+            auto it1 = intervals.begin(); // (a; b)
+            auto it2 = points.begin(); // {point}
+            auto from = minimal<T>::data();
+            while (it1 != intervals.end() || it2 != points.end()) {
+                if (it2 == points.end() || (it1 != intervals.end() && it1->first < *it2)) { // a < b < point (because point cannot be in (a, b)) -> (from; a) U (b; ...)
+                    if (from < it1->first) {
+                        buf.intervals.insert(buf.intervals.end(), {from, it1->first});
+                        if (it1->first != minimal<T>::data()) buf.points.insert(buf.points.end(), it1->first);
+                    }
+                    if (it1->second != maximal<T>::data() && (it2 == points.end() || *it2 != it1->second))
+                        buf.points.insert(buf.points.end(), it1->second);
+                    from = it1->second;
+                    ++it1;
+                }
+                else { // a > point -> (from; point) U (point; a)
+                    if (from < *it2) buf.intervals.insert(buf.intervals.end(), {from, *it2});
+                    from = *it2;
+                    ++it2;
+                }
             }
-            for (auto &it : points) buf.remove_point(it);
+            if (from < maximal<T>::data()) buf.intervals.insert(buf.intervals.end(), {from, maximal<T>::data()});
         }
 
         void plus_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
