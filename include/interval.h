@@ -302,7 +302,10 @@ namespace interval {
         }
 
         /// return string with all data in mathematical style
-        [[nodiscard]] std::string print() const { return print_in(); }
+        [[nodiscard]] std::string to_string() const { return print_in(); }
+
+        /// return string with all data in mathematical style
+        [[nodiscard]] [[deprecated]] std::string print() const { return print_in(); }
 
         /**
         ### any

@@ -9,6 +9,6 @@ int main() {
     a.add_point(-5);
     a.add_point(0);
     a.add_point(0);
-    std::cout << a.print();
+    std::cout << a.to_string();
     return 0;
 }

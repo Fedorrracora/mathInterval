@@ -19,7 +19,7 @@ void bind_interval(py::module_ &m, const char* class_name) {
 
     py::class_<Interval> cls(m, class_name);
     cls.def(py::init<>())
-        .def("__str__", &Interval::print, "return string with all data in mathematical style")
+        .def("__str__", &Interval::to_string, "return string with all data in mathematical style")
         .def("__contains__", &Interval::issubset, py::arg("a"), "return true if this multitude is subset of another multitude, else return false")
         .def("__contains__", static_cast<bool (Interval::*)(const typename Interval::inp_type&) const>(&Interval::in), py::arg("a"), "return true if this point in multitude, else return false")
         .def("contains", static_cast<bool (Interval::*)(const typename Interval::inp_type&, const typename Interval::inp_type&) const>(&Interval::in), py::arg("a"), py::arg("b"), "return true if interval (a, b) in multitude, else return false")
