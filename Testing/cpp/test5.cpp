@@ -2,52 +2,59 @@
 #include <interval.h>
 #include <verifier.h>
 
-TEST(ONE_SET, in_inverse_points_only) {
+TEST(ONE_SET, inverse) {
     interval::interval<int> a;
     verify::line_checker line(verify::read_file("answers/test5.a"));
-    a.add_interval(1, 3);
-    ASSERT_TRUE(!a.points_only()) << "error in step 1: points_only on one interval\n";
-    a.remove_interval(1, 2);
-    a.remove_interval(2, 3);
-    ASSERT_TRUE(verify::same(a.to_string(), line(), true, true, false) && a.points_only()) << "error in step 2: points_only on one point\n";
-    a.add_interval(interval::minimal<int>(), 2);
-    ASSERT_TRUE(!a.points_only()) << "error in step 3: points_only on interval with -INF\n";
-    a.add_interval(2, interval::maximal<int>());
-    ASSERT_TRUE(verify::same(a.to_string(), line(), true, true, false) && !a.points_only() && a.full()) << "error in step 4: points_only on interval with -INF\n";
-    a = a.inverse();
-    ASSERT_TRUE(verify::same(a.to_string(), line(), true, true, false) && a.points_only() && !a.full()) << "error in step 5: inverse (-INF; +INF)\n";
-    a.add_interval(1, 10);
-    a.add_interval(100, interval::maximal<int>());
-    a.add_point(10);
-    a.add_point(28);
-    a.add_point(28);
-    EXPECT_TRUE(!a.in(-3) &&
-                !a.in(1) &&
-                 a.in(3) &&
-                 a.in(10) &&
-                !a.in(14) &&
-                 a.in(28) &&
-                !a.in(-7) &&
-                !a.in(100) &&
-                 a.in(1000) &&
-                !a.in(interval::maximal<int>()) &&
-                !a.in(interval::minimal<int>())) << "error in step 6: in with point\n";
-    a = a.inverse();
-    EXPECT_TRUE( verify::same(a.to_string(), line(), true, true, false) &&
-                 a.in(3, 3) &&
-                 a.in(10, 28) &&
-                 a.in(10, 27) &&
-                 a.in(11, 28) &&
-                 a.in(11, 27) &&
-                !a.in(9, 28) &&
-                !a.in(10, 29) &&
-                !a.in(9, 29) &&
-                 a.in(-1000, 1) &&
-                 a.in(interval::minimal<int>(), -100) &&
-                !a.in(interval::minimal<int>(), interval::maximal<int>()) &&
-                !a.in(15, 55) &&
-                !a.in(1000, 1001) &&
-                 a.in(1000, 1000) &&
-                 a.in(1, 1)) << "error in step 7: in with interval after inverse\n";
 
+    a.add_interval(1, 2);
+    EXPECT_TRUE(verify::same(a.inverse().to_string(), line(), true, true, false)) << "error in step 1: inverse one interval\n";
+    a.clear();
+
+    a.add_point(5);
+    EXPECT_TRUE(verify::same(a.inverse().to_string(), line(), true, true, false)) << "error in step 2: inverse one point\n";
+    a.clear();
+
+    a.add_interval(1, 10);
+    a.add_point(1);
+    a.add_point(10);
+    EXPECT_TRUE(verify::same(a.inverse().to_string(), line(), true, true, false)) << "error in step 3: inverse one interval with points around\n";
+    a.clear();
+
+    EXPECT_TRUE(verify::same(a.inverse().to_string(), line(), true, true, false)) << "error in step 4: inverse empty interval\n";
+
+    a.add_interval(interval::minimal<int>(), interval::maximal<int>());
+    EXPECT_TRUE(verify::same(a.inverse().to_string(), line(), true, true, false)) << "error in step 5: inverse interval (-INF; +INF)\n";
+    a.clear();
+
+    a.add_point(-3);
+    a.add_point(0);
+    a.add_point(1);
+    a.add_interval(1, 2);
+    a.add_point(2);
+    a.add_interval(5, 10);
+    a.add_point(10);
+    a.add_point(11);
+    a.add_interval(11, 100);
+    a.add_interval(105, 110);
+    a.add_point(1000);
+    a.add_interval(1001, 1002);
+    a.add_interval(1002, 1003);
+    a.add_interval(1003, 1004);
+    a.add_point(1005);
+    a.add_interval(1006, 1007);
+    a.add_point(1007);
+    a.add_point(1008);
+    a.add_interval(1009, 1010);
+    a.add_interval(1012, 1013);
+    a.add_interval(1015, 1016);
+    EXPECT_TRUE(verify::same(a.inverse().to_string(), line(), true, true, false)) << "error in step 5: inverse many random points and intervals\n";
+    a.clear();
+
+    a.add_interval(interval::minimal<int>(), 10);
+    EXPECT_TRUE(verify::same(a.inverse().to_string(), line(), true, true, false)) << "error in step 5: inverse many random points and intervals\n";
+    a.clear();
+
+    a.add_interval(10, interval::maximal<int>());
+    EXPECT_TRUE(verify::same(a.inverse().to_string(), line(), true, true, false)) << "error in step 5: inverse many random points and intervals\n";
+    a.clear();
 }

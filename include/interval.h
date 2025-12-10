@@ -301,6 +301,14 @@ namespace interval {
             return buf;
         }
 
+        /// returns the multitude that is the inverse of the given one
+        /// same as inverse(), but takes longer
+        [[nodiscard]] [[deprecated]] interval _inverse() const {
+            interval buf;
+            _invert_in(buf);
+            return buf;
+        }
+
         /// return string with all data in mathematical style
         [[nodiscard]] std::string to_string() const { return print_in(); }
 
@@ -670,13 +678,13 @@ namespace interval {
             return ret;
         }
 
-        // void invert_in(interval &buf) const {
-        //     buf.add_interval_in(minimal<T>().data(), maximal<T>().data());
-        //     for (auto &it : intervals) {
-        //         buf.remove_interval(it.first, it.second);
-        //     }
-        //     for (auto &it : points) buf.remove_point(it);
-        // }
+        void _invert_in(interval &buf) const {
+            buf.add_interval_in(minimal<T>().data(), maximal<T>().data());
+            for (auto &it : intervals) {
+                buf.remove_interval(it.first, it.second);
+            }
+            for (auto &it : points) buf.remove_point(it);
+        }
 
         void invert_in(interval &buf) const {
             auto it1 = intervals.begin(); // (a; b)
