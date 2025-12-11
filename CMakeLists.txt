@@ -97,26 +97,42 @@ endif()
 
 # Python
 if(SKBUILD)
-install(TARGETS _mathInterval
-        LIBRARY DESTINATION ${SKBUILD_PROJECT_NAME}
-        ARCHIVE DESTINATION ${SKBUILD_PROJECT_NAME}
-        RUNTIME DESTINATION ${SKBUILD_PROJECT_NAME}
-)
-install(FILES src/__init__.py DESTINATION ${SKBUILD_PROJECT_NAME})
-install(DIRECTORY src/_mathInterval/ DESTINATION ${SKBUILD_PROJECT_NAME}/_mathInterval OPTIONAL)
+    install(TARGETS _mathInterval
+            LIBRARY DESTINATION ${SKBUILD_PROJECT_NAME}
+            ARCHIVE DESTINATION ${SKBUILD_PROJECT_NAME}
+            RUNTIME DESTINATION ${SKBUILD_PROJECT_NAME}
+    )
+    install(FILES src/__init__.py DESTINATION ${SKBUILD_PROJECT_NAME})
+    install(DIRECTORY src/_mathInterval/ DESTINATION ${SKBUILD_PROJECT_NAME}/_mathInterval OPTIONAL)
 
 # C++
 else()
-message(STATUS "Building done. Now run `sudo make install`") # todo
-install(FILES include/interval.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mathInterval)
-install(TARGETS mathInterval EXPORT mathIntervalTargets)
-install(EXPORT mathIntervalTargets FILE mathIntervalTargets.cmake NAMESPACE mathInterval:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
-write_basic_package_version_file(mathIntervalConfigVersion.cmake VERSION 0.4.1 COMPATIBILITY AnyNewerVersion)
-configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/mathIntervalConfig.cmake.in
-                              ${CMAKE_CURRENT_BINARY_DIR}/mathIntervalConfig.cmake
-                              INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
-install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/mathIntervalConfig.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/mathIntervalConfigVersion.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
+    if(TESTING)
+        add_custom_target(final_message ALL
+                COMMAND ${CMAKE_COMMAND} -E echo ""
+                COMMAND ${CMAKE_COMMAND} -E echo "For installing run: sudo make install"
+                COMMAND ${CMAKE_COMMAND} -E echo "For testing run: make test"
+                COMMAND ${CMAKE_COMMAND} -E echo "For C++ only testing run: ./test_target"
+                COMMAND ${CMAKE_COMMAND} -E echo "when you run ./test_target, you can see additional output"
+        )
+        add_dependencies(final_message mathInterval test_target gmock_main gmock)
+    else()
+        add_custom_target(final_message ALL
+                COMMAND ${CMAKE_COMMAND} -E echo ""
+                COMMAND ${CMAKE_COMMAND} -E echo "=== building done ==="
+                COMMAND ${CMAKE_COMMAND} -E echo "Now run: sudo make install"
+        )
+        add_dependencies(final_message mathInterval)
+    endif ()
+    install(FILES include/interval.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mathInterval)
+    install(TARGETS mathInterval EXPORT mathIntervalTargets)
+    install(EXPORT mathIntervalTargets FILE mathIntervalTargets.cmake NAMESPACE mathInterval:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
+    write_basic_package_version_file(mathIntervalConfigVersion.cmake VERSION 0.4.1 COMPATIBILITY AnyNewerVersion)
+    configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/mathIntervalConfig.cmake.in
+                                  ${CMAKE_CURRENT_BINARY_DIR}/mathIntervalConfig.cmake
+                                  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
+    install(FILES
+            ${CMAKE_CURRENT_BINARY_DIR}/mathIntervalConfig.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/mathIntervalConfigVersion.cmake
+            DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
 endif()
