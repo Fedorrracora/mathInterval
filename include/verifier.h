@@ -39,7 +39,7 @@ namespace verify {
         /// get calculated time
         [[nodiscard]] double time() const;
     private:
-        std::chrono::time_point<std::chrono::system_clock> begin_point, end_point;
+        std::chrono::steady_clock::time_point begin_point, end_point;
         double len{};
         bool started = false;
     };

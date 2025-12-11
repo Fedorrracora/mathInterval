@@ -85,9 +85,6 @@ if(TESTING AND NOT SKBUILD)
     target_compile_definitions(test_target PRIVATE ITERATIONS=2500 RANDOM_GENERATOR=100000)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-    add_executable(test_verify Testing/main_test.cpp) # todo: remove
-    target_link_libraries(test_verify verify)
-
     if(BUILD_PYTHON_BINDINGS)
         pybind11_add_module(verify_python src/verifier_bindings.cpp)
         target_link_libraries(verify_python PRIVATE verify)

@@ -8,6 +8,9 @@ int gen_val() {
     return verify::random_int_distribution(-D, D);
 }
 TEST(GENERATOR, inverse) {
+    std::cout << "===== GENERATOR TEST (inverse) =====\n" << std::flush;
+    verify::time_checker checker;
+    checker.start();
     std::cout << "Run " << RANDOM_GENERATOR << " iterations" << std::endl;
     for (auto iter = 0; iter < RANDOM_GENERATOR; ++iter) {
         if (iter % debug_iter == 0) {
@@ -37,4 +40,7 @@ TEST(GENERATOR, inverse) {
         EXPECT_TRUE(verify::same(a.inverse().to_string(), a._inverse().to_string(), true, true, true)) << "bug in :" << a.to_string();
     }
     std::cout << "\rTesting done          \n" << std::flush;
+    checker.stop();
+    std::cout << "Time: " << checker.time() << " sec\n";
+    std::cout << "===== end of GENERATOR TEST (inverse) =====\n\n" << std::flush;
 }

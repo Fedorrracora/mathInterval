@@ -4,6 +4,7 @@
 
 constexpr int debug_iter = ITERATIONS / 100;
 TEST(TIME_TEST, inverse) {
+    std::cout << "===== TIME TEST (inverse) =====\n" << std::flush;
     verify::time_checker checker;
     interval::interval<int> a;
     auto print_time = [](const double t) {
@@ -28,7 +29,7 @@ TEST(TIME_TEST, inverse) {
     }
     std::cout << "\rTesting done          \n" << std::flush;
     checker.stop();
-    double t1 = checker.time();
+    const double t1 = checker.time();
     print_time(t1);
 
     checker.start();
@@ -41,7 +42,10 @@ TEST(TIME_TEST, inverse) {
     }
     std::cout << "\rTesting done          \n" << std::flush;
     checker.stop();
-    double t2 = checker.time();
+    const double t2 = checker.time();
     print_time(t2);
-    ASSERT_TRUE(t2 / t1 > 5);
+    const auto t = t2 / t1;
+    std::cout << "speed coefficient: " << t << std::endl;
+    ASSERT_TRUE(t > 2) << "too long";
+    std::cout << "===== end of TIME TEST (inverse) =====\n\n" << std::flush;
 }

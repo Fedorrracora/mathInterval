@@ -61,13 +61,13 @@ namespace verify {
 
     void time_checker::start() {
         if (started) return;
-        begin_point = std::chrono::high_resolution_clock::now();
+        begin_point = std::chrono::steady_clock::now();
         started = true;
     }
     void time_checker::stop() {
         if (!started) return;
         started = false;
-        end_point = std::chrono::high_resolution_clock::now();
+        end_point = std::chrono::steady_clock::now();
         const std::chrono::duration<double> dur = end_point - begin_point;
         len = dur.count();
     }
