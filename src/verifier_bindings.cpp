@@ -24,4 +24,11 @@ return true if two strings are equal with some filters
     .def(py::init<std::string>(), py::arg("s"))
     .def("__call__", &verify::line_checker::operator(), "gets next line")
     .def_property_readonly("last", [](const verify::line_checker& self) { return std::string(self.last); }, "last read line");
+    py::class_<verify::time_checker>(m, "time_checker", "helps keep track of time")
+    .def(py::init<>())
+    .def("start", &verify::time_checker::start, "start timing")
+    .def("stop", &verify::time_checker::stop, "stop timing. Not work if you did not start")
+    .def("time", &verify::time_checker::time, "get calculated time");
+
+    m.def("random_int_distribution", &verify::random_int_distribution, py::arg("from"), py::arg("to"), "return random value between from and to");
 }

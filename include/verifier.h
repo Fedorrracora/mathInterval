@@ -34,7 +34,7 @@ namespace verify {
     struct time_checker {
         /// start timing
         void start();
-        /// stop timing. Not work if you did not start.
+        /// stop timing. Not work if you did not start
         void stop();
         /// get calculated time
         [[nodiscard]] double time() const;

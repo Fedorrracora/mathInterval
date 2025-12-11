@@ -38,7 +38,7 @@ jobs:
         with:
           files: build/junit-report.xml
 
-  gcc_timer:
+  timer_test:
     needs: test
     name: Testing with ${{ matrix.compiler }} compilator
     runs-on: ubuntu-latest

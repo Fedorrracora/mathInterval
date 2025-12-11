@@ -107,6 +107,7 @@ if(SKBUILD)
 # C++
 else()
     if(TESTING)
+        if (BUILD_PYTHON_BINDINGS)
         add_custom_target(final_message ALL
                 COMMAND ${CMAKE_COMMAND} -E echo ""
                 COMMAND ${CMAKE_COMMAND} -E echo "For installing run: sudo make install"
@@ -114,7 +115,18 @@ else()
                 COMMAND ${CMAKE_COMMAND} -E echo "For C++ only testing run: ./test_target"
                 COMMAND ${CMAKE_COMMAND} -E echo "when you run ./test_target, you can see additional output"
         )
-        add_dependencies(final_message mathInterval test_target gmock_main gmock)
+        add_dependencies(final_message mathInterval test_target gmock_main gmock _mathInterval)
+        else ()
+            add_custom_target(final_message ALL
+                    COMMAND ${CMAKE_COMMAND} -E echo ""
+                    COMMAND ${CMAKE_COMMAND} -E echo "option BUILD_PYTHON_BINDINGS disabled. Python tests were not generated"
+                    COMMAND ${CMAKE_COMMAND} -E echo "For installing run: sudo make install"
+                    COMMAND ${CMAKE_COMMAND} -E echo "For testing run: make test"
+                    COMMAND ${CMAKE_COMMAND} -E echo "For C++ only testing run: ./test_target"
+                    COMMAND ${CMAKE_COMMAND} -E echo "when you run ./test_target, you can see additional output"
+            )
+            add_dependencies(final_message mathInterval test_target gmock_main gmock _mathInterval)
+        endif()
     else()
         add_custom_target(final_message ALL
                 COMMAND ${CMAKE_COMMAND} -E echo ""
