@@ -45,6 +45,54 @@ jobs:
         with:
           files: build/junit-report.xml
 
+  gcc_timer:
+    needs: test
+    name: Testing with ${{ matrix.compiler }} compilator
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - compiler: gcc
+            CC: gcc
+            CXX: g++
+          - compiler: clang
+            CC: clang
+            CXX: clang++
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build project
+        env:
+          CC: ${{ matrix.CC }}
+          CXX: ${{ matrix.CXX }}
+        run: |
+          mkdir build
+          cd build
+          cmake -DTESTING=ON -DTESTING_BAR=OFF ..
+          make
+
+      - name: Testing
+        id: test
+        working-directory: build
+        run: ./test_target --gtest_filter="TIME_TEST*" --gtest_brief=1 | tee ctest_output.txt
+
+      - name: Write Summary
+        env:
+          $COMPILER: ${{ matrix.compiler }}
+        run: |
+          echo "## 🧪 CTest Results ($COMPILER)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Output" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat build/ctest_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          
+
   pybind11_stubgen:
     name: Build pybind11 stubgen
     runs-on: ubuntu-latest
