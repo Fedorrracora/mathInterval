@@ -72,8 +72,10 @@ jobs:
         run: ./test_target --gtest_filter="TIME_TEST*" --gtest_brief=1 | tee ctest_output.txt
 
       - name: Write Summary
+        env:
+          $COMPILER: ${{ matrix.compiler }}
         run: |
-          echo "## 🧪 CTest Results" >> $GITHUB_STEP_SUMMARY
+          echo "## 🧪 CTest Results ($COMPILER)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Output" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
