@@ -10,6 +10,7 @@ TEST(GENERATOR, inverse) {
     for (auto iter = 0; iter < RANDOM_GENERATOR; ++iter) {
         prog.call(iter);
         auto a = verifier_tests::generate(25);
+        // ReSharper disable once CppDeprecatedEntity
         EXPECT_TRUE(verify::same(a.inverse().to_string(), a._inverse().to_string(), true, true, true)) << "bug in :" << a.to_string();
     }
 }

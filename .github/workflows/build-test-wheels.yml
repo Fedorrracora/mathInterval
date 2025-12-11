@@ -69,7 +69,7 @@ jobs:
       - name: Testing
         id: test
         working-directory: build
-        run: ctest -V -R TIME_TEST. | tee ctest_output.txt
+        run: ./test_target --gtest_filter="TIME_TEST*" --gtest_brief=1 | tee ctest_output.txt
 
       - name: Write Summary
         run: |

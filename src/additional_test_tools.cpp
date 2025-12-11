@@ -34,13 +34,16 @@ namespace verifier_tests {
     }
 
     interval::interval<int> many_data(const int len, const bool verbose) {
+        verify::time_checker checker;
         if (verbose) std::cout << "Generating large amounts of data (" << len << " elems)" << std::endl;
+        checker.start();
         interval::interval<int> a;
         for (auto i = 0; i < len; ++i) {
             a.add_interval(i * 2, i * 2 + 1);
             a.add_point(i * 2);
         }
-        if (verbose) std::cout << "Generation done." << std::endl;
+        checker.stop();
+        if (verbose) std::cout << "Generation done (" << checker.time() << " sec)" << std::endl;
         return a;
     }
 
@@ -72,10 +75,12 @@ namespace verifier_tests {
 #endif
     }
     print_information::progress_t::~progress_t() {
-        std::cout << "\rTesting done          \n" << std::flush;
         if (t) {
             checker.stop();
-            std::cout << "Time: " << checker.time() << " sec\n" << std::flush;
+            std::cout << "\rTesting done (" << checker.time() << " sec)   \n" << std::flush;
+        }
+        else {
+            std::cout << "\rTesting done          \n" << std::flush;
         }
     }
 
