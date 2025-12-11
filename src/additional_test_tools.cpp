@@ -65,9 +65,11 @@ namespace verifier_tests {
         if (t) checker.start();
     }
     void print_information::progress_t::call(const int iter) const {
+#ifndef DISABLE_PROGRESS_BAR
         if (iter % debug_iter == 0) {
             std::cout << "\rTesting (" << iter / debug_iter << "/100)" << std::flush;
         }
+#endif
     }
     print_information::progress_t::~progress_t() {
         std::cout << "\rTesting done          \n" << std::flush;

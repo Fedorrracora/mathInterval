@@ -9,6 +9,7 @@ include(CMakePackageConfigHelpers)
 
 option(TESTING "Enable testing" OFF)
 option(BUILD_PYTHON_BINDINGS "Build Python bindings for development" OFF)
+option(TESTING_BAR "Enable progress bar in testing" ON)
 
 add_library(mathInterval INTERFACE)
 
@@ -66,6 +67,9 @@ if(TESTING AND NOT SKBUILD)
     add_library(additional_test_tools STATIC src/additional_test_tools.cpp)
     target_include_directories(additional_test_tools PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
     target_compile_definitions(additional_test_tools PRIVATE MAX_VALUE=1000000)
+    if(NOT TESTING_BAR)
+        target_compile_definitions(additional_test_tools PRIVATE DISABLE_PROGRESS_BAR)
+    endif ()
 
     add_executable(test_target
             Testing/cpp/test1.cpp
