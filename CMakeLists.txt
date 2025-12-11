@@ -77,9 +77,11 @@ if(TESTING AND NOT SKBUILD)
             Testing/cpp/test4.cpp
             Testing/cpp/test5.cpp
             Testing/cpp/test6.cpp
-            Testing/cpp/test7.cpp) # todo: add tests
+            Testing/cpp/test7.cpp
+            Testing/cpp/time_test1.cpp) # todo: add tests
     target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE verify)
     target_compile_options(test_target PRIVATE -Wno-deprecated-declarations)
+    target_compile_definitions(test_target PRIVATE ITERATIONS=2500)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
     add_executable(test_verify Testing/main_test.cpp) # todo: remove
@@ -105,7 +107,7 @@ install(DIRECTORY src/_mathInterval/ DESTINATION ${SKBUILD_PROJECT_NAME}/_mathIn
 
 # C++
 else()
-message(STATUS "Building done. Now run `sudo make install`")
+message(STATUS "Building done. Now run `sudo make install`") # todo
 install(FILES include/interval.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mathInterval)
 install(TARGETS mathInterval EXPORT mathIntervalTargets)
 install(EXPORT mathIntervalTargets FILE mathIntervalTargets.cmake NAMESPACE mathInterval:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)

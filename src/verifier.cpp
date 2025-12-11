@@ -59,4 +59,21 @@ namespace verify {
         if (!std::getline(contain, last_str)) throw std::runtime_error("Could not read line");
         return last_str;
     }
+
+    void time_checker::start() {
+        if (started) return;
+        begin_point = std::chrono::high_resolution_clock::now();
+        started = true;
+    }
+    void time_checker::stop() {
+        if (!started) return;
+        started = false;
+        end_point = std::chrono::high_resolution_clock::now();
+        const std::chrono::duration<double> dur = end_point - begin_point;
+        len = dur.count();
+    }
+    double time_checker::time() const {
+        return len;
+    }
+
 }

@@ -2,6 +2,7 @@
 #define MATHINTERVAL_VERIFIER_H
 #include <string>
 #include <sstream>
+#include <chrono>
 
 namespace verify {
     /// return string with content of file
@@ -26,6 +27,20 @@ namespace verify {
     private:
         std::stringstream contain;
         std::string last_str;
+    };
+
+    /// helps keep track of time
+    struct time_checker {
+        /// start timing
+        void start();
+        /// stop timing. Not work if you did not start.
+        void stop();
+        /// get calculated time
+        [[nodiscard]] double time() const;
+    private:
+        std::chrono::time_point<std::chrono::system_clock> begin_point, end_point;
+        double len{};
+        bool started = false;
     };
 }
 #endif //MATHINTERVAL_VERIFIER_H

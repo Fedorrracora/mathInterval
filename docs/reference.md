@@ -52,7 +52,7 @@
 | Operator `^` between two sets                                      | Operator `^` between two sets                     | `O(n)`     | Generate the symmetric difference of sets.                                                                                                                                                             |
 | Operator `^=` between two sets                                     | Operator `^=` between two sets                    | `O(n)`     | Generate the symmetric difference of sets, storing the result in the first set.                                                                                                                        |
 | `inverse()`                                                        | `inverse()`                                       | `O(n)`     | Return a set containing all points except those in the current set (difference of the set (-INF, +INF) and the current set).                                                                           |
-| `print()`                                                          | `str()` (external built-in operator)              | `O(n)`     | Return a string representation of the current set (mathematical notation). In C++, the stored type must have the \<\< operator for `std::ostream`. In Python, a type must have the `__str__` operator. |
+| `to_string()`                                                      | `str()` (external built-in operator)              | `O(n)`     | Return a string representation of the current set (mathematical notation). In C++, the stored type must have the \<\< operator for `std::ostream`. In Python, a type must have the `__str__` operator. |
 
 ---
 
