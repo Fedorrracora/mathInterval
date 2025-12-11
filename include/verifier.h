@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <chrono>
+#include <random>
 
 namespace verify {
     /// return string with content of file
@@ -42,5 +43,10 @@ namespace verify {
         double len{};
         bool started = false;
     };
+
+    inline std::mt19937 rnd(std::chrono::steady_clock::now().time_since_epoch().count());
+
+    /// return random value between from and to
+    int random_int_distribution(int from, int to);
 }
 #endif //MATHINTERVAL_VERIFIER_H

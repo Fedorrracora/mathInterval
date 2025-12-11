@@ -78,10 +78,11 @@ if(TESTING AND NOT SKBUILD)
             Testing/cpp/test5.cpp
             Testing/cpp/test6.cpp
             Testing/cpp/test7.cpp
-            Testing/cpp/time_test1.cpp) # todo: add tests
+            Testing/cpp/time_test1.cpp
+            Testing/cpp/generator_test1.cpp)
     target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE verify)
     target_compile_options(test_target PRIVATE -Wno-deprecated-declarations)
-    target_compile_definitions(test_target PRIVATE ITERATIONS=2500)
+    target_compile_definitions(test_target PRIVATE ITERATIONS=2500 RANDOM_GENERATOR=100000)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
     add_executable(test_verify Testing/main_test.cpp) # todo: remove

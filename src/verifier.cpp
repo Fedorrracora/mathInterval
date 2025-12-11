@@ -1,6 +1,5 @@
 #include <verifier.h>
 #include <fstream>
-#include <sstream>
 
 namespace verify {
     namespace {
@@ -76,4 +75,9 @@ namespace verify {
         return len;
     }
 
+    int random_int_distribution(const int from, const int to) {
+        if (from == to) return from;
+        std::uniform_int_distribution dist(from, to);
+        return dist(rnd);
+    }
 }

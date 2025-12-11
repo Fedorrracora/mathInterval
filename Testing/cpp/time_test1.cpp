@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 #include <interval.h>
 #include <verifier.h>
-#include <chrono>
 
 constexpr int debug_iter = ITERATIONS / 100;
 TEST(TIME_TEST, inverse) {
