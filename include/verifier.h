@@ -1,5 +1,5 @@
-#ifndef MATHINTERVAL_VERIFIER_H
-#define MATHINTERVAL_VERIFIER_H
+#ifndef VERIFIER_H
+#define VERIFIER_H
 #include <string>
 #include <sstream>
 #include <chrono>
@@ -49,4 +49,4 @@ namespace verify {
     /// return random value between from and to
     int random_int_distribution(int from, int to);
 }
-#endif //MATHINTERVAL_VERIFIER_H
+#endif //VERIFIER_H

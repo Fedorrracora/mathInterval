@@ -8,7 +8,6 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 option(TESTING "Enable testing" OFF)
-option(CONSOLE "Enable console executable" OFF)
 option(BUILD_PYTHON_BINDINGS "Build Python bindings for development" OFF)
 
 add_library(mathInterval INTERFACE)
@@ -17,12 +16,6 @@ target_include_directories(mathInterval INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
-
-if(CONSOLE)
-    add_executable(TEST test/test.cpp)
-    target_link_libraries(TEST PRIVATE mathInterval)
-    add_executable(mathIntervalConsole test/sample.cpp)
-endif()
 
 # python
 if(SKBUILD OR BUILD_PYTHON_BINDINGS)
@@ -70,6 +63,10 @@ if(TESTING AND NOT SKBUILD)
     add_library(verify SHARED src/verifier.cpp)
     target_include_directories(verify PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+    add_library(additional_test_tools STATIC src/additional_test_tools.cpp)
+    target_include_directories(additional_test_tools PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    target_compile_definitions(additional_test_tools PRIVATE MAX_VALUE=1000000)
+
     add_executable(test_target
             Testing/cpp/test1.cpp
             Testing/cpp/test2.cpp
@@ -79,8 +76,8 @@ if(TESTING AND NOT SKBUILD)
             Testing/cpp/test6.cpp
             Testing/cpp/test7.cpp
             Testing/cpp/time_test1.cpp
-            Testing/cpp/generator_test1.cpp)
-    target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE verify)
+            Testing/cpp/test_generator1.cpp)
+    target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE verify PRIVATE additional_test_tools)
     target_compile_options(test_target PRIVATE -Wno-deprecated-declarations)
     target_compile_definitions(test_target PRIVATE ITERATIONS=2500 RANDOM_GENERATOR=100000)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
