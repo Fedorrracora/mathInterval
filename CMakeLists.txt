@@ -59,16 +59,12 @@ if(TESTING AND NOT SKBUILD)
     FetchContent_MakeAvailable(googletest)
     include(GoogleTest)
 
-    add_library(verify SHARED src/verifier.cpp)
+    add_library(verify SHARED src/verifier.cpp src/additional_test_tools.cpp)
     target_include_directories(verify PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-    add_library(test_tools STATIC src/additional_test_tools.cpp)
-    target_include_directories(test_tools PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-    target_link_libraries(test_tools PUBLIC verify)
-    target_compile_definitions(test_tools PRIVATE MAX_VALUE=1000000)
+    target_compile_definitions(verify PRIVATE MAX_VALUE=1000000)
 
     if(NOT TESTING_BAR)
-        target_compile_definitions(test_tools PRIVATE DISABLE_PROGRESS_BAR)
+        target_compile_definitions(verify PRIVATE DISABLE_PROGRESS_BAR)
     endif ()
 
     add_executable(test_target
@@ -81,7 +77,7 @@ if(TESTING AND NOT SKBUILD)
             Testing/cpp/test7.cpp
             Testing/cpp/time_test1.cpp
             Testing/cpp/test_generator1.cpp)
-    target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE mathInterval PRIVATE test_tools)
+    target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE mathInterval PRIVATE verify)
     target_compile_options(test_target PRIVATE -Wno-deprecated-declarations)
     target_compile_definitions(test_target PRIVATE ITERATIONS=2500 RANDOM_GENERATOR=100000)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
@@ -114,12 +110,12 @@ else()
 
     if(TESTING)
         if (BUILD_PYTHON_BINDINGS)
-            set(FINAL_DEPS mathInterval test_target test_tools gmock_main gmock _mathInterval)
+            set(FINAL_DEPS mathInterval test_target verify gmock_main gmock _mathInterval)
         else ()
             list(APPEND FINAL_MSG
                     "option BUILD_PYTHON_BINDINGS disabled. Python tests were not generated"
             )
-            set(FINAL_DEPS mathInterval test_target test_tools gmock_main gmock)
+            set(FINAL_DEPS mathInterval test_target verify gmock_main gmock)
         endif()
         list(APPEND FINAL_MSG
                 "For testing run: make test"
