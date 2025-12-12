@@ -33,17 +33,13 @@ namespace verifier_tests {
         return a;
     }
 
-    interval::interval<int> many_data(const int len, const bool verbose) {
-        verify::time_checker checker;
-        if (verbose) std::cout << "Generating large amounts of data (" << len << " elems)" << std::endl;
-        checker.start();
+    interval::interval<int> many_data(const int len) {
+        progress prog(len, "Generating", true);
         interval::interval<int> a;
         for (auto i = 0; i < len; ++i) {
             a.add_interval(i * 2, i * 2 + 1);
             a.add_point(i * 2);
         }
-        checker.stop();
-        if (verbose) std::cout << "Generation done (" << checker.time() << " sec)" << std::endl;
         return a;
     }
 
@@ -55,32 +51,32 @@ namespace verifier_tests {
     }
 
 
-    void print_information::setup_iterations(const int iter) {
-        def_iterations = iter;
-    }
-    print_information::progress_t print_information::progress(const std::string &s, bool timer) const {
-        return {def_iterations, s, timer};
-    }
 
-
-    print_information::progress_t::progress_t(const int iter, const std::string &s, const bool timer) : iterations(iter), debug_iter(iter / 100), t(timer) {
-        std::cout << "Run " << iterations << " iterations " << s << std::endl;
+    progress::progress(const int iter, std::string s, const bool timer, const bool timer_verbose) : iterations(iter), debug_iter(iter / 100), t(timer), t_verbose(timer_verbose), master_name(std::move(s)) {
         if (t) checker.start();
     }
-    void print_information::progress_t::call(const int iter) const {
+    void progress::call(const int iter) const {
 #ifndef DISABLE_PROGRESS_BAR
         if (iter % debug_iter == 0) {
-            std::cout << "\rTesting (" << iter / debug_iter << "/100)" << std::flush;
+            std::cout << '\r' << master_name << ": " << iter / debug_iter << "/100" << std::flush;
         }
 #endif
     }
-    print_information::progress_t::~progress_t() {
+    double progress::stop() {
+        checker.stop();
+        return checker.time();
+    }
+
+    progress::~progress() {
         if (t) {
             checker.stop();
-            std::cout << "\rTesting done (" << checker.time() << " sec)   \n" << std::flush;
+            if (t_verbose)
+                std::cout << '\r' << master_name << ": done (" << checker.time() << " sec, "
+                        << checker.time() / iterations << " sec for iteration)\n" << std::flush;
+            else std::cout << '\r' << master_name << ": done (" << checker.time() << " sec)   \n" << std::flush;
         }
         else {
-            std::cout << "\rTesting done          \n" << std::flush;
+            std::cout << '\r' << master_name << ": done          \n" << std::flush;
         }
     }
 

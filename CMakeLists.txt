@@ -125,7 +125,7 @@ else()
                     COMMAND ${CMAKE_COMMAND} -E echo "For C++ only testing run: ./test_target"
                     COMMAND ${CMAKE_COMMAND} -E echo "when you run ./test_target, you can see additional output"
             )
-            add_dependencies(final_message mathInterval test_target gmock_main gmock _mathInterval)
+            add_dependencies(final_message mathInterval test_target gmock_main gmock)
         endif()
     else()
         add_custom_target(final_message ALL

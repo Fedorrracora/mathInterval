@@ -5,8 +5,7 @@
 
 TEST(GENERATOR, inverse) {
     auto info = verifier_tests::print_information("GENERATOR TEST (inverse)");
-    info.setup_iterations(RANDOM_GENERATOR);
-    const auto prog = info.progress("", true);
+    const auto prog = verifier_tests::progress(RANDOM_GENERATOR, "generating && testing", true);
     for (auto iter = 0; iter < RANDOM_GENERATOR; ++iter) {
         prog.call(iter);
         auto a = verifier_tests::generate(25);

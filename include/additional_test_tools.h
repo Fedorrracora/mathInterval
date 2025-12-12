@@ -6,7 +6,23 @@ namespace verifier_tests {
     /// generating random data
     interval::interval<int> generate(int max_len, int probability_coefficient = 15);
 
-    interval::interval<int> many_data(int len, bool verbose = false);
+    interval::interval<int> many_data(int len);
+
+    /// print progress bar (s - master name)
+    struct progress {
+        progress(int iter, std::string s, bool timer = false, bool timer_verbose = false);
+        ~progress();
+        /// must be called in each iteration
+        void call(int iter) const;
+        /// stop timer and get the time
+        double stop();
+    private:
+        const int iterations;
+        const int debug_iter;
+        verify::time_checker checker;
+        const bool t, t_verbose;
+        const std::string master_name;
+    };
 
     /// show additional info
     struct print_information {
@@ -16,23 +32,6 @@ namespace verifier_tests {
         explicit print_information(std::string s);
         ~print_information();
 
-        /// for progress
-        void setup_iterations(int iter);
-
-        struct progress_t {
-            progress_t(int iter, const std::string &s, bool timer = false);
-            ~progress_t();
-            /// must be called in each iteration
-            void call(int iter) const;
-        private:
-            int iterations;
-            int debug_iter;
-            verify::time_checker checker;
-            bool t;
-        };
-
-        /// print progress bar (s - additional write)
-        [[nodiscard]] progress_t progress(const std::string &s, bool timer = false) const;
     private:
         int def_iterations = 0;
     };
