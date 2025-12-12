@@ -8,6 +8,14 @@ namespace verifier_tests {
 
     interval::interval<int> many_data(int len);
 
+    /// simple struct for fixed size printing of float numbers
+    struct fixed_printing {
+        explicit fixed_printing(const double val) : val(val) {}
+        double val;
+    };
+
+    std::ostream& operator << (std::ostream& os, const fixed_printing& v);
+
     /// print progress bar (s - master name)
     struct progress {
         progress(int iter, std::string s, bool timer = false, bool timer_verbose = false);

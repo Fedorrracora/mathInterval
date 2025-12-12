@@ -7,10 +7,15 @@
 #else
 #define CONTROL_CHAR "\r"
 #endif
+constexpr int PRECISION = 10;
 
 namespace verifier_tests {
     namespace {
         int gen_val() { return verify::random_int_distribution(-MAX_VALUE, MAX_VALUE); }
+    }
+
+    std::ostream& operator << (std::ostream& os, const fixed_printing& v) {
+        return os << std::fixed << std::setprecision(PRECISION) << v.val;
     }
 
     interval::interval<int> generate(const int max_len, const int probability_coefficient) {
@@ -39,7 +44,7 @@ namespace verifier_tests {
     }
 
     interval::interval<int> many_data(const int len) {
-        progress prog(len, "Generating", true);
+        progress prog(len, "Generating " + std::to_string(len) + " elems of data", true);
         interval::interval<int> a;
         for (auto i = 0; i < len; ++i) {
             a.add_interval(i * 2, i * 2 + 1);
@@ -76,9 +81,9 @@ namespace verifier_tests {
         if (t) {
             checker.stop();
             if (t_verbose)
-                std::cout << CONTROL_CHAR << master_name << ": done (" << checker.time() << " sec, "
-                        << checker.time() / iterations << " sec for iteration)\n" << std::flush;
-            else std::cout << CONTROL_CHAR << master_name << ": done (" << checker.time() << " sec)   \n" << std::flush;
+                std::cout << CONTROL_CHAR << master_name << ": done (" << fixed_printing(checker.time()) << " sec, "
+                        << fixed_printing(checker.time() / iterations) << " sec for iteration)\n" << std::flush;
+            else std::cout << CONTROL_CHAR << master_name << ": done (" << fixed_printing(checker.time()) << " sec)   \n" << std::flush;
         }
         else {
             std::cout << CONTROL_CHAR << master_name << ": done          \n" << std::flush;
