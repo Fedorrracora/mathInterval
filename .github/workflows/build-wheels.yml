@@ -80,7 +80,7 @@ jobs:
 
       - name: Write Summary
         env:
-          $COMPILER: ${{ matrix.compiler }}
+          COMPILER: ${{ matrix.compiler }}
         run: |
           echo "## 🧪 CTest Results ($COMPILER)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY

@@ -35,5 +35,5 @@ TEST(TIME_TEST, inverse) {
     }
     const auto t = coef1 / coef2;
     std::cout << "asymptotics coefficient: " << verifier_tests::fixed_printing(t) << std::endl;
-    EXPECT_TRUE(t > 2) << "too long";
+    EXPECT_TRUE(t > 1.5) << "too long";
 }

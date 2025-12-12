@@ -20,8 +20,6 @@ target_include_directories(mathInterval INTERFACE
 
 # python
 if(SKBUILD OR BUILD_PYTHON_BINDINGS)
-    #set(PYBIND11_USE_ABI3 ON)
-    #set(PYBIND11_ABI_VERSION 3)
     find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
 
     if(TESTING)
