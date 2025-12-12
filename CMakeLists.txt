@@ -106,35 +106,38 @@ if(SKBUILD)
 
 # C++
 else()
+    set(FINAL_MSG
+            ""
+            "=== building done ==="
+            "For installing run: make install \\(Root privileges are required\\)"
+    )
+
     if(TESTING)
         if (BUILD_PYTHON_BINDINGS)
-        add_custom_target(final_message ALL
-                COMMAND ${CMAKE_COMMAND} -E echo ""
-                COMMAND ${CMAKE_COMMAND} -E echo "For installing run: sudo make install"
-                COMMAND ${CMAKE_COMMAND} -E echo "For testing run: make test"
-                COMMAND ${CMAKE_COMMAND} -E echo "For C++ only testing run: ./test_target"
-                COMMAND ${CMAKE_COMMAND} -E echo "when you run ./test_target, you can see additional output"
-        )
-        add_dependencies(final_message mathInterval test_target test_tools gmock_main gmock _mathInterval)
+            set(FINAL_DEPS mathInterval test_target test_tools gmock_main gmock _mathInterval)
         else ()
-            add_custom_target(final_message ALL
-                    COMMAND ${CMAKE_COMMAND} -E echo ""
-                    COMMAND ${CMAKE_COMMAND} -E echo "option BUILD_PYTHON_BINDINGS disabled. Python tests were not generated"
-                    COMMAND ${CMAKE_COMMAND} -E echo "For installing run: sudo make install"
-                    COMMAND ${CMAKE_COMMAND} -E echo "For testing run: make test"
-                    COMMAND ${CMAKE_COMMAND} -E echo "For C++ only testing run: ./test_target"
-                    COMMAND ${CMAKE_COMMAND} -E echo "when you run ./test_target, you can see additional output"
+            list(APPEND FINAL_MSG
+                    "option BUILD_PYTHON_BINDINGS disabled. Python tests were not generated"
             )
-            add_dependencies(final_message mathInterval test_target test_tools gmock_main gmock)
+            set(FINAL_DEPS mathInterval test_target test_tools gmock_main gmock)
         endif()
-    else()
-        add_custom_target(final_message ALL
-                COMMAND ${CMAKE_COMMAND} -E echo ""
-                COMMAND ${CMAKE_COMMAND} -E echo "=== building done ==="
-                COMMAND ${CMAKE_COMMAND} -E echo "Now run: sudo make install"
+        list(APPEND FINAL_MSG
+                "For testing run: make test"
+                "For C++ only testing run: ./test_target"
+                "when you run ./test_target, you can see additional output"
         )
-        add_dependencies(final_message mathInterval)
+    else()
+        set(FINAL_DEPS mathInterval)
     endif ()
+
+    set(FINAL_CMD "")
+    foreach(line IN LISTS FINAL_MSG)
+        list(APPEND FINAL_CMD COMMAND ${CMAKE_COMMAND} -E echo "${line}")
+    endforeach()
+
+    add_custom_target(final_message ALL ${FINAL_CMD})
+    add_dependencies(final_message ${FINAL_DEPS})
+
     install(FILES include/interval.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mathInterval)
     install(TARGETS mathInterval EXPORT mathIntervalTargets)
     install(EXPORT mathIntervalTargets FILE mathIntervalTargets.cmake NAMESPACE mathInterval:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
