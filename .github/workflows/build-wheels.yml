@@ -47,7 +47,7 @@ jobs:
 
   timer_test:
     needs: test
-    name: Testing with ${{ matrix.compiler }} compilator
+    name: Testing with ${{ matrix.compiler }} compiler
     runs-on: ubuntu-latest
     strategy:
       matrix:

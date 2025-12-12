@@ -2,6 +2,11 @@
 #include <verifier.h>
 #include <iostream>
 #include <utility>
+#ifdef DISABLE_PROGRESS_BAR
+#define CONTROL_CHAR ""
+#else
+#define CONTROL_CHAR "\r"
+#endif
 
 namespace verifier_tests {
     namespace {
@@ -71,12 +76,12 @@ namespace verifier_tests {
         if (t) {
             checker.stop();
             if (t_verbose)
-                std::cout << '\r' << master_name << ": done (" << checker.time() << " sec, "
+                std::cout << CONTROL_CHAR << master_name << ": done (" << checker.time() << " sec, "
                         << checker.time() / iterations << " sec for iteration)\n" << std::flush;
-            else std::cout << '\r' << master_name << ": done (" << checker.time() << " sec)   \n" << std::flush;
+            else std::cout << CONTROL_CHAR << master_name << ": done (" << checker.time() << " sec)   \n" << std::flush;
         }
         else {
-            std::cout << '\r' << master_name << ": done          \n" << std::flush;
+            std::cout << CONTROL_CHAR << master_name << ": done          \n" << std::flush;
         }
     }
 
