@@ -64,11 +64,13 @@ if(TESTING AND NOT SKBUILD)
     add_library(verify SHARED src/verifier.cpp)
     target_include_directories(verify PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-    add_library(additional_test_tools STATIC src/additional_test_tools.cpp)
-    target_include_directories(additional_test_tools PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-    target_compile_definitions(additional_test_tools PRIVATE MAX_VALUE=1000000)
+    add_library(test_tools STATIC src/additional_test_tools.cpp)
+    target_include_directories(test_tools PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    target_link_libraries(test_tools PUBLIC verify)
+    target_compile_definitions(test_tools PRIVATE MAX_VALUE=1000000)
+
     if(NOT TESTING_BAR)
-        target_compile_definitions(additional_test_tools PRIVATE DISABLE_PROGRESS_BAR)
+        target_compile_definitions(test_tools PRIVATE DISABLE_PROGRESS_BAR)
     endif ()
 
     add_executable(test_target
@@ -81,7 +83,7 @@ if(TESTING AND NOT SKBUILD)
             Testing/cpp/test7.cpp
             Testing/cpp/time_test1.cpp
             Testing/cpp/test_generator1.cpp)
-    target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE verify PRIVATE additional_test_tools)
+    target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE mathInterval PRIVATE test_tools)
     target_compile_options(test_target PRIVATE -Wno-deprecated-declarations)
     target_compile_definitions(test_target PRIVATE ITERATIONS=2500 RANDOM_GENERATOR=100000)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
@@ -115,7 +117,7 @@ else()
                 COMMAND ${CMAKE_COMMAND} -E echo "For C++ only testing run: ./test_target"
                 COMMAND ${CMAKE_COMMAND} -E echo "when you run ./test_target, you can see additional output"
         )
-        add_dependencies(final_message mathInterval test_target gmock_main gmock _mathInterval)
+        add_dependencies(final_message mathInterval test_target test_tools gmock_main gmock _mathInterval)
         else ()
             add_custom_target(final_message ALL
                     COMMAND ${CMAKE_COMMAND} -E echo ""
@@ -125,7 +127,7 @@ else()
                     COMMAND ${CMAKE_COMMAND} -E echo "For C++ only testing run: ./test_target"
                     COMMAND ${CMAKE_COMMAND} -E echo "when you run ./test_target, you can see additional output"
             )
-            add_dependencies(final_message mathInterval test_target gmock_main gmock)
+            add_dependencies(final_message mathInterval test_target test_tools gmock_main gmock)
         endif()
     else()
         add_custom_target(final_message ALL
