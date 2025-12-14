@@ -1,5 +1,6 @@
 #include <verifier.h>
 #include <fstream>
+#include <ranges>
 
 namespace verify {
     namespace {
@@ -58,6 +59,10 @@ namespace verify {
         if (!std::getline(contain, last_str)) throw std::runtime_error("Could not read line");
         return last_str;
     }
+    std::optional<std::string> line_checker::get() {
+        if (!std::getline(contain, last_str)) return std::nullopt;
+        return last_str;
+    }
 
     void time_checker::start() {
         if (started) return;
@@ -79,5 +84,35 @@ namespace verify {
         if (from == to) return from;
         std::uniform_int_distribution dist(from, to);
         return dist(rnd);
+    }
+
+    std::size_t in(const std::string &where, std::string what, const char ch) {
+        const auto what_size = what.size();
+        what += ch;
+        what += where;
+        std::vector<std::size_t> zf(what.size());
+        for (long i = 1, l = 0, r = 0; i < what.size(); ++i) {
+            zf[i] = std::max(0l, std::min(r - i, static_cast<long>(zf[i - l])));
+            while (i + zf[i] < what.size() && what[zf[i]] == what[i + zf[i]])
+                ++zf[i];
+            if (maxof(r, i + zf[i]))
+                l = i;
+            if (zf[i] == what_size) return i - what_size - 1;
+        }
+        return -1;
+    }
+
+    bool can_cast_to_digit(const std::string &s, std::string_view v) {
+        for (auto &i : s) {
+            if ('0' <= i && i <= '9') continue;
+            bool cont = false;
+            for (auto &j : v)
+                if (i == j) {
+                    cont = true;
+                    break;
+                }
+            if (!cont) return false;
+        }
+        return true;
     }
 }

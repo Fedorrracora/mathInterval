@@ -4,6 +4,7 @@
 #include <sstream>
 #include <chrono>
 #include <random>
+#include <optional>
 
 namespace verify {
     /// return string with content of file
@@ -25,6 +26,8 @@ namespace verify {
         explicit line_checker(std::string s);
         /// gets next line
         std::string operator()();
+        /// gets next line. If you run out of data, std::nullopt is returned
+        std::optional<std::string> get();
     private:
         std::stringstream contain;
         std::string last_str;
@@ -48,5 +51,42 @@ namespace verify {
 
     /// return random value between from and to
     int random_int_distribution(int from, int to);
+
+    /// max= (a = std::max(a, b)). If a changes, return true
+    template <typename T, typename U>
+        [[maybe_unused]] constexpr bool maxof(T &a, U&& b) {
+        return a < std::forward<U>(b) && (a = std::forward<U>(b), true);
+    }
+    /// min= (a = std::min(a, b)). If a changes, return true
+    template <typename T, typename U>
+    [[maybe_unused]] constexpr bool minof(T &a, U&& b) {
+        return a > std::forward<U>(b) && (a = std::forward<U>(b), true);
+    }
+
+    /// checks for the presence of a substring in the string
+    [[nodiscard]] std::size_t in(const std::string &where, std::string what, char ch = '#');
+
+    /// helps to take into account the error when working with float numbers
+    template <typename T>
+    struct near {
+        T value, accuracy;
+        near(T value, T accuracy) : value(value), accuracy(accuracy) {}
+        [[nodiscard]] constexpr bool operator==(const near&a) const { return std::abs(value - a.value) < accuracy + a.accuracy; }
+        [[nodiscard]] constexpr bool operator< (const near&a) const { return value - a.value < accuracy + a.accuracy; }
+        [[nodiscard]] constexpr bool operator> (const near&a) const { return accuracy + a.accuracy < value - a.value; }
+        [[nodiscard]] constexpr bool operator<=(const near&a) const { return value - a.value <= accuracy + a.accuracy; }
+        [[nodiscard]] constexpr bool operator>=(const near&a) const { return accuracy + a.accuracy <= value - a.value; }
+        [[nodiscard]] constexpr bool operator!=(const near&a) const { return std::abs(value - a.value) >= accuracy + a.accuracy; }
+
+        [[nodiscard]] constexpr bool operator==(const T&a) const { return std::abs(value - a) < accuracy; }
+        [[nodiscard]] constexpr bool operator< (const T&a) const { return value - a < accuracy; }
+        [[nodiscard]] constexpr bool operator> (const T&a) const { return accuracy < value - a; }
+        [[nodiscard]] constexpr bool operator<=(const T&a) const { return value - a <= accuracy; }
+        [[nodiscard]] constexpr bool operator>=(const T&a) const { return accuracy <= value - a; }
+        [[nodiscard]] constexpr bool operator!=(const T&a) const { return std::abs(value - a) >= accuracy; }
+    };
+
+    /// Does what is written. v - skip able chars
+    bool can_cast_to_digit(const std::string &s, std::string_view v);
 }
 #endif //VERIFIER_H

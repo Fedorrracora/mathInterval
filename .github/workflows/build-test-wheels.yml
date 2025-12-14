@@ -63,13 +63,15 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -DTESTING=ON -DTESTING_BAR=OFF ..
+          cmake -DTESTING=ON -DTESTING_BAR=OFF -DFORMATTER=ON ..
           make
 
       - name: Testing
         id: test
         working-directory: build
-        run: ./test_target --gtest_filter="TIME_TEST*" --gtest_brief=1 | tee ctest_output.txt
+        run: |
+          ./test_target --gtest_filter="TIME_TEST*" --gtest_brief=1 | tee ctest_output.txt
+          ./formatter ctest_output.txt | tee formatter_output.txt
 
       - name: Write Summary
         env:
@@ -79,9 +81,9 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Output" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat build/ctest_output.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+#          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat build/formatter_output.txt >> $GITHUB_STEP_SUMMARY
+#          echo '```' >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
 

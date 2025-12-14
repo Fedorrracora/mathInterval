@@ -23,6 +23,7 @@ return true if two strings are equal with some filters
     py::class_<verify::line_checker>(m, "line_checker", "helps to read a long string by lines")
     .def(py::init<std::string>(), py::arg("s"))
     .def("__call__", &verify::line_checker::operator(), "gets next line")
+    .def("get", &verify::line_checker::get, "gets next line. If you run out of data, None is returned")
     .def_property_readonly("last", [](const verify::line_checker& self) { return std::string(self.last); }, "last read line");
     py::class_<verify::time_checker>(m, "time_checker", "helps keep track of time")
     .def(py::init<>())
@@ -31,4 +32,5 @@ return true if two strings are equal with some filters
     .def("time", &verify::time_checker::time, "get calculated time");
 
     m.def("random_int_distribution", &verify::random_int_distribution, py::arg("from"), py::arg("to"), "return random value between from and to");
+    m.def("in", &verify::in, py::arg("where"), py::arg("what"), py::arg("ch"), "checks for the presence of a substring in the string");
 }

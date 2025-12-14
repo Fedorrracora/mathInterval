@@ -6,7 +6,7 @@ namespace verifier_tests {
     /// generating random data
     interval::interval<int> generate(int max_len, int probability_coefficient = 15);
 
-    interval::interval<int> many_data(int len);
+    std::pair<interval::interval<int>, double> many_data(int len);
 
     /// simple struct for fixed size printing of float numbers
     struct fixed_printing {
@@ -43,6 +43,9 @@ namespace verifier_tests {
     private:
         int def_iterations = 0;
     };
+
+    /// format vector NxM with std::string to table (md format). Vector must have one line without elems (HEADER_LINE)
+    std::string to_table(std::vector<std::vector<std::string>> &vec, int HEADER_LINE = 1);
 }
 
 #endif //MATHINTERVAL_ADDITIONAL_TEST_TOOLS_H

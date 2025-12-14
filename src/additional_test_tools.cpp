@@ -43,14 +43,14 @@ namespace verifier_tests {
         return a;
     }
 
-    interval::interval<int> many_data(const int len) {
+    std::pair<interval::interval<int>, double> many_data(const int len) {
         progress prog(len, "Generating " + std::to_string(len) + " elems of data", true);
         interval::interval<int> a;
         for (auto i = 0; i < len; ++i) {
             a.add_interval(i * 2, i * 2 + 1);
             a.add_point(i * 2);
         }
-        return a;
+        return {a, prog.stop()};
     }
 
     print_information::print_information(std::string s) : test_name(std::move(s)) {
@@ -90,4 +90,32 @@ namespace verifier_tests {
         }
     }
 
+    std::string to_table(std::vector<std::vector<std::string>> &vec, const int HEADER_LINE) {
+        vec[HEADER_LINE].resize(vec.front().size());
+        for (auto depth = 0; depth < vec.front().size(); ++depth) {
+            std::size_t max = 0;
+            for (auto &i : vec) {
+                verify::maxof(max, i[depth].size());
+            }
+            for (auto &i : vec) {
+                while (i[depth].size() < max) i[depth] += ' ';
+            }
+            for (auto &i : vec[HEADER_LINE][depth]) {
+                i = '-';
+            }
+        }
+        std::string out;
+        for (auto i = 0; i < vec.size(); ++i) {
+            const char control_char = i == HEADER_LINE ? '-':' ';
+            out += '|';
+            for (const auto &j : vec[i]) {
+                out += control_char;
+                out += j;
+                out += control_char;
+                out += '|';
+            }
+            out += '\n';
+        }
+        return out;
+    }
 }

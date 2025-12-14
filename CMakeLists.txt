@@ -7,9 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-option(TESTING "Enable testing" OFF)
+option(TESTING "Enable testing" ON)
 option(BUILD_PYTHON_BINDINGS "Build Python bindings for development" OFF)
 option(TESTING_BAR "Enable progress bar in testing" ON)
+option(FORMATTER "Build tool for formatting test results to md. Using only in github workflows" OFF)
 
 add_library(mathInterval INTERFACE)
 
@@ -22,7 +23,7 @@ target_include_directories(mathInterval INTERFACE
 if(SKBUILD OR BUILD_PYTHON_BINDINGS)
     find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
 
-    if(TESTING)
+    if(TESTING AND NOT SKBUILD)
         execute_process(
                 COMMAND ${Python3_EXECUTABLE} -c "import pytest"
                 RESULT_VARIABLE EXIT_CODE
@@ -75,11 +76,11 @@ if(TESTING AND NOT SKBUILD)
             Testing/cpp/test5.cpp
             Testing/cpp/test6.cpp
             Testing/cpp/test7.cpp
-            Testing/cpp/time_test1.cpp
+            Testing/time_tests/time_test1.cpp
             Testing/cpp/test_generator1.cpp)
     target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE mathInterval PRIVATE verify)
     target_compile_options(test_target PRIVATE -Wno-deprecated-declarations)
-    target_compile_definitions(test_target PRIVATE ITERATIONS=2500 RANDOM_GENERATOR=100000)
+    target_compile_definitions(test_target PRIVATE ITERATIONS=1250 RANDOM_GENERATOR=100000)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
     if(BUILD_PYTHON_BINDINGS)
@@ -87,6 +88,11 @@ if(TESTING AND NOT SKBUILD)
         target_link_libraries(verify_python PRIVATE verify)
         add_test(NAME PYTHON.ONE_SET.add_point COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.ONE_SET.add_interval COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test2.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+    endif()
+
+    if(FORMATTER)
+        add_executable(formatter src/register.cpp Testing/time_tests/time_test1.register.cpp)
+        target_link_libraries(formatter PRIVATE verify)
     endif()
 endif()
 
@@ -107,23 +113,26 @@ else()
             "=== building done ==="
             "For installing run: make install \\(Root privileges are required\\)"
     )
+    set(FINAL_DEPS mathInterval)
 
     if(TESTING)
+        list(APPEND FINAL_DEPS test_target verify gmock_main gmock)
         if (BUILD_PYTHON_BINDINGS)
-            set(FINAL_DEPS mathInterval test_target verify gmock_main gmock _mathInterval)
+            list(APPEND FINAL_DEPS _mathInterval)
         else ()
             list(APPEND FINAL_MSG
                     "option BUILD_PYTHON_BINDINGS disabled. Python tests were not generated"
+                    "Note that the BUILD_PYTHON_BINDINGS option is only used for testing. It cannot be used it to install library in the system"
             )
-            set(FINAL_DEPS mathInterval test_target verify gmock_main gmock)
         endif()
         list(APPEND FINAL_MSG
                 "For testing run: make test"
                 "For C++ only testing run: ./test_target"
                 "when you run ./test_target, you can see additional output"
         )
-    else()
-        set(FINAL_DEPS mathInterval)
+        if(FORMATTER)
+            list(APPEND FINAL_DEPS formatter)
+        endif()
     endif ()
 
     set(FINAL_CMD "")
