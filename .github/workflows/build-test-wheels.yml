@@ -69,7 +69,6 @@ jobs:
       - name: Testing
         working-directory: build
         run: ./test_target --gtest_filter="TIME_TEST*" --gtest_brief=1 | tee ctest_output.txt
-
       - name: Formatting
         working-directory: build
         run: ./formatter ctest_output.txt | tee formatter_output.txt
@@ -82,9 +81,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Output" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-#          echo '```' >> $GITHUB_STEP_SUMMARY
           cat build/formatter_output.txt >> $GITHUB_STEP_SUMMARY
-#          echo '```' >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
 
