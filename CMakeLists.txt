@@ -91,6 +91,7 @@ if(TESTING AND NOT SKBUILD)
     endif()
 
     if(FORMATTER)
+        target_compile_definitions(test_target PRIVATE FORMATTER_ENABLED)
         add_executable(formatter src/register.cpp Testing/time_tests/time_test1.register.cpp)
         target_link_libraries(formatter PRIVATE verify)
     endif()

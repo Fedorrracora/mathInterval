@@ -13,8 +13,8 @@ int main(const int argc, const char *argv[]) {
     bool changed = false;
     while (a != std::nullopt) {
         for (auto i = 0; i < formatter::tests.size(); i++) {
-            if (verify::in(a.value(), "===== " + formatter::tests[i].name) != -1) now = i;
-            if (verify::in(a.value(), "===== end of " + formatter::tests[i].name) != -1) changed = true;
+            if (verify::same(a.value(), "===== " + formatter::tests[i].name + " =====", true, true, false)) now = i;
+            if (verify::same(a.value(), "===== end of " + formatter::tests[i].name + " =====", true, true, false)) changed = true;
         }
         if (changed) {
             std::cout << formatter::tests[now].func(std::nullopt).value();

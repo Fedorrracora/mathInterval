@@ -4,7 +4,6 @@
 std::vector<std::vector<std::string>> vec = {
     {"function"},
     {},
-    {"generating time"},
     {"time of 1000 elems"},
     {"time of 1000 elems (one iteration)"},
     {"time of 10 elems"},
@@ -14,7 +13,6 @@ std::vector<std::vector<std::string>> vec = {
 enum OUTPUT_LINES {
     FUNCTION,
     HEADER,
-    GENERATE_TIME,
     FIRST_TIME,
     FIRST_TIME_ITERATION,
     SECOND_TIME,
@@ -23,7 +21,6 @@ enum OUTPUT_LINES {
 };
 enum LINE_CONFIG {
     LINE_FUNCTION,
-    LINE_GENERATE_TIME,
     LINE_FIRST_TIME,
     LINE_FIRST_TIME_ITERATION,
     LINE_SECOND_TIME,
@@ -54,7 +51,6 @@ REGISTER(TIME TEST (inverse), s) {
                 info.push_back(l);
             }
             vec[FUNCTION].push_back(info[LINE_FUNCTION]);
-            vec[GENERATE_TIME].push_back(info[LINE_GENERATE_TIME]);
             vec[FIRST_TIME].push_back(info[LINE_FIRST_TIME]);
             vec[FIRST_TIME_ITERATION].push_back(info[LINE_FIRST_TIME_ITERATION]);
             vec[SECOND_TIME].push_back(info[LINE_SECOND_TIME]);
@@ -62,7 +58,7 @@ REGISTER(TIME TEST (inverse), s) {
             vec[ASYMPTOTICS_COEFFICIENT].push_back(info[LINE_ASYMPTOTICS_COEFFICIENT]);
         }
     }
-    if (verify::same(s.value(), "----- The following text is needed only for the parser -----", false, true, false)) {
+    if (verify::same(s.value(), "----- The following text is needed only for the formatter -----", false, true, false)) {
         begin_reading = true;
     }
     return std::nullopt;
