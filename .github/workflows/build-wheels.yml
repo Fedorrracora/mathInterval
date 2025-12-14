@@ -7,7 +7,7 @@ on:
   pull_request:
     branches: [ main ]
   release:
-    types: [published]    # при публикации релиза
+    types: [published]
 permissions:
   checks: write
   pull-requests: write
@@ -87,7 +87,7 @@ jobs:
         run: |
           echo "## 🧪 CTest Results ($COMPILER)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Output" >> $GITHUB_STEP_SUMMARY
+          echo "### Execution time of various operations (sec)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           cat build/formatter_output.txt >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
