@@ -118,7 +118,6 @@ Transfer all elements that are in this multitude and return a new multitude.
 
 The function takes **one lambda function**
 and **two values** – the converted values of `-INF` and `+INF`.
-New values cannot themselves be `-INF` or `+INF`.
 
 ---
 

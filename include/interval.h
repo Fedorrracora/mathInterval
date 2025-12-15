@@ -411,7 +411,6 @@ namespace interval {
 
         The function takes **one lambda function**, that must return `T`,
         and **two values** – the converted values of `-INF` and `+INF`.
-        New values cannot themselves be `-INF` or `+INF`.
 
         ---
 
