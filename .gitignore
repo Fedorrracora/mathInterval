@@ -4,3 +4,4 @@
 /run.sh
 /cmake-build-debug
 /build
+/.devcontainer

@@ -111,7 +111,7 @@ If the first value of an interval becomes greater than the second,
 the function will swap them automatically.
 )doc")
         .def("custom_transfer", static_cast<Interval (Interval::*)
-                (const std::function<T(const T&)> &, const T&, const T&) const>(&Interval::custom_transfer), py::arg("fun"), py::arg("MINUS_INF"), py::arg("PLUS_INF"), R"doc(
+                (const std::function<T(const T&)> &, const typename Interval::inp_type&, const typename Interval::inp_type&) const>(&Interval::custom_transfer), py::arg("fun"), py::arg("MINUS_INF"), py::arg("PLUS_INF"), R"doc(
 ### custom_transfer()
 
 Transfer all elements that are in this multitude and return a new multitude.

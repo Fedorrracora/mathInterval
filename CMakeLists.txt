@@ -53,6 +53,7 @@ if(TESTING AND NOT SKBUILD)
     if(POLICY CMP0135)
         cmake_policy(SET CMP0135 NEW)
     endif()
+    set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of GoogleTest")
     FetchContent_Declare(
             googletest
             URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
@@ -112,7 +113,7 @@ else()
     set(FINAL_MSG
             ""
             "=== building done ==="
-            "For installing run: make install \\(Root privileges are required\\)"
+            "-- For installing run: make install \\(Root privileges are required\\)"
     )
     set(FINAL_DEPS mathInterval)
 
@@ -122,17 +123,30 @@ else()
             list(APPEND FINAL_DEPS _mathInterval)
         else ()
             list(APPEND FINAL_MSG
-                    "option BUILD_PYTHON_BINDINGS disabled. Python tests were not generated"
-                    "Note that the BUILD_PYTHON_BINDINGS option is only used for testing. It cannot be used it to install library in the system"
+                    "-- Option BUILD_PYTHON_BINDINGS disabled. Python tests were not generated"
+                    "Note that the BUILD_PYTHON_BINDINGS option is only used for testing. It cannot be used to install Python library in the system"
             )
         endif()
         list(APPEND FINAL_MSG
-                "For testing run: make test"
-                "For C++ only testing run: ./test_target"
-                "when you run ./test_target, you can see additional output"
+                "-- For testing run: make test"
+                "-- For C++ only testing run: ./test_target"
+                "When you run ./test_target, you can see additional output"
         )
+        if(NOT TESTING_BAR)
+            list(APPEND FINAL_MSG
+                    "-- Option TESTING_BAR disabled. Progress bar is disabled in all tests"
+                    "This can be useful as the progress bar output breaks in some terminals"
+            )
+        endif()
         if(FORMATTER)
             list(APPEND FINAL_DEPS formatter)
+            list(APPEND FINAL_MSG
+                    "-- Option FORMATTER enabled. Formatter executable built"
+                    "It is used to worm the output of TIME_TESTS. Takes the path to the test output file and formats them into a markdown table"
+                    "You can use it like this \\(in bash\\):"
+                    "./test_target \\| tee ctest_output.txt"
+                    "./formatter ctest_output.txt"
+            )
         endif()
     endif ()
 

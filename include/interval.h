@@ -279,7 +279,6 @@ namespace interval {
         friend interval & operator*=(interval &a, const T val)
                 {interval b; a.multiply_in(b, val); a = std::move(b); return a;}
 
-        //todo: change logic
         /// returns a new multitude with the points divided by a factor of val
         [[nodiscard]] interval operator/(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; division_in(b, val); return b;}
         /// divides the points of a multitude by a factor of val
@@ -427,9 +426,9 @@ namespace interval {
         the function will swap them automatically.
          */
         [[nodiscard]] interval custom_transfer(const std::function<T(const T&)> &fun,
-                                               const T& MINUS_INF, const T& PLUS_INF) const {
+                                               const inp_type& MINUS_INF, const inp_type& PLUS_INF) const {
             interval b;
-            custom_transfer_in(b, fun, MINUS_INF, PLUS_INF);
+            custom_transfer_in(b, fun, to_point(MINUS_INF), to_point(PLUS_INF));
             return b;
         }
         /**
@@ -791,10 +790,10 @@ namespace interval {
             }
         }
 
-        void custom_transfer_in(interval &buf, const std::function<T(const T&)> &fun, const T& a, const T& b) const {
+        void custom_transfer_in(interval &buf, const std::function<T(const T&)> &fun, const inner_type& a, const inner_type& b) const {
             for (auto &[fst, snd] : intervals) {
-                auto x = (fst.first != 1 ? std::make_pair(1, a):std::make_pair(fst.first, fun(fst.second)));
-                auto y = (snd.first != 1 ? std::make_pair(1, b):std::make_pair(snd.first, fun(snd.second)));
+                auto x = fst.first != 1 ? a:std::make_pair(fst.first, fun(fst.second));
+                auto y = snd.first != 1 ? b:std::make_pair(snd.first, fun(snd.second));
                 buf.add_interval_in(std::min(x, y), std::max(x, y));
             }
             for (auto &i : points) {

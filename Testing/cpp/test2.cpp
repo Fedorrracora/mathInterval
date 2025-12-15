@@ -1,3 +1,4 @@
+#include <climits>
 #include <gtest/gtest.h>
 #include <interval.h>
 #include <verifier.h>
