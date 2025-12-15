@@ -97,8 +97,8 @@ namespace interval {
     class interval {
     public:
         using inner_type = std::pair<int, T>;
-        // structure can receive data with minimal<T>, maximal<T>, T type and inner_type
-        using inp_type = std::variant<minimal<T>, maximal<T>, T, inner_type>;
+        // structure can receive data with minimal<T>, maximal<T>, T
+        using inp_type = std::variant<minimal<T>, maximal<T>, T>;
 
         interval() = default;
         ~interval() = default;
@@ -531,7 +531,8 @@ namespace interval {
             if (z != nullptr) return z->data();
             auto x = std::get_if<T>(&a);
             if (x != nullptr) return {1, std::get<T>(a)};
-            return std::get<inner_type>(a);
+            throw std::bad_cast();
+            // return std::get<inner_type>(a);
         }
 
         bool add_point_in(const inner_type &p) {
@@ -679,9 +680,9 @@ namespace interval {
         void _invert_in(interval &buf) const {
             buf.add_interval_in(minimal<T>().data(), maximal<T>().data());
             for (auto &it : intervals) {
-                buf.remove_interval(it.first, it.second);
+                buf.remove_interval_in(it.first, it.second);
             }
-            for (auto &it : points) buf.remove_point(it);
+            for (auto &it : points) buf.remove_point_in(it);
         }
 
         void invert_in(interval &buf) const {
@@ -949,7 +950,7 @@ namespace interval {
         }
 
         [[nodiscard]] std::optional<T> get_any_in // for degrees
-                (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>, pair_less> &a) const requires type_policy::template is_arithmetic_v<T> {
+                (const std::set<std::pair<inner_type, inner_type>, pair_less> &a) const requires type_policy::template is_arithmetic_v<T> {
             for (auto &i : a) {
                 if (i.first.first == 0 && i.second.first == 2) return {}; // (-INF; +INF) -> 0
                 // i.second.second - 1 < i.second.second and i.first.second + 1 > i.first.second
@@ -967,7 +968,7 @@ namespace interval {
         }
 
         [[nodiscard]] static std::optional<std::string> get_any_in // for string
-                (const std::set<std::pair<std::pair<int, std::string>, std::pair<int, std::string>>, pair_less> &a)
+                (const std::set<std::pair<inner_type, inner_type>, pair_less> &a)
                     requires type_policy::template is_string_v<T> {
             for (const auto &[fst, snd] : a) {
                 if (fst.first == 0 && snd.first == 2) return "aboba"; // (-INF; +INF) -> "aboba"
@@ -985,14 +986,14 @@ namespace interval {
         }
 
         [[nodiscard]] static std::optional<T> get_any_in // non-number types
-        (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>, pair_less> &a)
+        (const std::set<std::pair<inner_type, inner_type>, pair_less> &a)
                     requires (!type_policy::template is_string_v<T> and !type_policy::template is_arithmetic_v<T>) {
             if (a.size() == 1 && a.begin()->first.first == 0 && a.begin()->second.first == 2) return T{};
             return std::nullopt; // for unknown type I don`t know what I need to do
         }
 
         [[nodiscard]] static std::optional<T> get_any_functional
-                (const std::set<std::pair<std::pair<int, T>, std::pair<int, T>>, pair_less> &a,
+                (const std::set<std::pair<inner_type, inner_type>, pair_less> &a,
                 const std::function<std::optional<T>(const T&)> &MINUS_INF_x,
                 const std::function<std::optional<T>(const T&)> &x_PLUS_INF,
                 const std::function<std::optional<T>(const T&, const T&)> &x_y, const T& MINUS_INF_PLUS_INF) {

@@ -41,5 +41,4 @@ TEST(ONE_SET, transfer_operations) {
     a.add_interval(18, 19);
     a /= 2;
     ASSERT_TRUE(verify::same(a.to_string(), line(), true, true, false)) << "error in step 13: /= with extreme cases \n";
-    auto b = a._inverse();
 }

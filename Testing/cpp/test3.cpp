@@ -52,5 +52,5 @@ TEST(ONE_SET, multi_add) {
     ASSERT_TRUE(verify::same(a.to_string(), line(), true, true, false)) << "error in step 8: points formatting\n";
     a.add_interval(interval::minimal<int>(), -21);
     a.add_interval(35, interval::maximal<int>());
-    ASSERT_TRUE(verify::same(a.to_string(), line(), true, true, false)) << "error in step 9: points formatting\n";
+    ASSERT_TRUE(verify::same(a.to_string(), line(), true, true, false)) << "error in step 9: +-INF\n";
 }
