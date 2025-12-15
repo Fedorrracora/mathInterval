@@ -37,7 +37,7 @@ TEST(TIME_TEST, inverse) {
     std::cout << "_inverse() asymptotics coefficient: " << fp(coef2 / coef4 / 100) << std::endl;
 #ifdef FORMATTER_ENABLED
     std::cout << "----- The following text is needed only for the formatter -----\n";
-    std::cout << "1000 10\n";
+    std::cout << ITERATIONS << " 1000 10\n";
     std::cout <<  "inverse() " << fp(coef1) << ' ' << fp(coef1 / ITERATIONS) << ' ' <<
         fp(coef3) << ' ' << fp(coef3 / ITERATIONS) << ' ' << fp(coef1 / coef3 / 100) << '\n';
     std::cout << "_inverse() " << fp(coef2) << ' ' << fp(coef2 / ITERATIONS) << ' ' <<

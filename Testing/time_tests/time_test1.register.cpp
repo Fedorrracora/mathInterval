@@ -1,12 +1,13 @@
 #include <register.h>
 #include <additional_test_tools.h>
 
+/// The numbers written here are approximate. They are replaced every time they are executed
 std::vector<std::vector<std::string>> vec = {
     {"function"},
     {},
-    {"time of processing 1000 elems"},
+    {"time of processing 1000 elems (1250 iterations)"},
     {"time of processing 1000 elems (one iteration)"},
-    {"time of processing 10 elems"},
+    {"time of processing 10 elems (1250 iterations)"},
     {"time of processing 10 elems (one iteration)"},
     {"asymptotics coefficient"}
 };
@@ -37,11 +38,11 @@ REGISTER(TIME TEST (inverse), s) {
         std::stringstream ss(s.value());
         if (!conf) {
             conf = true;
-            std::string a1, a2;
-            ss >> a1 >> a2;
-            vec[FIRST_TIME].front() = "time of processing " + a1 + " elems";
+            std::string iters, a1, a2;
+            ss >> iters >> a1 >> a2;
+            vec[FIRST_TIME].front() = "time of processing " + a1 + " elems (" + iters + " iterations)";
             vec[FIRST_TIME_ITERATION].front() = "time of processing " + a1 + " elems (one iteration)";
-            vec[SECOND_TIME].front() = "time of processing " + a2 + " elems";
+            vec[SECOND_TIME].front() = "time of processing " + a2 + " elems (" + iters + " iterations)";
             vec[SECOND_TIME_ITERATION].front() = "time of processing " + a2 + " elems (one iteration)";
         }
         else {
