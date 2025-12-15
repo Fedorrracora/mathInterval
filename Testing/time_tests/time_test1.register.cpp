@@ -4,10 +4,10 @@
 std::vector<std::vector<std::string>> vec = {
     {"function"},
     {},
-    {"time of 1000 elems"},
-    {"time of 1000 elems (one iteration)"},
-    {"time of 10 elems"},
-    {"time of 10 elems (one iteration)"},
+    {"time of processing 1000 elems"},
+    {"time of processing 1000 elems (one iteration)"},
+    {"time of processing 10 elems"},
+    {"time of processing 10 elems (one iteration)"},
     {"asymptotics coefficient"}
 };
 enum OUTPUT_LINES {
@@ -39,10 +39,10 @@ REGISTER(TIME TEST (inverse), s) {
             conf = true;
             std::string a1, a2;
             ss >> a1 >> a2;
-            vec[FIRST_TIME].front() = "time of " + a1 + " elems";
-            vec[FIRST_TIME_ITERATION].front() = "time of " + a1 + " elems (one iteration)";
-            vec[SECOND_TIME].front() = "time of " + a2 + " elems";
-            vec[SECOND_TIME_ITERATION].front() = "time of " + a2 + " elems (one iteration)";
+            vec[FIRST_TIME].front() = "time of processing " + a1 + " elems";
+            vec[FIRST_TIME_ITERATION].front() = "time of processing " + a1 + " elems (one iteration)";
+            vec[SECOND_TIME].front() = "time of processing " + a2 + " elems";
+            vec[SECOND_TIME_ITERATION].front() = "time of processing " + a2 + " elems (one iteration)";
         }
         else {
             std::vector<std::string> info;
