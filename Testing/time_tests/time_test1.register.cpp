@@ -31,7 +31,7 @@ enum LINE_CONFIG {
 bool begin_reading = false, conf = false;
 REGISTER(TIME TEST (inverse), s) {
     if (!s.has_value()) {
-        auto out = verifier_tests::to_table(vec, OUTPUT_LINES::HEADER);
+        auto out = verifier_tests::to_table(vec, HEADER);
         return out;
     }
     if (begin_reading) {

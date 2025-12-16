@@ -22,11 +22,11 @@ namespace formatter {
 */
 #define REGISTER(test_name, input) \
 namespace formatter { \
-std::optional<std::string> REGISTER_UNIQUE_NAME_(formatter_test_func_) (const std::optional<std::string>& input); \
+std::optional<std::string> REGISTER_UNIQUE_NAME_(formatter_test_func_) (const std::optional<std::string>& (input)); \
 static bool REGISTER_UNIQUE_NAME_(formatter_dummy_) = []() { \
 tests.emplace_back(#test_name, REGISTER_UNIQUE_NAME_(formatter_test_func_)); \
 return true; \
 }(); \
 } \
-std::optional<std::string> formatter::REGISTER_UNIQUE_NAME_(formatter_test_func_) (const std::optional<std::string>& input)
+std::optional<std::string> formatter::REGISTER_UNIQUE_NAME_(formatter_test_func_) (const std::optional<std::string>& (input))
 #endif //MATHINTERVAL_REGISTER_H

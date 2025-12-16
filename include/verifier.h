@@ -55,12 +55,14 @@ namespace verify {
     /// max= (a = std::max(a, b)). If a changes, return true
     template <typename T, typename U>
         [[maybe_unused]] constexpr bool maxof(T &a, U&& b) {
-        return a < std::forward<U>(b) && (a = std::forward<U>(b), true);
+        auto&& value = std::forward<U>(b);
+        return a < value && (a = value, true);
     }
     /// min= (a = std::min(a, b)). If a changes, return true
     template <typename T, typename U>
     [[maybe_unused]] constexpr bool minof(T &a, U&& b) {
-        return a > std::forward<U>(b) && (a = std::forward<U>(b), true);
+        auto&& value = std::forward<U>(b);
+        return a > value && (a = value, true);
     }
 
     /// checks for the presence of a substring in the string

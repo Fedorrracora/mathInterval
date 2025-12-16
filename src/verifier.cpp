@@ -102,7 +102,7 @@ namespace verify {
         return -1;
     }
 
-    bool can_cast_to_digit(const std::string &s, std::string_view v) {
+    bool can_cast_to_digit(const std::string &s, const std::string_view v) {
         for (auto &i : s) {
             if ('0' <= i && i <= '9') continue;
             bool cont = false;
