@@ -376,7 +376,7 @@ namespace interval {
         [[nodiscard]] std::optional<T> any(
             const std::function<std::optional<T>(const T&)> &MINUS_INF_x,
             const std::function<std::optional<T>(const T&)> &x_PLUS_INF,
-            const std::function<std::optional<T>(const T&, const T&)> &x_y, const T MINUS_INF_PLUS_INF) const {
+            const std::function<std::optional<T>(const T&, const T&)> &x_y, const std::optional<T> &MINUS_INF_PLUS_INF) const {
             if (!points.empty()) return points.begin()->second; // if there is any point: return it
             return get_any_functional(intervals, MINUS_INF_x, x_PLUS_INF, x_y, MINUS_INF_PLUS_INF);
         }
@@ -996,7 +996,7 @@ namespace interval {
                 (const std::set<std::pair<inner_type, inner_type>, pair_less> &a,
                 const std::function<std::optional<T>(const T&)> &MINUS_INF_x,
                 const std::function<std::optional<T>(const T&)> &x_PLUS_INF,
-                const std::function<std::optional<T>(const T&, const T&)> &x_y, const T& MINUS_INF_PLUS_INF) {
+                const std::function<std::optional<T>(const T&, const T&)> &x_y, const std::optional<T>& MINUS_INF_PLUS_INF) {
             for (auto &i : a) {
                 if (i.first.first == 0 && i.second.first == 2) return MINUS_INF_PLUS_INF; // (-INF; +INF)
                 if (i.first.first == 0 && i.second.first == 1)
