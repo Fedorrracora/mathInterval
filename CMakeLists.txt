@@ -62,9 +62,9 @@ if(TESTING AND NOT SKBUILD)
     FetchContent_MakeAvailable(googletest)
     include(GoogleTest)
 
-    add_library(verify SHARED src/verifier.cpp src/additional_test_tools.cpp)
+    add_library(verify SHARED src/verifier.cpp src/additional_test_tools.cpp src/time_test_base.cpp)
     target_include_directories(verify PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-    target_compile_definitions(verify PRIVATE MAX_VALUE=1000000)
+    target_compile_definitions(verify PRIVATE MAX_VALUE=1000000 ITERATIONS=1250)
 
     if(NOT TESTING_BAR)
         target_compile_definitions(verify PRIVATE DISABLE_PROGRESS_BAR)
@@ -79,10 +79,13 @@ if(TESTING AND NOT SKBUILD)
             Testing/cpp/test6.cpp
             Testing/cpp/test7.cpp
             Testing/time_tests/time_test1.cpp
-            Testing/cpp/test_generator1.cpp)
+            Testing/time_tests/time_test2.cpp
+            Testing/cpp/test_generator1.cpp
+            Testing/cpp/test_generator2.cpp
+    )
     target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE mathInterval PRIVATE verify)
     target_compile_options(test_target PRIVATE -Wno-deprecated-declarations)
-    target_compile_definitions(test_target PRIVATE ITERATIONS=1250 RANDOM_GENERATOR=100000 CS=true WS=true BS=true)
+    target_compile_definitions(test_target PRIVATE RANDOM_GENERATOR=100000 CS=true WS=true BS=true)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
     if(BUILD_PYTHON_BINDINGS)
@@ -98,8 +101,8 @@ if(TESTING AND NOT SKBUILD)
     endif()
 
     if(FORMATTER)
-        target_compile_definitions(test_target PRIVATE FORMATTER_ENABLED)
-        add_executable(formatter src/register.cpp Testing/time_tests/time_test1.register.cpp)
+        target_compile_definitions(verify PRIVATE FORMATTER_ENABLED)
+        add_executable(formatter src/register.cpp Testing/time_tests/time_test.register.cpp)
         target_link_libraries(formatter PRIVATE verify)
     endif()
 

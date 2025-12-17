@@ -270,7 +270,7 @@ namespace interval {
         [[nodiscard]] interval operator-(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; plus_in(b, -val); return b;}
         /// shift the points backward by a distance of val
         friend interval & operator-=(interval &a, const T val) {
-            interval b; a.plus_in(b, -val); a = std::move(b); return a; // because I use -val, in strings it is error
+            interval b; a.plus_in(b, -val); a = std::move(b); return a;
         }
 
         /// returns a new multitude with the points multiplied by a factor of val
@@ -297,14 +297,6 @@ namespace interval {
         [[nodiscard]] interval inverse() const {
             interval buf;
             invert_in(buf);
-            return buf;
-        }
-
-        /// returns the multitude that is the inverse of the given one
-        /// same as inverse(), but takes longer
-        [[nodiscard]] [[deprecated]] interval _inverse() const {
-            interval buf;
-            _invert_in(buf);
             return buf;
         }
 
@@ -491,6 +483,21 @@ namespace interval {
         /// allow to change any not-type policy
         void apply_policy(const policy::minmax_print_policy &policy) { minmax_print = std::make_pair(policy.min, policy.max); }
 
+        // deprecated
+
+        /// returns the multitude that is the inverse of the given one
+        /// same as inverse(), but takes longer
+        [[nodiscard]] [[deprecated]] interval _inverse() const {
+            interval buf;
+            _invert_in(buf);
+            return buf;
+        }
+
+        /// returns a new multitude with the points shifted forward by the distance val
+        [[nodiscard]] interval _plus(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; _plus_in(b, val); return b;}
+        /// shift the points forward by a distance of val
+        friend interval & _plus_self(interval &a, const T val)
+        {interval b; a._plus_in(b, val); a = std::move(b); return a;}
     protected:
 
         struct pair_less {
@@ -677,14 +684,6 @@ namespace interval {
             return ret;
         }
 
-        void _invert_in(interval &buf) const {
-            buf.add_interval_in(minimal<T>().data(), maximal<T>().data());
-            for (auto &it : intervals) {
-                buf.remove_interval_in(it.first, it.second);
-            }
-            for (auto &it : points) buf.remove_point_in(it);
-        }
-
         void invert_in(interval &buf) const {
             auto it1 = intervals.begin(); // (a; b)
             auto it2 = points.begin(); // {point}
@@ -712,11 +711,12 @@ namespace interval {
         void plus_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
             // if point was -INF or +INF, recover will return second elem to {}
             for (auto &[fst, snd] : intervals) {
-                buf.intervals.emplace(recover(std::make_pair(fst.first, fst.second + val)),
-                                      recover(std::make_pair(snd.first, snd.second + val)));
+                buf.intervals.insert(buf.intervals.end(),
+                                      {recover(std::make_pair(fst.first, fst.second + val)),
+                                       recover(std::make_pair(snd.first, snd.second + val))});
             }
             for (auto &i : points) {
-                buf.points.insert(recover(std::make_pair(i.first, i.second + val)));
+                buf.points.insert(buf.points.end(), recover(std::make_pair(i.first, i.second + val)));
             }
         }
 
@@ -827,6 +827,27 @@ namespace interval {
                 return true;
             }
             return false;
+        }
+
+        // deprecated versions of functions
+
+        void _invert_in(interval &buf) const { // old version
+            buf.add_interval_in(minimal<T>().data(), maximal<T>().data());
+            for (auto &it : intervals) {
+                buf.remove_interval_in(it.first, it.second);
+            }
+            for (auto &it : points) buf.remove_point_in(it);
+        }
+
+        void _plus_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
+            // if point was -INF or +INF, recover will return second elem to {}
+            for (auto &[fst, snd] : intervals) {
+                buf.intervals.emplace(recover(std::make_pair(fst.first, fst.second + val)),
+                                      recover(std::make_pair(snd.first, snd.second + val)));
+            }
+            for (auto &i : points) {
+                buf.points.insert(recover(std::make_pair(i.first, i.second + val)));
+            }
         }
     private:
         [[nodiscard]] std::string print_in() const {

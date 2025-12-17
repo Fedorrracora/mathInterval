@@ -1,6 +1,7 @@
 #include <iostream>
 #include <verifier.h>
 #include <register.h>
+#include <additional_test_tools.h>
 
 int main(const int argc, const char *argv[]) {
     if (argc != 2) {
@@ -17,10 +18,10 @@ int main(const int argc, const char *argv[]) {
             if (verify::same(a.value(), "===== end of " + formatter::tests[i].name + " =====", true, true, false)) changed = true;
         }
         if (changed) {
-            std::cout << formatter::tests[now].func(std::nullopt).value();
         }
         else if (now != -1) formatter::tests[now].func(a.value());
         a = line.get();
         if (changed) now = -1, changed = false;
     }
+    std::cout << verifier_tests::to_table(formatter::vec, formatter::HEADER);
 }
