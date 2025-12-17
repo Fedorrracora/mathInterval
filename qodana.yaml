@@ -1,13 +1,13 @@
 ####################################################################################################################
 # WARNING: Do not store sensitive information in this file, as its contents will be included in the Qodana report. #
 ####################################################################################################################
-
-version: "1.0"
+version: '1.0'
 linter: qodana-clang
 bootstrap: |
   cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 exclude:
-  - name: ExternalDeps
+  - name: All
     paths:
-      - "build/_deps/googletest-src/**"
-      - "extern/pybind11/**"
+      - 'build/_deps/googletest-src/**'
+      - 'extern/pybind11/**'
+      - build/_deps
