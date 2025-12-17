@@ -3,8 +3,11 @@
 ####################################################################################################################
 
 version: "1.0"
-linter: jetbrains/qodana-cpp:2025.2
-profile:
-  name: qodana.recommended
-include:
-  - name: CheckDependencyLicenses
+linter: qodana-clang
+bootstrap: |
+  cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+exclude:
+  - name: All
+    paths:
+      - "build/_deps/googletest-src/**"
+      - "extern/pybind11/**"
