@@ -485,19 +485,33 @@ namespace interval {
 
         // deprecated
 
-        /// returns the multitude that is the inverse of the given one
-        /// same as inverse(), but takes longer
+        /// [[deprecated]] returns the multitude that is the inverse of the given one
         [[nodiscard]] [[deprecated]] interval _inverse() const {
             interval buf;
             _invert_in(buf);
             return buf;
         }
 
-        /// returns a new multitude with the points shifted forward by the distance val
-        [[nodiscard]] interval _plus(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; _plus_in(b, val); return b;}
-        /// shift the points forward by a distance of val
-        friend interval & _plus_self(interval &a, const T val)
+        /// [[deprecated]] returns a new multitude with the points shifted forward by the distance val
+        [[nodiscard]] [[deprecated]] interval _plus(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; _plus_in(b, val); return b;}
+        /// [[deprecated]] shift the points forward by a distance of val
+        [[deprecated]] friend interval & _plus_self(interval &a, const T val)
         {interval b; a._plus_in(b, val); a = std::move(b); return a;}
+        /// [[deprecated]] returns a new multitude with the points shifted forward by the distance val
+        [[nodiscard]] [[deprecated]] interval _minus(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; _plus_in(b, -val); return b;}
+        /// [[deprecated]] shift the points forward by a distance of val
+        [[deprecated]] friend interval & _minus_self(interval &a, const T val)
+        {interval b; a._plus_in(b, -val); a = std::move(b); return a;}
+        /// [[deprecated]] returns a new multitude with the points multiplied by a factor of val
+        [[nodiscard]] [[deprecated]] interval _mul(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; _multiply_in(b, val); return b;}
+        /// [[deprecated]] multiplies the points of a multitude by a factor of val
+        [[deprecated]] friend interval & _mul_self(interval &a, const T val)
+        {interval b; a._multiply_in(b, val); a = std::move(b); return a;}
+        /// [[deprecated]] returns a new multitude with the points divided by a factor of val
+        [[nodiscard]] [[deprecated]] interval _div(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; _division_in(b, val); return b;}
+        /// [[deprecated]] divides the points of a multitude by a factor of val
+        [[deprecated]] friend interval & _div_self(interval &a, const T val)
+        {interval b; a._division_in(b, val); a = std::move(b); return a;}
     protected:
 
         struct pair_less {
@@ -730,27 +744,51 @@ namespace interval {
                 else buf.clear();
                 return;
             }
-            for (auto &[fst, snd] : intervals) {
-                auto a = std::make_pair(val < 0 ? 2 - fst.first:fst.first, fst.second * val),
-                     b = std::make_pair(val < 0 ? 2 - snd.first:snd.first, snd.second * val);
-                // if val < 0: fst < snd -> a > b
-                if (a != b) buf.intervals.emplace(std::min(a, b), std::max(a, b));
+            if (val > 0) {
+                for (auto &[fst, snd] : intervals) {
+                    auto a = std::make_pair(fst.first, fst.second * val),
+                         b = std::make_pair(snd.first, snd.second * val);
+                    if (a != b) buf.intervals.insert(buf.intervals.end(), {a, b});
+                }
+                for (auto &i : points) {
+                    buf.points.insert(buf.points.end(), std::make_pair(i.first, i.second * val));
+                }
             }
-            for (auto &i : points) {
-                buf.points.insert(std::make_pair(i.first, i.second * val));
+            else {
+                for (auto &[fst, snd] : intervals) {
+                    auto a = std::make_pair(2 - fst.first, fst.second * val),
+                         b = std::make_pair(2 - snd.first, snd.second * val);
+                    // if val < 0: fst < snd -> a > b
+                    if (a != b) buf.intervals.insert(buf.intervals.begin(), {b, a});
+                }
+                for (auto &i : points) {
+                    buf.points.insert(buf.points.begin(), std::make_pair(i.first, i.second * val));
+                }
             }
         }
 
         void division_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
             // if point was -INF or +INF, second elem if set to 0 -> 0 / val = 0
-            for (auto &[fst, snd] : intervals) {
-                auto a = std::make_pair(val < 0 ? 2 - fst.first:fst.first, fst.second / val),
-                     b = std::make_pair(val < 0 ? 2 - snd.first:snd.first, snd.second / val);
-                // if val < 0: fst < snd -> a > b
-                if (a != b) buf.intervals.emplace(std::min(a, b), std::max(a, b));
+            if (val > 0) {
+                for (auto &[fst, snd] : intervals) {
+                    auto a = std::make_pair(fst.first, fst.second / val),
+                         b = std::make_pair(snd.first, snd.second / val);
+                    if (a != b) buf.intervals.insert(buf.intervals.end(), {a, b});
+                }
+                for (auto &i : points) {
+                    buf.points.insert(buf.points.end(), std::make_pair(i.first, i.second / val));
+                }
             }
-            for (auto &i : points) {
-                buf.points.insert(std::make_pair(i.first, i.second / val));
+            else {
+                for (auto &[fst, snd] : intervals) {
+                    auto a = std::make_pair(2 - fst.first, fst.second / val),
+                         b = std::make_pair(2 - snd.first, snd.second / val);
+                    // if val < 0: fst < snd -> a > b
+                    if (a != b) buf.intervals.insert(buf.intervals.begin(), {b, a});
+                }
+                for (auto &i : points) {
+                    buf.points.insert(buf.points.begin(), std::make_pair(i.first, i.second / val));
+                }
             }
         }
 
@@ -847,6 +885,39 @@ namespace interval {
             }
             for (auto &i : points) {
                 buf.points.insert(recover(std::make_pair(i.first, i.second + val)));
+            }
+        }
+
+        void _multiply_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
+            // if point was -INF or +INF second elem if set to 0 -> 0 * val = 0
+            if (val == 0) {
+                if (!intervals.empty() || !points.empty()) {
+                    buf.clear();
+                    buf.points.emplace(1, T{});
+                }
+                else buf.clear();
+                return;
+            }
+            for (auto &[fst, snd] : intervals) {
+                auto a = std::make_pair(val < 0 ? 2 - fst.first:fst.first, fst.second * val),
+                     b = std::make_pair(val < 0 ? 2 - snd.first:snd.first, snd.second * val);
+                // if val < 0: fst < snd -> a > b
+                if (a != b) buf.intervals.emplace(std::min(a, b), std::max(a, b));
+            }
+            for (auto &i : points) {
+                buf.points.insert(std::make_pair(i.first, i.second * val));
+            }
+        }
+        void _division_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
+            // if point was -INF or +INF, second elem if set to 0 -> 0 / val = 0
+            for (auto &[fst, snd] : intervals) {
+                auto a = std::make_pair(val < 0 ? 2 - fst.first:fst.first, fst.second / val),
+                     b = std::make_pair(val < 0 ? 2 - snd.first:snd.first, snd.second / val);
+                // if val < 0: fst < snd -> a > b
+                if (a != b) buf.intervals.emplace(std::min(a, b), std::max(a, b));
+            }
+            for (auto &i : points) {
+                buf.points.insert(std::make_pair(i.first, i.second / val));
             }
         }
     private:

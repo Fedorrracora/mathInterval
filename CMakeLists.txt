@@ -80,8 +80,12 @@ if(TESTING AND NOT SKBUILD)
             Testing/cpp/test7.cpp
             Testing/time_tests/time_test1.cpp
             Testing/time_tests/time_test2.cpp
+            Testing/time_tests/time_test3.cpp
+            Testing/time_tests/time_test4.cpp
             Testing/cpp/test_generator1.cpp
             Testing/cpp/test_generator2.cpp
+            Testing/cpp/test_generator3.cpp
+            Testing/cpp/test_generator4.cpp
     )
     target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE mathInterval PRIVATE verify)
     target_compile_options(test_target PRIVATE -Wno-deprecated-declarations)

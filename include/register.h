@@ -76,8 +76,6 @@ namespace formatter {
 #define REGISTER_CONCAT_(a, b) a##b
 /**
  * Register test.
- * Input - std::optional<std::string>. Returning value also std::optional<std::string>
- * If input - std::nullopt, it is last call of this function.
 */
 #define REGISTER_IN(test_name, input, priority) \
 namespace formatter { \
