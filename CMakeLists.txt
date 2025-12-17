@@ -162,7 +162,7 @@ else()
     install(FILES include/interval.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mathInterval)
     install(TARGETS mathInterval EXPORT mathIntervalTargets)
     install(EXPORT mathIntervalTargets FILE mathIntervalTargets.cmake NAMESPACE mathInterval:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
-    write_basic_package_version_file(mathIntervalConfigVersion.cmake VERSION 0.4.1 COMPATIBILITY AnyNewerVersion)
+    write_basic_package_version_file(mathIntervalConfigVersion.cmake VERSION 0.5.0 COMPATIBILITY AnyNewerVersion)
     configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/mathIntervalConfig.cmake.in
                                   ${CMAKE_CURRENT_BINARY_DIR}/mathIntervalConfig.cmake
                                   INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)

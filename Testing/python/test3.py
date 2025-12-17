@@ -4,6 +4,7 @@ import verify_python as verify
 def test_multi_add():
     a = interval.Interval()
     line = verify.line_checker(verify.read_file("answers/test3.a"))
+
     a.add_interval(1, 10)
     a.add_point(10)
     assert verify.same(str(a), line(), True, True, False), "error in step 1: adding border point"

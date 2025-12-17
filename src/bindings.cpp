@@ -151,6 +151,7 @@ void bind_interval(py::module_ &m, const char* class_name) {
         .def("issuperset", &Interval::issuperset, py::arg("b"), "return true if this multitude is subset of another multitude, else return false")
         .def("isdisjoint", &Interval::isdisjoint, py::arg("b"), "return true if these multitudes has no common points, else return false")
         .def("empty", &Interval::empty, "return true if this multitude is empty, else return false")
+        .def("full", &Interval::full, "return true if this multitude is empty, else return false")
         .def("points_only", &Interval::points_only, "return true if multitude has only separate points (or empty), else return false")
         .def("clear", &Interval::clear, "clear multitude data")
         .def("inverse", &Interval::inverse, "returns the multitude that is the inverse of the given one")
