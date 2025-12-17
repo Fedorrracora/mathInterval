@@ -7,7 +7,7 @@ linter: qodana-clang
 bootstrap: |
   cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 exclude:
-  - name: All
+  - name: ExternalDeps
     paths:
       - "build/_deps/googletest-src/**"
       - "extern/pybind11/**"
