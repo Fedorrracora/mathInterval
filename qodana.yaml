@@ -4,7 +4,7 @@
 version: '1.0'
 linter: qodana-clang
 bootstrap: |
-  cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DFORMATTER=ON -DTEST_WRITER=ON -DBUILD_PYTHON_BINDINGS=ON
+  cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DFORMATTER=ON -DTEST_WRITER=ON
 exclude:
   - name: All
     paths:
