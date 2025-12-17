@@ -93,6 +93,8 @@ if(TESTING AND NOT SKBUILD)
         add_test(NAME PYTHON.ONE_SET.multi_add COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test3.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.ONE_SET.remove_clear_empty_full COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test4.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.ONE_SET.inverse COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test5.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.ONE_SET.in_inverse_points_only COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test6.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.ONE_SET.transfer_operations COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test7.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
     endif()
 
     if(FORMATTER)

@@ -197,6 +197,7 @@ void bind_interval(py::module_ &m, const char* class_name) {
         .def("remove_interval", [](Interval &self, const V_type &obj1, const V_type &obj2) {return self.remove_interval(cast<T>(obj1), cast<T>(obj2));}, py::arg("a"), py::arg("b"), "returns false if all this interval was not inside this multitude, else return true")
         .def("remove_point", [](Interval &self, const V_type &obj) {return self.remove_point(cast<T>(obj));}, py::arg("a"), "returns false if this point was not inside this multitude, else return true. Note that the removed point cannot be -INF and +INF")
         .def("__contains__", [](Interval &self, const V_type &obj) {return self.in(cast<T>(obj));}, py::arg("a"), "return true if this point in multitude, else return false")
+        .def("contains", [](Interval &self, const V_type &obj) {return self.in(cast<T>(obj));}, py::arg("a"), "return true if this point in multitude, else return false")
         .def("contains", [](Interval &self, const V_type &obj1, const V_type &obj2) {return self.in(cast<T>(obj1), cast<T>(obj2));}, py::arg("a"), py::arg("b"), "return true if interval (a, b) in multitude, else return false")
         .def("any", [](const Interval &self) {return reverse_optional_cast(self.any(true));}, any1.c_str())
         .def("any", [](const Interval &self, const std::function<std::optional<py::object>(const py::object&)> &a,
@@ -216,6 +217,7 @@ void bind_interval(py::module_ &m, const char* class_name) {
         .def("remove_interval", &Interval::remove_interval, py::arg("a"), py::arg("b"), "returns false if all this interval was not inside this multitude, else return true")
         .def("remove_point", &Interval::remove_point, py::arg("a"), "returns false if this point was not inside this multitude, else return true. Note that the removed point cannot be -INF and +INF")
         .def("__contains__", static_cast<bool (Interval::*)(const typename Interval::inp_type&) const>(&Interval::in), py::arg("a"), "return true if this point in multitude, else return false")
+        .def("contains", static_cast<bool (Interval::*)(const typename Interval::inp_type&) const>(&Interval::in), py::arg("a"), "return true if this point in multitude, else return false")
         .def("contains", static_cast<bool (Interval::*)(const typename Interval::inp_type&, const typename Interval::inp_type&) const>(&Interval::in), py::arg("a"), py::arg("b"), "return true if interval (a, b) in multitude, else return false")
         .def("any", [](const Interval &a) {return a.any(true);}, any1.c_str())
         .def("any", static_cast<std::optional<T> (Interval::*)(
