@@ -5,6 +5,7 @@ on:
   push:
     branches: # Specify your branches here
       - main # The 'main' branch
+      - qonada_repair # for future
       - 'releases/*' # The release branches
 
 jobs:
@@ -23,7 +24,7 @@ jobs:
         uses: JetBrains/qodana-action@v2025.2
         with:
           pr-mode: false
-          args: '--image jetbrains/qodana-cpp:2025.2-eap'
+          args: '-l qodana-cpp --within-docker false'
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_806153236 }}
           QODANA_ENDPOINT: 'https://qodana.cloud'
