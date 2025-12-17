@@ -11,6 +11,7 @@ option(TESTING "Enable testing" ON)
 option(BUILD_PYTHON_BINDINGS "Build Python bindings for development" OFF)
 option(TESTING_BAR "Enable progress bar in testing" ON)
 option(FORMATTER "Build tool for formatting test results to md. Using only in github workflows" OFF)
+option(TEST_WRITER "Helps format c++ tests to python. Developers Only" OFF)
 
 add_library(mathInterval INTERFACE)
 
@@ -81,7 +82,7 @@ if(TESTING AND NOT SKBUILD)
             Testing/cpp/test_generator1.cpp)
     target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE mathInterval PRIVATE verify)
     target_compile_options(test_target PRIVATE -Wno-deprecated-declarations)
-    target_compile_definitions(test_target PRIVATE ITERATIONS=1250 RANDOM_GENERATOR=100000)
+    target_compile_definitions(test_target PRIVATE ITERATIONS=1250 RANDOM_GENERATOR=100000 CS=true WS=true BS=true)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
     if(BUILD_PYTHON_BINDINGS)
@@ -91,12 +92,18 @@ if(TESTING AND NOT SKBUILD)
         add_test(NAME PYTHON.ONE_SET.add_interval COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test2.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.ONE_SET.multi_add COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test3.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.ONE_SET.remove_clear_empty_full COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test4.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.ONE_SET.inverse COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test5.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
     endif()
 
     if(FORMATTER)
         target_compile_definitions(test_target PRIVATE FORMATTER_ENABLED)
         add_executable(formatter src/register.cpp Testing/time_tests/time_test1.register.cpp)
         target_link_libraries(formatter PRIVATE verify)
+    endif()
+
+    if(TEST_WRITER)
+        add_executable(writer src/writer.cpp)
+        target_link_libraries(writer PRIVATE verify)
     endif()
 endif()
 
@@ -143,11 +150,20 @@ else()
         if(FORMATTER)
             list(APPEND FINAL_DEPS formatter)
             list(APPEND FINAL_MSG
-                    "-- Option FORMATTER enabled. Formatter executable built"
+                    "-- Option FORMATTER enabled. Formatter executable built. This is only necessary for developers"
                     "It is used to worm the output of TIME_TESTS. Takes the path to the test output file and formats them into a markdown table"
                     "You can use it like this \\(in bash\\):"
                     "./test_target \\| tee ctest_output.txt"
                     "./formatter ctest_output.txt"
+            )
+        endif()
+        if(TEST_WRITER)
+            list(APPEND FINAL_DEPS writer)
+            list(APPEND FINAL_MSG
+                    "-- Option TEST_WRITER enabled. Writer executable built. This is only necessary for developers"
+                    "It helps converting simple c++ tests to python tests for mathInterval. The result often requires manual revisions"
+                    "You can use it like this \\(in bash\\):"
+                    "./writer test.cpp \\| tee test.py"
             )
         endif()
     endif ()

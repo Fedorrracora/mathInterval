@@ -32,5 +32,13 @@ return true if two strings are equal with some filters
     .def("time", &verify::time_checker::time, "get calculated time");
 
     m.def("random_int_distribution", &verify::random_int_distribution, py::arg("from"), py::arg("to"), "return random value between from and to");
+    m.def("find", &verify::find, py::arg("where"), py::arg("what"), py::arg("ch"), "finds the index of substring entry into the string");
     m.def("in", &verify::in, py::arg("where"), py::arg("what"), py::arg("ch"), "checks for the presence of a substring in the string");
+    m.def("change", &verify::change, py::arg("where"), py::arg("from"), py::arg("to"), "Change substring `from` to string `to` in string `where`. Return new string, not changes `where`");
+    m.def("n_word", &verify::n_word, py::arg("where"), py::arg("n"), "get n`th word in string");
+    m.def("boundary", &verify::boundary, py::arg("where"), "removes special symbols around word");
+    m.def("boundary_spaces", &verify::boundary_spaces, py::arg("where"), "removes spaces around word");
+    m.def("begin_from", &verify::begin_from, py::arg("where"), py::arg("what"), "check if `where` begins with `what`");
+    m.def("split", &verify::split, py::arg("s"), py::arg("delim"), "such python split");
+    m.def("join", &verify::join, py::arg("sep"), py::arg("data"), "such python join");
 }

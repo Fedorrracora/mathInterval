@@ -1,7 +1,7 @@
 import _mathInterval as interval
 import verify_python as verify
 
-stp = (True, True, False)
+stp = (True, True, True)
 
 def test_remove_clear_empty_full():
     a = interval.Interval()

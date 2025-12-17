@@ -65,8 +65,11 @@ namespace verify {
         return a > value && (a = value, true);
     }
 
+    /// finds the index of substring entry into the string
+    [[nodiscard]] std::size_t find(const std::string &where, std::string what, char ch = '#');
+
     /// checks for the presence of a substring in the string
-    [[nodiscard]] std::size_t in(const std::string &where, std::string what, char ch = '#');
+    [[nodiscard]] bool in(const std::string &where, const std::string &what, char ch = '#');
 
     /// helps to take into account the error when working with float numbers
     template <typename T>
@@ -89,6 +92,27 @@ namespace verify {
     };
 
     /// Does what is written. v - skip able chars
-    bool can_cast_to_digit(const std::string &s, std::string_view v);
+    [[nodiscard]] bool can_cast_to_digit(const std::string &s, std::string_view v);
+
+    /// Change substring `from` to string `to` in string `where`. Return new string, not changes `where`
+    [[nodiscard]] std::string change(const std::string &where, std::string_view from, std::string_view to);
+
+    /// get n`th word in string
+    [[nodiscard]] std::string n_word(const std::string& where, std::size_t n);
+
+    /// removes special symbols around word
+    [[nodiscard]] std::string boundary(const std::string &where);
+
+    /// removes spaces around word
+    [[nodiscard]] std::string boundary_spaces(const std::string &where);
+
+    /// check if `where` begins with `what`
+    [[nodiscard]] bool begin_from(const std::string &where, std::string_view what);
+
+    /// such python split
+    [[nodiscard]] std::vector<std::string> split(const std::string &s, char delim = ' ');
+
+    /// such python join
+    [[nodiscard]] std::string join(std::string_view sep, const std::vector<std::string> &data);
 }
 #endif //VERIFIER_H
