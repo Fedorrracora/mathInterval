@@ -1,4 +1,4 @@
-import mathInterval as interval
+import _mathInterval as interval
 
 def correct(a, empty : bool):
     x = a.any()
