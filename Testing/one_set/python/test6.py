@@ -5,7 +5,7 @@ stp = (True, True, True)
     
 def test_in_inverse_points_only():
     a = interval.Interval()
-    line = verify.line_checker(verify.read_file("answers/test6.a"))
+    line = verify.line_checker(verify.read_file("one_set/answers/test6.a"))
     a.add_interval(1, 3)
     assert(1 - a.points_only()), "error in step 1: points_only on one interval"
     a.remove_interval(1, 2)

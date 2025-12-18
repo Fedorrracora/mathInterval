@@ -5,7 +5,7 @@ stp = (True, True, True)
 
 def test_remove_clear_empty_full():
     a = interval.Interval()
-    line = verify.line_checker(verify.read_file("answers/test4.a"))
+    line = verify.line_checker(verify.read_file("one_set/answers/test4.a"))
 
     assert verify.same(str(a), line(), *stp) and a.empty() and (not a.full()), "error in step 1: testing empty interval"
 

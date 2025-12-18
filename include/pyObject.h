@@ -30,7 +30,7 @@ public:
         if (obj.attr("__lt__")(other.obj).cast<bool>())
             return std::partial_ordering::less;
 
-        if (obj.attr("__gt__")(other.obj).cast<bool>())
+        if (other.obj.attr("__lt__")(obj).cast<bool>())
             return std::partial_ordering::greater;
 
         if (obj.attr("__eq__")(other.obj).cast<bool>())

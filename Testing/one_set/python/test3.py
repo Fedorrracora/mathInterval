@@ -5,7 +5,7 @@ stp = (True, True, True)
 
 def test_multi_add():
     a = interval.Interval()
-    line = verify.line_checker(verify.read_file("answers/test3.a"))
+    line = verify.line_checker(verify.read_file("one_set/answers/test3.a"))
 
     a.add_interval(1, 10)
     a.add_point(10)

@@ -4,7 +4,7 @@
 
 TEST(ONE_SET, add_point) {
     interval::interval<int> a;
-    verify::line_checker line(verify::read_file("answers/test1.a"));
+    verify::line_checker line(verify::read_file("one_set/answers/test1.a"));
     {
         bool b = true;
         b &= a.add_point(1);

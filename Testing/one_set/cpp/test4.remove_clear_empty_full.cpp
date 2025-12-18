@@ -4,7 +4,7 @@
 
 TEST(ONE_SET, remove_clear_empty_full) {
     interval::interval<int> a;
-    verify::line_checker line(verify::read_file("answers/test4.a"));
+    verify::line_checker line(verify::read_file("one_set/answers/test4.a"));
     EXPECT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS) && a.empty() && !a.full()) << "error in step 1: testing empty interval\n";
     a.add_interval(1, 111);
     a.add_point(0);

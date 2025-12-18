@@ -5,7 +5,7 @@ stp = (True, True, True)
     
 def test_inverse():
     a = interval.Interval()
-    line = verify.line_checker(verify.read_file("answers/test5.a"))
+    line = verify.line_checker(verify.read_file("one_set/answers/test5.a"))
     
     a.add_interval(1, 2)
     assert(verify.same(a.inverse().__str__(), line(), *stp)), "error in step 1: inverse one interval"

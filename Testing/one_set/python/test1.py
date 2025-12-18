@@ -6,7 +6,7 @@ stp = (True, True, True)
 
 def test_add_point():
     a = interval.Interval()
-    line = verify.line_checker(verify.read_file("answers/test1.a"))
+    line = verify.line_checker(verify.read_file("one_set/answers/test1.a"))
 
     b = True
     b = b and a.add_point(1)

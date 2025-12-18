@@ -5,7 +5,7 @@ stp = (True, True, True)
     
 def test_transfer_operations():
     a = interval.Interval(interval.policy.IntTypePolicy)
-    line = verify.line_checker(verify.read_file("answers/test7.a"))
+    line = verify.line_checker(verify.read_file("one_set/answers/test7.a"))
     a.add_interval(1, 3)
     a.add_point(8)
     a.add_point(1)

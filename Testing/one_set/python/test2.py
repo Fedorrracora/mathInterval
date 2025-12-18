@@ -6,7 +6,7 @@ stp = (True, True, True)
 
 def test_add_interval():
     a = interval.Interval()
-    line = verify.line_checker(verify.read_file("answers/test2.a"))
+    line = verify.line_checker(verify.read_file("one_set/answers/test2.a"))
 
     b = True
     b = b and a.add_interval(1, 5)

@@ -4,7 +4,7 @@
 
 TEST(ONE_SET, transfer_operations) {
     interval::interval<int> a;
-    verify::line_checker line(verify::read_file("answers/test7.a"));
+    verify::line_checker line(verify::read_file("one_set/answers/test7.a"));
     a.add_interval(1, 3);
     a.add_point(8);
     a.add_point(1);

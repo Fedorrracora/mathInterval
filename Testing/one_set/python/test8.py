@@ -5,7 +5,7 @@ stp = (True, True, True)
     
 def test_remainder():
     a = interval.Interval(interval.policy.IntTypePolicy)
-    line = verify.line_checker(verify.read_file("answers/test8.a"))
+    line = verify.line_checker(verify.read_file("one_set/answers/test8.a"))
     a.add_interval(1, 3)
     a %= 4
     assert(verify.same(a.__str__(), line(), *stp)), "error in step 1: %= with one interval not changing data"

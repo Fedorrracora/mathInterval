@@ -4,7 +4,7 @@
 
 TEST(ONE_SET, in_inverse_points_only) {
     interval::interval<int> a;
-    verify::line_checker line(verify::read_file("answers/test6.a"));
+    verify::line_checker line(verify::read_file("one_set/answers/test6.a"));
     a.add_interval(1, 3);
     ASSERT_TRUE(!a.points_only()) << "error in step 1: points_only on one interval\n";
     a.remove_interval(1, 2);

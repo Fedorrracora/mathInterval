@@ -47,7 +47,8 @@ endif()
 
 if(TESTING AND NOT SKBUILD)
     enable_testing()
-    file(COPY Testing/one_set/answers DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    file(COPY Testing/one_set/answers DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/one_set)
+    file(COPY Testing/custom_type/answers DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/custom_type)
 
     #setup GoogleTest
     include(FetchContent)
@@ -80,6 +81,7 @@ if(TESTING AND NOT SKBUILD)
             Testing/one_set/cpp/test7.transfer_operations.cpp
             Testing/one_set/cpp/test8.remainder.cpp
             Testing/one_set/cpp/test9.any.cpp
+            Testing/custom_type/cpp/test1.many_funcs.cpp
             Testing/time_test/base.cpp
             Testing/time_test/test1.inverse.cpp
             Testing/time_test/test2.plus_transfer.cpp
@@ -108,6 +110,7 @@ if(TESTING AND NOT SKBUILD)
         add_test(NAME PYTHON.ONE_SET.transfer_operations COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test7.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.ONE_SET.remainder COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test8.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.ONE_SET.any COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test9.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.CUSTOM_TYPE.many_funcs COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/custom_type/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
     endif()
 
     if(FORMATTER)
