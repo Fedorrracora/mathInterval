@@ -78,6 +78,7 @@ if(TESTING AND NOT SKBUILD)
             Testing/cpp/test5.cpp
             Testing/cpp/test6.cpp
             Testing/cpp/test7.cpp
+            Testing/cpp/test8.cpp
             Testing/time_tests/time_test1.cpp
             Testing/time_tests/time_test2.cpp
             Testing/time_tests/time_test3.cpp

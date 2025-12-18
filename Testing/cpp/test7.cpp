@@ -41,4 +41,11 @@ TEST(ONE_SET, transfer_operations) {
     a.add_interval(18, 19);
     a /= 2;
     ASSERT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS)) << "error in step 13: /= with extreme cases\n";
+    a.clear();
+    a *= 0;
+    EXPECT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS)) << "error in step 14: *= 0 with empty\n";
+    a.clear();
+    a.add_interval(1, 2);
+    a *= 0;
+    EXPECT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS)) << "error in step 15: *= 0 with some data\n";
 }

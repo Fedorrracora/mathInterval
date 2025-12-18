@@ -103,25 +103,11 @@ namespace interval {
         interval() = default;
         ~interval() = default;
 
-        interval(const interval &other): points(other.points), intervals(other.intervals) {}
-        interval(interval &&other) noexcept: points(std::move(other.points)), intervals(std::move(other.intervals)) {}
+        interval(const interval &other) = default;
+        interval(interval &&other) noexcept = default;
 
-        interval & operator=(const interval &other) {
-            if (this == &other) return *this;
-            points = other.points, intervals = other.intervals;
-            return *this;
-        }
-        interval & operator=(interval &&other) noexcept {
-            if (this == &other) return *this;
-            points = std::move(other.points), intervals = std::move(other.intervals);
-            return *this;
-        }
-
-        friend void swap(interval &lhs, interval &rhs) noexcept {
-            using std::swap;
-            swap(lhs.points, rhs.points);
-            swap(lhs.intervals, rhs.intervals);
-        }
+        interval & operator=(const interval &other) = default;
+        interval & operator=(interval &&other) noexcept = default;
 
         [[nodiscard]] bool operator==(const interval &b) const noexcept {
             return this == &b || (points == b.points && intervals == b.intervals);

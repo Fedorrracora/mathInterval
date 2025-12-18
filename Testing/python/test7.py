@@ -42,3 +42,10 @@ def test_transfer_operations():
     a.add_interval(18, 19)
     a //= 2
     assert(verify.same(a.__str__(), line(), *stp)), "error in step 13: /= with extreme cases"
+    a.clear()
+    a *= 0
+    assert(verify.same(a.__str__(), line(), *stp)), "error in step 14: *= 0 with empty"
+    a.clear()
+    a.add_interval(1, 2)
+    a *= 0
+    assert(verify.same(a.__str__(), line(), *stp)), "error in step 15: *= 0 with some data"
