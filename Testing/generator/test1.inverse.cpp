@@ -1,15 +1,10 @@
-#include <gtest/gtest.h>
-#include <interval.h>
-#include <verifier.h>
-#include <additional_test_tools.h>
+#include <generate_test_base.h>
 
 TEST(GENERATOR, inverse) {
-    auto info = verifier_tests::print_information("GENERATOR TEST (inverse)");
-    const auto prog = verifier_tests::progress(RANDOM_GENERATOR, "generating && testing", true);
-    for (auto iter = 0; iter < RANDOM_GENERATOR; ++iter) {
-        prog.call(iter);
-        auto a = verifier_tests::generate(25);
+    generate_test::generate_test_base("inverse", [](const interval::interval<int> &a) {
+        return a.inverse();
+    }, [](const interval::interval<int> &a) {
         // ReSharper disable once CppDeprecatedEntity
-        EXPECT_TRUE(verify::same(a.inverse().to_string(), a._inverse().to_string(), true, true, true)) << "bug in :" << a.to_string();
-    }
+        return a._inverse();
+    });
 }

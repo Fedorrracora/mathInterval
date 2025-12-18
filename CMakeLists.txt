@@ -62,9 +62,9 @@ if(TESTING AND NOT SKBUILD)
     FetchContent_MakeAvailable(googletest)
     include(GoogleTest)
 
-    add_library(verify SHARED src/verifier.cpp src/additional_test_tools.cpp src/time_test_base.cpp)
+    add_library(verify SHARED src/verifier.cpp src/additional_test_tools.cpp)
     target_include_directories(verify PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-    target_compile_definitions(verify PRIVATE MAX_VALUE=1000000 ITERATIONS=1250)
+    target_compile_definitions(verify PRIVATE MAX_VALUE=1000000)
 
     if(NOT TESTING_BAR)
         target_compile_definitions(verify PRIVATE DISABLE_PROGRESS_BAR)
@@ -80,10 +80,12 @@ if(TESTING AND NOT SKBUILD)
             Testing/one_set/cpp/test7.transfer_operations.cpp
             Testing/one_set/cpp/test8.remainder.cpp
             Testing/one_set/cpp/test9.any.cpp
+            Testing/time_test/base.cpp
             Testing/time_test/test1.inverse.cpp
             Testing/time_test/test2.plus_transfer.cpp
             Testing/time_test/test3.mul_transfer.cpp
             Testing/time_test/test4.div_transfer.cpp
+            Testing/generator/base.cpp
             Testing/generator/test1.inverse.cpp
             Testing/generator/test2.plus_transfer.cpp
             Testing/generator/test3.mul_transfer.cpp
@@ -91,7 +93,7 @@ if(TESTING AND NOT SKBUILD)
     )
     target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE mathInterval PRIVATE verify)
     target_compile_options(test_target PRIVATE -Wno-deprecated-declarations)
-    target_compile_definitions(test_target PRIVATE RANDOM_GENERATOR=100000 CS=true WS=true BS=true)
+    target_compile_definitions(test_target PRIVATE RANDOM_GENERATOR=100000 CS=true WS=true BS=true ITERATIONS=1250)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
     if(BUILD_PYTHON_BINDINGS)

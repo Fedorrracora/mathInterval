@@ -13,7 +13,7 @@ namespace time_test {
                         const std::function<void(const interval::interval<int>&)> &fun1,
                         const std::function<void(const interval::interval<int>&)> &fun2) {
         auto info = verifier_tests::print_information("TIME TEST (" + name + ")");
-        double coef1, coef2, coef3, coef4;
+        double cf1, cf2, cf3, cf4;
         for (const int D : {HIGH, LOW}) {
             const auto a = verifier_tests::many_data(D).first;
             double t1, t2;
@@ -36,19 +36,19 @@ namespace time_test {
                 t2 = prog.stop();
             }
             const auto t = t2 / t1;
-            if (D == HIGH) coef1 = t1, coef2 = t2;
-            else coef3 = t1, coef4 = t2;
+            if (D == HIGH) cf1 = t1, cf2 = t2;
+            else cf3 = t1, cf4 = t2;
             std::cout << "speed coefficient: " << fp(t) << std::endl;
         }
-        std::cout << fun1_name << " asymptotics coefficient: " << fp(coef1 / coef3 / ATTITUDE) << std::endl;
-        std::cout << fun2_name << " asymptotics coefficient: " << fp(coef2 / coef4 / ATTITUDE) << std::endl;
+        std::cout << fun1_name << " asymptotics coefficient: " << fp(cf1 / cf3 / ATTITUDE) << std::endl;
+        std::cout << fun2_name << " asymptotics coefficient: " << fp(cf2 / cf4 / ATTITUDE) << std::endl;
 #ifdef FORMATTER_ENABLED
         std::cout << "----- The following text is needed only for the formatter -----\n";
         std::cout << ITERATIONS << ' ' << HIGH << ' ' << LOW << '\n';
-        std::cout << fun1_name << ' ' << fp(coef1) << ' ' << fp(coef1 / ITERATIONS) << ' ' <<
-            fp(coef3) << ' ' << fp(coef3 / ITERATIONS) << ' ' << fp(coef1 / coef3 / ATTITUDE) << '\n';
-        std::cout << fun2_name << ' ' << fp(coef2) << ' ' << fp(coef2 / ITERATIONS) << ' ' <<
-            fp(coef4) << ' ' << fp(coef4 / ITERATIONS) << ' ' << fp(coef2 / coef4 / ATTITUDE) << '\n' << std::flush;
+        std::cout << fun1_name << ' ' << fp(cf1) << ' ' << fp(cf1 / ITERATIONS) << ' ' <<
+            fp(cf3) << ' ' << fp(cf3 / ITERATIONS) << ' ' << fp(cf1 / cf3 / ATTITUDE) << '\n';
+        std::cout << fun2_name << ' ' << fp(cf2) << ' ' << fp(cf2 / ITERATIONS) << ' ' <<
+            fp(cf4) << ' ' << fp(cf4 / ITERATIONS) << ' ' << fp(cf2 / cf4 / ATTITUDE) << '\n' << std::flush;
 #endif
     }
 }
