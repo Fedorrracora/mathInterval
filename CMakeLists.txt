@@ -103,6 +103,7 @@ if(TESTING AND NOT SKBUILD)
         add_test(NAME PYTHON.ONE_SET.inverse COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test5.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.ONE_SET.in_inverse_points_only COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test6.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.ONE_SET.transfer_operations COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test7.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.ONE_SET.remainder COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test8.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
     endif()
 
     if(FORMATTER)
@@ -189,7 +190,7 @@ else()
     install(FILES include/interval.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mathInterval)
     install(TARGETS mathInterval EXPORT mathIntervalTargets)
     install(EXPORT mathIntervalTargets FILE mathIntervalTargets.cmake NAMESPACE mathInterval:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
-    write_basic_package_version_file(mathIntervalConfigVersion.cmake VERSION 0.5.0 COMPATIBILITY AnyNewerVersion)
+    write_basic_package_version_file(mathIntervalConfigVersion.cmake VERSION 0.5.1 COMPATIBILITY AnyNewerVersion)
     configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/mathIntervalConfig.cmake.in
                                   ${CMAKE_CURRENT_BINARY_DIR}/mathIntervalConfig.cmake
                                   INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)

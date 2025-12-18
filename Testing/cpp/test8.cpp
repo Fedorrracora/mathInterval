@@ -20,5 +20,33 @@ TEST(ONE_SET, remainder) {
     a %= 3;
     EXPECT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS)) << "error in step 5: %= with empty interval\n";
     a.clear();
-
+    a.add_interval(-1, 0);
+    a %= 3;
+    EXPECT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS)) << "error in step 6: %= with negative interval\n";
+    a.clear();
+    a.add_interval(-1, 1);
+    a %= 3;
+    EXPECT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS)) << "error in step 7: %= with interval with positive and negative borders\n";
+    a.clear();
+    a.add_interval(0, 3);
+    a %= 3;
+    EXPECT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS)) << "error in step 8: %= with interval with equal values on the balance\n";
+    a.clear();
+    a.add_interval(0, 6);
+    a %= 3;
+    EXPECT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS)) << "error in step 9: %= with interval with equal values on the balance\n";
+    a.clear();
+    a.add_point(1);
+    a.add_interval(1, 3);
+    a.add_point(3);
+    a %= 3;
+    EXPECT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS)) << "error in step 10: %= with interval and points\n";
+    a.clear();
+    a.add_point(-1);
+    a %= 3;
+    EXPECT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS)) << "error in step 11: %= with negative point\n";
+    a.clear();
+    a.add_interval(0, interval::maximal<int>());
+    a %= 2;
+    EXPECT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS)) << "error in step 12: %= with infinity border\n";
 }
