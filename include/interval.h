@@ -789,16 +789,17 @@ namespace interval {
                     buf.add_interval(T{}, val);
                     break;
                 }
-                auto r = fst.second % val + len; // l of interval is fst.second % val
+                auto s = (fst.second % val + val) % val;
+                auto r = s + len; // l of interval is fst.second % val
                 if (r > val) { // l in [0, val); l + len not in [0, val) -> (l, val) U [0, (l + len) % val)
-                    buf.add_interval(fst.second % val, val);
+                    buf.add_interval(s, val);
                     buf.add_point(T{});
                     buf.add_interval(T{}, r % val);
                 }
-                else buf.add_interval(fst.second % val, r); // l and l + len in [0, val) -> (l, l + len)
+                else buf.add_interval(s, r); // l and l + len in [0, val) -> (l, l + len)
             }
             for (auto &i : points) {
-                buf.add_point(i.second % val);
+                buf.add_point((i.second % val + val) % val);
             }
         }
 
