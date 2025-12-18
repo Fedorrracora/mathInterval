@@ -47,7 +47,7 @@ endif()
 
 if(TESTING AND NOT SKBUILD)
     enable_testing()
-    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Testing/answers DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    file(COPY Testing/one_set/answers DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
     #setup GoogleTest
     include(FetchContent)
@@ -71,22 +71,23 @@ if(TESTING AND NOT SKBUILD)
     endif ()
 
     add_executable(test_target
-            Testing/cpp/test1.cpp
-            Testing/cpp/test2.cpp
-            Testing/cpp/test3.cpp
-            Testing/cpp/test4.cpp
-            Testing/cpp/test5.cpp
-            Testing/cpp/test6.cpp
-            Testing/cpp/test7.cpp
-            Testing/cpp/test8.cpp
-            Testing/time_tests/time_test1.cpp
-            Testing/time_tests/time_test2.cpp
-            Testing/time_tests/time_test3.cpp
-            Testing/time_tests/time_test4.cpp
-            Testing/cpp/test_generator1.cpp
-            Testing/cpp/test_generator2.cpp
-            Testing/cpp/test_generator3.cpp
-            Testing/cpp/test_generator4.cpp
+            Testing/one_set/cpp/test1.add_point.cpp
+            Testing/one_set/cpp/test2.add_interval.cpp
+            Testing/one_set/cpp/test3.multi_add.cpp
+            Testing/one_set/cpp/test4.remove_clear_empty_full.cpp
+            Testing/one_set/cpp/test5.inverse.cpp
+            Testing/one_set/cpp/test6.in_inverse_points_only.cpp
+            Testing/one_set/cpp/test7.transfer_operations.cpp
+            Testing/one_set/cpp/test8.remainder.cpp
+            Testing/one_set/cpp/test9.any.cpp
+            Testing/time_test/test1.inverse.cpp
+            Testing/time_test/test2.plus_transfer.cpp
+            Testing/time_test/test3.mul_transfer.cpp
+            Testing/time_test/test4.div_transfer.cpp
+            Testing/generator/test1.inverse.cpp
+            Testing/generator/test2.plus_transfer.cpp
+            Testing/generator/test3.mul_transfer.cpp
+            Testing/generator/test4.div_transfer.cpp
     )
     target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE mathInterval PRIVATE verify)
     target_compile_options(test_target PRIVATE -Wno-deprecated-declarations)
@@ -96,19 +97,20 @@ if(TESTING AND NOT SKBUILD)
     if(BUILD_PYTHON_BINDINGS)
         pybind11_add_module(verify_python src/verifier_bindings.cpp)
         target_link_libraries(verify_python PRIVATE verify)
-        add_test(NAME PYTHON.ONE_SET.add_point COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-        add_test(NAME PYTHON.ONE_SET.add_interval COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test2.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-        add_test(NAME PYTHON.ONE_SET.multi_add COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test3.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-        add_test(NAME PYTHON.ONE_SET.remove_clear_empty_full COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test4.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-        add_test(NAME PYTHON.ONE_SET.inverse COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test5.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-        add_test(NAME PYTHON.ONE_SET.in_inverse_points_only COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test6.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-        add_test(NAME PYTHON.ONE_SET.transfer_operations COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test7.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-        add_test(NAME PYTHON.ONE_SET.remainder COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/python/test8.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.ONE_SET.add_point COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.ONE_SET.add_interval COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test2.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.ONE_SET.multi_add COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test3.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.ONE_SET.remove_clear_empty_full COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test4.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.ONE_SET.inverse COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test5.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.ONE_SET.in_inverse_points_only COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test6.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.ONE_SET.transfer_operations COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test7.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.ONE_SET.remainder COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test8.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.ONE_SET.any COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test9.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
     endif()
 
     if(FORMATTER)
         target_compile_definitions(verify PRIVATE FORMATTER_ENABLED)
-        add_executable(formatter src/register.cpp Testing/time_tests/time_test.register.cpp)
+        add_executable(formatter src/register.cpp Testing/time_test/time_test.register.cpp)
         target_link_libraries(formatter PRIVATE verify)
     endif()
 

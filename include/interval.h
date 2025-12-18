@@ -1031,7 +1031,7 @@ namespace interval {
         [[nodiscard]] std::optional<T> get_any_in // for degrees
                 (const std::set<std::pair<inner_type, inner_type>, pair_less> &a) const requires type_policy::template is_arithmetic_v<T> {
             for (auto &i : a) {
-                if (i.first.first == 0 && i.second.first == 2) return {}; // (-INF; +INF) -> 0
+                if (i.first.first == 0 && i.second.first == 2) return T{}; // (-INF; +INF) -> 0
                 // i.second.second - 1 < i.second.second and i.first.second + 1 > i.first.second
                 // are need for detect overflow
                 if (i.first.first == 0 && i.second.first == 1 && i.second.second - 1 < i.second.second)
@@ -1050,7 +1050,7 @@ namespace interval {
                 (const std::set<std::pair<inner_type, inner_type>, pair_less> &a)
                     requires type_policy::template is_string_v<T> {
             for (const auto &[fst, snd] : a) {
-                if (fst.first == 0 && snd.first == 2) return "aboba"; // (-INF; +INF) -> "aboba"
+                if (fst.first == 0 && snd.first == 2) return "text"; // (-INF; +INF) -> "text"
                 if (fst.first == 0 && snd.first == 1 && snd.second > "a") return "a";
                 // (-INF; x) -> "a"
                 if (fst.first == 1 && snd.first == 2) return 'z' + fst.second;
