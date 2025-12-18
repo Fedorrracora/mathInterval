@@ -1,4 +1,4 @@
-#include <generate_test_base.h>
+#include <test_base/generate_test_base.h>
 
 TEST(GENERATOR, inverse) {
     generate_test::generate_test_base("inverse", [](const interval::interval<int> &a) {

@@ -3,7 +3,7 @@
 #include <verifier.h>
 #include <additional_test_tools.h>
 #include <functional>
-#include <generate_test_base.h>
+#include <test_base/generate_test_base.h>
 
 namespace generate_test {
     void generate_test_base(const std::string &test_name,

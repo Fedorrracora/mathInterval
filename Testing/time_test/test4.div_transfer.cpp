@@ -1,6 +1,4 @@
-#include <gtest/gtest.h>
-#include <interval.h>
-#include <time_test_base.h>
+#include <test_base/time_test_base.h>
 TEST(TIME_TEST, div_transfer) {
     time_test::time_test_base("div_transfer", "operator/", "_div()", [](const interval::interval<int> &a) {
         auto x = a / 2;

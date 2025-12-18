@@ -81,6 +81,7 @@ if(TESTING AND NOT SKBUILD)
             Testing/one_set/cpp/test7.transfer_operations.cpp
             Testing/one_set/cpp/test8.remainder.cpp
             Testing/one_set/cpp/test9.any.cpp
+            Testing/custom_type/cpp/base.cpp
             Testing/custom_type/cpp/test1.many_funcs.cpp
             Testing/time_test/base.cpp
             Testing/time_test/test1.inverse.cpp

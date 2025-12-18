@@ -1,14 +1,5 @@
-#include <gtest/gtest.h>
-#include <interval.h>
-#include <verifier.h>
-struct test_type {
-    int a = 0;
-    test_type() = default;
-    explicit test_type(const int a) : a(a) {}
-    bool operator==(const test_type &other) const { return a == other.a; }
-    bool operator<(const test_type &other) const { return a < other.a; }
-    friend std::ostream& operator<<(std::ostream& os, const test_type &other) { return os << other.a; }
-};
+#include <test_base/custom_type_base.h>
+using test_type = type_base::test_type;
 TEST(CUSTOM_TYPE, many_funcs) {
     interval::interval<test_type> a;
     verify::line_checker line(verify::read_file("custom_type/answers/test1.a"));

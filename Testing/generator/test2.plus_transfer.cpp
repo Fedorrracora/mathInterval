@@ -1,4 +1,4 @@
-#include <generate_test_base.h>
+#include <test_base/generate_test_base.h>
 
 TEST(GENERATOR, plus_transfer) {
     generate_test::generate_test_base("plus_transfer", [](const interval::interval<int> &a, const int b) {
