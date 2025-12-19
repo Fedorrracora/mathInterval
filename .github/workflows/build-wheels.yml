@@ -194,11 +194,25 @@ jobs:
           ${{ matrix.cibw_env }}: ${{ matrix.cibw_archs }}
           CIBW_BUILD_VERBOSITY: 1
 
+      - name: pack wheels
+        run: zip -r artifact.zip wheelhouse/
+
       - name: Upload wheels (GitHub Artifacts)
         uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}
           path: wheelhouse/*.whl
+
+      - name: upload realize
+        if: ${{ success() && github.event_name == 'release' && github.event.action == 'published' }}
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: artifact.zip
+          asset_name: wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   qodana:
     runs-on: ubuntu-latest
