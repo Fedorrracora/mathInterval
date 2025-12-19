@@ -131,7 +131,7 @@ jobs:
           path: build/stubs/_mathInterval
 
   build_wheels:
-    needs: pybind11_stubgen
+    needs: [pybind11_stubgen, test]
     name: Build ${{ matrix.os }} ${{ matrix.cibw_archs }} wheels
     runs-on: ${{ matrix.os }}
     strategy:
