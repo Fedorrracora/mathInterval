@@ -67,10 +67,6 @@ if(TESTING AND NOT SKBUILD)
     target_include_directories(verify PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
     target_compile_definitions(verify PRIVATE MAX_VALUE=1000000)
 
-    if(NOT TESTING_BAR)
-        target_compile_definitions(verify PRIVATE DISABLE_PROGRESS_BAR)
-    endif ()
-
     add_executable(test_target
             Testing/one_set/cpp/test1.add_point.cpp
             Testing/one_set/cpp/test2.add_interval.cpp
@@ -94,6 +90,10 @@ if(TESTING AND NOT SKBUILD)
             Testing/generator/test3.mul_transfer.cpp
             Testing/generator/test4.div_transfer.cpp
     )
+
+    if(NOT TESTING_BAR)
+        target_compile_definitions(test_target PRIVATE DISABLE_PROGRESS_BAR)
+    endif ()
     target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE mathInterval PRIVATE verify)
     target_compile_options(test_target PRIVATE -Wno-deprecated-declarations)
     target_compile_definitions(test_target PRIVATE RANDOM_GENERATOR=100000 CS=true WS=true BS=true ITERATIONS=1250)
@@ -115,7 +115,7 @@ if(TESTING AND NOT SKBUILD)
     endif()
 
     if(FORMATTER)
-        target_compile_definitions(verify PRIVATE FORMATTER_ENABLED)
+        target_compile_definitions(test_target PRIVATE FORMATTER_ENABLED)
         add_executable(formatter src/register.cpp Testing/time_test/time_test.register.cpp)
         target_link_libraries(formatter PRIVATE verify)
     endif()
