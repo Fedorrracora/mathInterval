@@ -21,7 +21,9 @@ int main(const int argc, const char *argv[]) {
 
         a.value() = verify::change(a.value(), ";", "");
         a.value() = verify::change(a.value(), "interval::minimal<int>()", "a.minimal");
+        a.value() = verify::change(a.value(), "interval::minimal<test_type>()", "a.minimal");
         a.value() = verify::change(a.value(), "interval::maximal<int>()", "a.maximal");
+        a.value() = verify::change(a.value(), "interval::maximal<test_type>()", "a.maximal");
         a.value() = verify::change(a.value(), "false", "False");
         a.value() = verify::change(a.value(), "true", "True");
         a.value() = verify::change(a.value(), "to_string()", "__str__()");
