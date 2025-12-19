@@ -26,7 +26,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -DTESTING=ON -DBUILD_PYTHON_BINDINGS=ON ..
+          cmake -DTESTING=ON -DBUILD_PYTHON_BINDINGS=ON -DFORMATTER=ON -DTEST_WRITER=ON ..
           make
 
       - name: Testing

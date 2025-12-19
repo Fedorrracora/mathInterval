@@ -1,6 +1,8 @@
 name: Build only linux wheels (for debug)
 on:
   workflow_dispatch:
+  push:
+    branches: [ test4 ]
 permissions:
   checks: write
   pull-requests: write
@@ -19,7 +21,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -DTESTING=ON -DBUILD_PYTHON_BINDINGS=ON ..
+          cmake -DTESTING=ON -DBUILD_PYTHON_BINDINGS=ON -DFORMATTER=ON -DTEST_WRITER=ON ..
           make
 
       - name: Testing
