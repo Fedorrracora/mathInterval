@@ -223,7 +223,7 @@ jobs:
 
   upload_to_pypi:
     if: github.event_name == 'release' && github.event.action == 'published'
-    needs: [pybind11_stubgen, qodana, timer_test]
+    needs: [build_wheels, qodana, timer_test]
     runs-on: ubuntu-latest
     steps:
       - name: Download all wheels artifacts
