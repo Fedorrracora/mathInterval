@@ -49,6 +49,7 @@ if(TESTING AND NOT SKBUILD)
     enable_testing()
     file(COPY Testing/one_set/answers DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/one_set)
     file(COPY Testing/custom_type/answers DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/custom_type)
+    file(COPY Testing/many_set/answers DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/many_set)
 
     #setup GoogleTest
     include(FetchContent)
@@ -77,6 +78,7 @@ if(TESTING AND NOT SKBUILD)
             Testing/one_set/cpp/test7.transfer_operations.cpp
             Testing/one_set/cpp/test8.remainder.cpp
             Testing/one_set/cpp/test9.any.cpp
+            Testing/many_set/cpp/test1.equal.cpp
             Testing/custom_type/cpp/base.cpp
             Testing/custom_type/cpp/test1.many_funcs.cpp
             Testing/custom_type/cpp/test2.custom_transfer.cpp
@@ -114,6 +116,7 @@ if(TESTING AND NOT SKBUILD)
         add_test(NAME PYTHON.ONE_SET.any COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test9.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.CUSTOM_TYPE.many_funcs COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/custom_type/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.CUSTOM_TYPE.custom_transfer COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/custom_type/python/test2.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.MANY_SET.equal COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/many_set/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
     endif()
 
     if(FORMATTER)
@@ -200,7 +203,7 @@ else()
     install(FILES include/interval.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mathInterval)
     install(TARGETS mathInterval EXPORT mathIntervalTargets)
     install(EXPORT mathIntervalTargets FILE mathIntervalTargets.cmake NAMESPACE mathInterval:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
-    write_basic_package_version_file(mathIntervalConfigVersion.cmake VERSION 0.5.1 COMPATIBILITY AnyNewerVersion)
+    write_basic_package_version_file(mathIntervalConfigVersion.cmake VERSION 0.5.2 COMPATIBILITY AnyNewerVersion)
     configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/mathIntervalConfig.cmake.in
                                   ${CMAKE_CURRENT_BINARY_DIR}/mathIntervalConfig.cmake
                                   INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
