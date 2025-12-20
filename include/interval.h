@@ -137,7 +137,7 @@ namespace interval {
         {return intervals.size() == 1 && *intervals.begin() == std::make_pair(minimal<T>::data(), maximal<T>::data());}
 
         /// clear multitude data
-        void clear() {points.clear(); intervals.clear();}
+        void clear() noexcept {points.clear(); intervals.clear();}
 
         /// return true if this point in multitude, else return false
         [[nodiscard]] bool in(const inp_type &a) const

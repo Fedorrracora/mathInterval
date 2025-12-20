@@ -148,7 +148,7 @@ void bind_interval(py::module_ &m, const char* class_name) {
         .def("__str__", &Interval::to_string, "return string with all data in mathematical style")
         .def("__eq__", &Interval::operator==, py::is_operator(), "does what it should")
         .def("__ne__", &Interval::operator!=, py::is_operator(), "does what it should")
-        .def("__contains__", &Interval::issubset, py::arg("a"), "return true if this multitude is subset of another multitude, else return false")
+        .def("__contains__", &Interval::issuperset, py::arg("a"), "return true if this multitude is subset of another multitude, else return false")
         .def("issubset", &Interval::issubset, py::arg("b"), "return true if this multitude is subset of another multitude, else return false")
         .def("issuperset", &Interval::issuperset, py::arg("b"), "return true if this multitude is subset of another multitude, else return false")
         .def("isdisjoint", &Interval::isdisjoint, py::arg("b"), "return true if these multitudes has no common points, else return false")
