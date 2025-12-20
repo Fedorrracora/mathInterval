@@ -43,6 +43,7 @@ int main(const int argc, const char *argv[]) {
             a.value() = verify::change(a.value(), "ASSERT_TRUE", "assert");
             a.value() = verify::change(a.value(), " << ", ", ");
             a.value() = verify::change(a.value(), "!", "1 - ");
+            a.value() = verify::change(a.value(), "1 - =", "!=");
             a.value() = verify::change(a.value(), "&&", "and");
             a.value() = verify::change(a.value(), "||", "or");
             a.value() = verify::change(a.value(), "CS, WS, BS", "*stp");
