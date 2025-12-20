@@ -195,7 +195,9 @@ jobs:
           CIBW_BUILD_VERBOSITY: 1
 
       - name: pack wheels
-        run: zip -r artifact.zip wheelhouse/
+        uses: montudor/action-zip@v1
+        with:
+          args: zip -r artifact.zip wheelhouse/
 
       - name: Upload wheels (GitHub Artifacts)
         uses: actions/upload-artifact@v4
