@@ -79,6 +79,7 @@ if(TESTING AND NOT SKBUILD)
             Testing/one_set/cpp/test8.remainder.cpp
             Testing/one_set/cpp/test9.any.cpp
             Testing/many_set/cpp/test1.equal.cpp
+            Testing/many_set/cpp/test2.subset.cpp
             Testing/custom_type/cpp/base.cpp
             Testing/custom_type/cpp/test1.many_funcs.cpp
             Testing/custom_type/cpp/test2.custom_transfer.cpp
@@ -114,9 +115,10 @@ if(TESTING AND NOT SKBUILD)
         add_test(NAME PYTHON.ONE_SET.transfer_operations COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test7.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.ONE_SET.remainder COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test8.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.ONE_SET.any COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test9.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.MANY_SET.equal COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/many_set/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        add_test(NAME PYTHON.MANY_SET.subset COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/many_set/python/test2.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.CUSTOM_TYPE.many_funcs COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/custom_type/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.CUSTOM_TYPE.custom_transfer COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/custom_type/python/test2.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-        add_test(NAME PYTHON.MANY_SET.equal COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/many_set/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
     endif()
 
     if(FORMATTER)
