@@ -132,7 +132,7 @@ jobs:
 
   build_wheels:
     needs: [pybind11_stubgen, test]
-    name: Build ${{ matrix.os }} ${{ matrix.cibw_archs }} wheels
+    name: Build ${{ matrix.name_os }} ${{ matrix.name_arch }} wheels
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -142,22 +142,32 @@ jobs:
           - os: ubuntu-latest
             cibw_archs: x86_64
             cibw_env: CIBW_ARCHS_LINUX
+            name_os: linux
+            name_arch: x86_64
           - os: ubuntu-latest
-            cibw_archs: aarch64    # ARM64 через QEMU
+            cibw_archs: aarch64
             cibw_env: CIBW_ARCHS_LINUX
+            name_os: linux
+            name_arch: arm64
 
           # ---- macOS ----
           - os: macos-latest
             cibw_archs: x86_64
             cibw_env: CIBW_ARCHS_MACOS
+            name_os: macos
+            name_arch: x86_64
           - os: macos-latest
             cibw_archs: arm64
             cibw_env: CIBW_ARCHS_MACOS
+            name_os: macos
+            name_arch: arm64
 
           # ---- Windows ----
           - os: windows-latest
             cibw_archs: AMD64
             cibw_env: CIBW_ARCHS_WINDOWS
+            name_os: windows
+            name_arch: x86_64
     steps:
       - uses: actions/checkout@v4
         with:
@@ -204,7 +214,7 @@ jobs:
       - name: Upload wheels (GitHub Artifacts)
         uses: actions/upload-artifact@v4
         with:
-          name: wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}
+          name: wheels-${{ matrix.name_os }}-${{ matrix.name_arch }}
           path: wheelhouse/*.whl
 
       - name: upload realize
@@ -213,7 +223,7 @@ jobs:
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: artifact.zip
-          asset_name: wheels-${{ matrix.os }}-${{ matrix.cibw_archs }}.zip
+          asset_name: wheels-${{ matrix.name_os }}-${{ matrix.name_arch }}.zip
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
