@@ -224,7 +224,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release upload ${{ github.event.release.tag_name }} \
-            wheels-${{ matrix.name_os }}-${{ matrix.name_arch }}.zip \
+            artifact.zip --name wheels-${{ matrix.name_os }}-${{ matrix.name_arch }}.zip \
             --clobber
 
   qodana:
