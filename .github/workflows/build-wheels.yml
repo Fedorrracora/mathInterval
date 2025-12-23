@@ -209,7 +209,7 @@ jobs:
         uses: thedoctor0/zip-release@0.7.6
         with:
           type: 'zip'
-          filename: 'artifact.zip'
+          filename: wheels-${{ matrix.name_os }}-${{ matrix.name_arch }}.zip
           path: 'wheelhouse/'
 
       - name: Upload wheels (GitHub Artifacts)
@@ -224,7 +224,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release upload ${{ github.event.release.tag_name }} \
-            artifact.zip --name wheels-${{ matrix.name_os }}-${{ matrix.name_arch }}.zip \
+            wheels-${{ matrix.name_os }}-${{ matrix.name_arch }}.zip \
             --clobber
 
   qodana:
