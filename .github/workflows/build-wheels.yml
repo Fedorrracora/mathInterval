@@ -210,7 +210,7 @@ jobs:
         with:
           type: 'zip'
           filename: wheels-${{ matrix.name_os }}-${{ matrix.name_arch }}.zip
-          path: 'wheelhouse/'
+          path: 'wheelhouse/*'
 
       - name: Upload wheels (GitHub Artifacts)
         uses: actions/upload-artifact@v4
