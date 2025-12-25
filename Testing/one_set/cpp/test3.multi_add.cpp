@@ -10,12 +10,14 @@ TEST(ONE_SET, multi_add) {
     ASSERT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS)) << "error in step 1: adding border point\n";
     {
         bool b = a.add_interval(10, 11);
-        ASSERT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS) && b) << "error in step 2: meet 2 intervals: last - interval\n";
+        ASSERT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS) && b) <<
+ "error in step 2: meet 2 intervals: last - interval\n";
     }
     a.add_interval(11, 20);
     {
         bool b = a.add_point(11);
-        ASSERT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS) && b) << "error in step 3: meet 2 intervals: last - point\n";
+        ASSERT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS) && b) <<
+ "error in step 3: meet 2 intervals: last - point\n";
     }
     a.add_interval(20, 30);
     a.add_point(30);
@@ -32,7 +34,8 @@ TEST(ONE_SET, multi_add) {
         b |= a.add_interval(10, 20);
         b |= a.add_interval(1, 15);
         b |= a.add_interval(25, 30);
-        EXPECT_TRUE(verify::same(a.to_string(), line.last, CS, WS, BS) && !b) << "error in step 5: adding intervals/points that not changing data\n";
+        EXPECT_TRUE(verify::same(a.to_string(), line.last, CS, WS, BS) && !b) <<
+ "error in step 5: adding intervals/points that not changing data\n";
     }
     a.add_point(-1);
     a.add_point(0);

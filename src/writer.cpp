@@ -2,18 +2,19 @@
 #include <verifier.h>
 /// python tests from 5 are generated from cpp tests using this tool
 std::string tab = "    ";
-int main(const int argc, const char *argv[]) {
+
+int main(const int argc, const char* argv[]) {
     if (argc != 2) {
         std::cerr << "Usage: " << argv[0] << " <filename>" << std::endl;
         return 1;
     }
     verify::line_checker line(verify::read_file(argv[1]));
     std::cout << "import _mathInterval as interval\n"
-"import verify_python as verify\n"
-"\n"
-"stp = (True, True, True)\n";
+        "import verify_python as verify\n"
+        "\n"
+        "stp = (True, True, True)\n";
     bool in_assert = false;
-    for (auto a = line.get();a != std::nullopt; a = line.get()) {
+    for (auto a = line.get(); a != std::nullopt; a = line.get()) {
         if (a.value()[0] == '#') continue;
         a.value() = verify::boundary_spaces(a.value());
         if (a == "}") continue;
@@ -31,7 +32,9 @@ int main(const int argc, const char *argv[]) {
         const auto data = verify::split(a.value());
         if (!data.empty() && data.front() == "interval::interval<int>") {
             std::vector<std::string> names, mul;
-            for (auto i = 1; i < data.size(); ++i) names.push_back(verify::boundary(data[i])), mul.emplace_back("interval.Interval()");
+            for (auto i = 1; i < data.size(); ++i)
+                names.push_back(verify::boundary(data[i])), mul.emplace_back(
+                    "interval.Interval()");
             a.value() = verify::join(", ", names) + " = " + verify::join(", ", mul);
         }
         if (!data.empty() && data.front() == "verify::line_checker") {

@@ -2,6 +2,7 @@
 #define MATHINTERVAL_ADDITIONAL_TEST_TOOLS_H
 #include <interval.h>
 #include <verifier.h>
+
 namespace verifier_tests {
     /// generating random data
     interval::interval<int> generate(int max_len, int probability_coefficient = 15);
@@ -14,7 +15,7 @@ namespace verifier_tests {
         double val;
     };
 
-    std::ostream& operator << (std::ostream& os, const fixed_printing& v);
+    std::ostream& operator <<(std::ostream& os, const fixed_printing& v);
 
     /// print progress bar (s - master name)
     struct progress {
@@ -24,6 +25,7 @@ namespace verifier_tests {
         void call(int iter) const;
         /// stop timer and get the time
         double stop();
+
     private:
         const int iterations;
         const int debug_iter;
@@ -45,7 +47,7 @@ namespace verifier_tests {
     };
 
     /// format vector NxM with std::string to table (md format). Vector must have one line without elems (HEADER_LINE)
-    std::string to_table(std::vector<std::vector<std::string>> &vec, int HEADER_LINE = 1);
+    std::string to_table(std::vector<std::vector<std::string>>& vec, int HEADER_LINE = 1);
 }
 
 #endif //MATHINTERVAL_ADDITIONAL_TEST_TOOLS_H

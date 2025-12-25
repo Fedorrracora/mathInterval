@@ -5,14 +5,17 @@
 #include <pybind11/stl.h>
 
 namespace py = pybind11;
+
 class PyValue {
 public:
     py::object obj{};
 
-    explicit PyValue(py::object o) : obj(std::move(o)) {}
+    explicit PyValue(py::object o) :
+        obj(std::move(o)) {}
+
     PyValue() = default;
 
-    bool operator==(const PyValue& other) const {
+    bool operator==(const PyValue &other) const {
         py::gil_scoped_acquire gil;
 
         if (obj.is(other.obj))
@@ -21,7 +24,7 @@ public:
         return obj.attr("__eq__")(other.obj).cast<bool>();
     }
 
-    std::partial_ordering operator<=>(const PyValue& other) const {
+    std::partial_ordering operator<=>(const PyValue &other) const {
         py::gil_scoped_acquire gil;
 
         if (obj.is(other.obj))
@@ -39,7 +42,7 @@ public:
         return std::partial_ordering::unordered;
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const PyValue& v) {
+    friend std::ostream &operator<<(std::ostream &os, const PyValue &v) {
         py::gil_scoped_acquire gil;
         os << v.obj;
         return os;

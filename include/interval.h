@@ -15,9 +15,11 @@ namespace interval {
     namespace detail {
         /// allow to custom detecting type
         struct type_policy {};
+
         /// standard type for policies
         struct standard_policy {};
     }
+
     namespace policy {
         // type policies
 
@@ -30,6 +32,7 @@ namespace interval {
             template <typename T>
             static constexpr bool is_string_v = std::is_same_v<std::string, T>;
         };
+
         /// type detects as int
         struct int_type_policy : detail::type_policy {
             template <typename>
@@ -39,6 +42,7 @@ namespace interval {
             template <typename>
             static constexpr bool is_string_v = false;
         };
+
         /// type detects as float
         struct float_type_policy : detail::type_policy {
             template <typename>
@@ -48,6 +52,7 @@ namespace interval {
             template <typename>
             static constexpr bool is_string_v = false;
         };
+
         /// type detects as string
         struct string_type_policy : detail::type_policy {
             template <typename>
@@ -57,6 +62,7 @@ namespace interval {
             template <typename>
             static constexpr bool is_string_v = true;
         };
+
         /// type detects as unknown
         struct unknown_type_policy : detail::type_policy {
             template <typename>
@@ -72,28 +78,34 @@ namespace interval {
         /// allows to change how an empty set prints
         struct empty_print_policy : detail::standard_policy {
             const std::string empty_print;
-            explicit empty_print_policy(std::string s) : empty_print(std::move(s)) {}
+
+            explicit empty_print_policy(std::string s) :
+                empty_print(std::move(s)) {}
         };
+
         /// allows to change how prints -INF and +INF
         struct minmax_print_policy : detail::standard_policy {
             const std::string min, max;
-            explicit minmax_print_policy(std::string min, std::string max) : min(std::move(min)), max(std::move(max)) {}
+
+            explicit minmax_print_policy(std::string min, std::string max) :
+                min(std::move(min)), max(std::move(max)) {}
         };
     } // policy
 
     /// return always minimal element in any interval
     template <typename T>
     struct minimal {
-        [[nodiscard]] static std::pair<int, T> data() noexcept {return {0, {}};}
+        [[nodiscard]] static std::pair<int, T> data() noexcept { return {0, {}}; }
     };
 
     /// return always maximal element in any interval
     template <typename T>
     struct maximal {
-        [[nodiscard]] static std::pair<int, T> data() noexcept {return {2, {}};}
+        [[nodiscard]] static std::pair<int, T> data() noexcept { return {2, {}}; }
     };
 
-    template<typename T, typename type_policy = policy::standard_type_policy> requires std::is_base_of_v<detail::type_policy, type_policy>
+    template <typename T, typename type_policy = policy::standard_type_policy> requires std::is_base_of_v<
+        detail::type_policy, type_policy>
     class interval {
     public:
         using inner_type = std::pair<int, T>;
@@ -106,46 +118,50 @@ namespace interval {
         interval(const interval &other) = default;
         interval(interval &&other) noexcept = default;
 
-        interval & operator=(const interval &other) = default;
-        interval & operator=(interval &&other) noexcept = default;
+        interval &operator=(const interval &other) = default;
+        interval &operator=(interval &&other) noexcept = default;
 
         [[nodiscard]] bool operator==(const interval &b) const noexcept {
             return this == &b || (points == b.points && intervals == b.intervals);
         }
-        [[nodiscard]] bool operator!=(const interval &b) const noexcept {
-            return !(*this == b);
-        }
+
+        [[nodiscard]] bool operator!=(const interval &b) const noexcept { return !(*this == b); }
 
         // standard operations
 
         /// returns false if this point was inside this multitude, else return true
-        bool add_point(const inp_type &a) {return add_point_in(to_point(a));}
+        bool add_point(const inp_type &a) { return add_point_in(to_point(a)); }
         /// returns false if this point was not inside this multitude, else return true
-        bool remove_point(const inp_type &a) {return remove_point_in(to_point(a));}
+        bool remove_point(const inp_type &a) { return remove_point_in(to_point(a)); }
 
         /// returns false if all this interval was inside this multitude, else return true
-        bool add_interval(const inp_type &a, const inp_type &b)
-        {return add_interval_in(to_point(a), to_point(b));}
+        bool add_interval(const inp_type &a, const inp_type &b) { return add_interval_in(to_point(a), to_point(b)); }
         /// returns false if all this interval was not inside this multitude, else return true
-        bool remove_interval(const inp_type &a, const inp_type &b)
-        {return remove_interval_in(to_point(a), to_point(b));}
+        bool remove_interval(const inp_type &a, const inp_type &b) {
+            return remove_interval_in(to_point(a), to_point(b));
+        }
 
         /// return true if this multitude is empty, else return false
-        [[nodiscard]] bool empty() const noexcept {return points.empty() && intervals.empty();}
+        [[nodiscard]] bool empty() const noexcept { return points.empty() && intervals.empty(); }
         /// return true if this multitude is (-INF; +INF), else return false
-        [[nodiscard]] bool full() const noexcept
-        {return intervals.size() == 1 && *intervals.begin() == std::make_pair(minimal<T>::data(), maximal<T>::data());}
+        [[nodiscard]] bool full() const noexcept {
+            return intervals.size() == 1 && *intervals.begin() ==
+                std::make_pair(minimal<T>::data(), maximal<T>::data());
+        }
 
         /// clear multitude data
-        void clear() noexcept {points.clear(); intervals.clear();}
+        void clear() noexcept {
+            points.clear();
+            intervals.clear();
+        }
 
         /// return true if this point in multitude, else return false
-        [[nodiscard]] bool in(const inp_type &a) const
-        {return points.count(to_point(a)) || get_interval_that_include_this_point(to_point(a)) != intervals.end();}
+        [[nodiscard]] bool in(const inp_type &a) const {
+            return points.count(to_point(a)) || get_interval_that_include_this_point(to_point(a)) != intervals.end();
+        }
 
         /// return true if interval (a, b) in multitude, else return false
-        [[nodiscard]] bool in(const inp_type &a, const inp_type &b) const
-        {return check_in(to_point(a), to_point(b));}
+        [[nodiscard]] bool in(const inp_type &a, const inp_type &b) const { return check_in(to_point(a), to_point(b)); }
 
         /// return true if interval in multitude, else return false
         [[nodiscard]] bool in(const std::pair<inp_type, inp_type> &a) const {
@@ -153,28 +169,19 @@ namespace interval {
         }
 
         /// return true if this multitude is subset of another multitude, else return false
-        [[nodiscard]] bool in(const interval &b) const {
-            return *this * b == *this;
-        }
+        [[nodiscard]] bool in(const interval &b) const { return *this * b == *this; }
+
         /// return true if this multitude is subset of another multitude, else return false
-        [[nodiscard]] bool issubset(const interval &b) const {
-            return this->in(b);
-        }
+        [[nodiscard]] bool issubset(const interval &b) const { return this->in(b); }
 
         /// return true if another multitude is subset of this multitude, else return false
-        [[nodiscard]] bool issuperset(const interval &b) const {
-            return b.in(*this);
-        }
+        [[nodiscard]] bool issuperset(const interval &b) const { return b.in(*this); }
 
         /// return true if these multitudes has no common points, else return false
-        [[nodiscard]] bool isdisjoint(const interval &b) const {
-            return (*this * b).empty();
-        }
+        [[nodiscard]] bool isdisjoint(const interval &b) const { return (*this * b).empty(); }
 
         /// return true if multitude has only separate points (or empty), else return false
-        [[nodiscard]] bool points_only() const {
-            return intervals.empty();
-        }
+        [[nodiscard]] bool points_only() const { return intervals.empty(); }
 
         // math operations
 
@@ -183,8 +190,9 @@ namespace interval {
             a += b;
             return a;
         }
+
         /// returns a new multitude containing the union of the elements of the previous multitudes
-        [[nodiscard]] friend interval operator|(const interval &a, const interval &b) {return a + b;}
+        [[nodiscard]] friend interval operator|(const interval &a, const interval &b) { return a + b; }
         /// adds elements of another multitude
         interval &operator+=(const interval &b) {
             if (this == &b) return *this;
@@ -192,14 +200,16 @@ namespace interval {
             for (auto &i : b.intervals) add_interval_in(i.first, i.second);
             return *this;
         }
+
         /// adds elements of another multitude
-        interval &operator|=(const interval &b) {return this->operator+=(b);}
+        interval &operator|=(const interval &b) { return this->operator+=(b); }
 
         /// returns a new multitude containing the difference of the elements of the previous multitudes
         [[nodiscard]] friend interval operator-(interval a, const interval &b) {
             a -= b;
             return a;
         }
+
         /// remove elements of another multitude
         interval &operator-=(const interval &b) {
             if (this == &b) {
@@ -219,21 +229,21 @@ namespace interval {
             x.invert_in(z);
             return z;
         }
+
         /// returns a new multitude containing the intersection of the elements of the previous multitudes
-        [[nodiscard]] friend interval operator&(const interval &a, const interval &b) {return a * b;}
+        [[nodiscard]] friend interval operator&(const interval &a, const interval &b) { return a * b; }
         /// intersect elements with another multitude
         friend interval &operator*=(interval &a, const interval &b) {
             if (&a == &b) return a;
             a = a * b;
             return a;
         }
+
         /// intersect elements with another multitude
-        friend interval &operator&=(interval &a, const interval &b) {return a *= b;}
+        friend interval &operator&=(interval &a, const interval &b) { return a *= b; }
 
         /// returns a new multitude containing the symmetric difference of the elements of the previous multitudes
-        [[nodiscard]] friend interval operator^(const interval &a, const interval &b) {
-            return a + b - a * b;
-        }
+        [[nodiscard]] friend interval operator^(const interval &a, const interval &b) { return a + b - a * b; }
 
         /// generating symmetric difference with elements of another multitude
         friend interval &operator^=(interval &a, const interval &b) {
@@ -243,39 +253,82 @@ namespace interval {
         }
 
 
-
         // transfer operations
 
         /// returns a new multitude with the points shifted forward by the distance val
-        [[nodiscard]] interval operator+(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; plus_in(b, val); return b;}
+        [[nodiscard]] interval operator+(const T val) const requires type_policy::template is_arithmetic_v<T> {
+            interval b;
+            plus_in(b, val);
+            return b;
+        }
+
         /// shift the points forward by a distance of val
-        friend interval & operator+=(interval &a, const T val)
-                {interval b; a.plus_in(b, val); a = std::move(b); return a;}
+        friend interval &operator+=(interval &a, const T val) {
+            interval b;
+            a.plus_in(b, val);
+            a = std::move(b);
+            return a;
+        }
 
         /// returns a new multitude with the points shifted backward by the distance val
-        [[nodiscard]] interval operator-(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; plus_in(b, -val); return b;}
+        [[nodiscard]] interval operator-(const T val) const requires type_policy::template is_arithmetic_v<T> {
+            interval b;
+            plus_in(b, -val);
+            return b;
+        }
+
         /// shift the points backward by a distance of val
-        friend interval & operator-=(interval &a, const T val) {
-            interval b; a.plus_in(b, -val); a = std::move(b); return a;
+        friend interval &operator-=(interval &a, const T val) {
+            interval b;
+            a.plus_in(b, -val);
+            a = std::move(b);
+            return a;
         }
 
         /// returns a new multitude with the points multiplied by a factor of val
-        [[nodiscard]] interval operator*(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; multiply_in(b, val); return b;}
+        [[nodiscard]] interval operator*(const T val) const requires type_policy::template is_arithmetic_v<T> {
+            interval b;
+            multiply_in(b, val);
+            return b;
+        }
+
         /// multiplies the points of a multitude by a factor of val
-        friend interval & operator*=(interval &a, const T val)
-                {interval b; a.multiply_in(b, val); a = std::move(b); return a;}
+        friend interval &operator*=(interval &a, const T val) {
+            interval b;
+            a.multiply_in(b, val);
+            a = std::move(b);
+            return a;
+        }
 
         /// returns a new multitude with the points divided by a factor of val
-        [[nodiscard]] interval operator/(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; division_in(b, val); return b;}
+        [[nodiscard]] interval operator/(const T val) const requires type_policy::template is_arithmetic_v<T> {
+            interval b;
+            division_in(b, val);
+            return b;
+        }
+
         /// divides the points of a multitude by a factor of val
-        friend interval & operator/=(interval &a, const T val)
-                {interval b; a.division_in(b, val); a = std::move(b); return a;}
+        friend interval &operator/=(interval &a, const T val) {
+            interval b;
+            a.division_in(b, val);
+            a = std::move(b);
+            return a;
+        }
 
         /// returns a new multitude with points taken as the remainder of the division by val
-        [[nodiscard]] interval operator%(const T val) const requires type_policy::template is_integral_v<T> {interval b; remainder_in(b, val); return b;}
+        [[nodiscard]] interval operator%(const T val) const requires type_policy::template is_integral_v<T> {
+            interval b;
+            remainder_in(b, val);
+            return b;
+        }
+
         /// replaces the points with the remainder of the division by val
-        friend interval & operator%=(interval &a, const T val)
-        {interval b; a.remainder_in(b, val); a = std::move(b); return a;}
+        friend interval &operator%=(interval &a, const T val) {
+            interval b;
+            a.remainder_in(b, val);
+            a = std::move(b);
+            return a;
+        }
 
         // advanced operations
 
@@ -317,9 +370,7 @@ namespace interval {
          */
         [[nodiscard]] std::optional<T> any(bool flag = false) const {
             if (!points.empty()) return points.begin()->second; // if there is any point: return it
-            if (flag && in(minimal<T>(), maximal<T>())) {
-                return std::nullopt;
-            }
+            if (flag && in(minimal<T>(), maximal<T>())) { return std::nullopt; }
             return get_any_in(intervals); // try to return something in intervals
         }
 
@@ -352,9 +403,10 @@ namespace interval {
         Do not forget to monitor for overflows.
          */
         [[nodiscard]] std::optional<T> any(
-            const std::function<std::optional<T>(const T&)> &MINUS_INF_x,
-            const std::function<std::optional<T>(const T&)> &x_PLUS_INF,
-            const std::function<std::optional<T>(const T&, const T&)> &x_y, const std::optional<T> &MINUS_INF_PLUS_INF) const {
+            const std::function<std::optional<T>(const T &)> &MINUS_INF_x,
+            const std::function<std::optional<T>(const T &)> &x_PLUS_INF,
+            const std::function<std::optional<T>(const T &, const T &)> &x_y,
+            const std::optional<T> &MINUS_INF_PLUS_INF) const {
             if (!points.empty()) return points.begin()->second; // if there is any point: return it
             return get_any_functional(intervals, MINUS_INF_x, x_PLUS_INF, x_y, MINUS_INF_PLUS_INF);
         }
@@ -377,11 +429,12 @@ namespace interval {
         If the first value of an interval becomes greater than the second,
         the function will swap them automatically.
          */
-        [[nodiscard]] interval custom_transfer(const std::function<T(const T&)> &fun) const {
+        [[nodiscard]] interval custom_transfer(const std::function<T(const T &)> &fun) const {
             interval b;
             custom_transfer_in(b, fun);
             return b;
         }
+
         /**
         ### custom_transfer()
 
@@ -402,12 +455,13 @@ namespace interval {
         If the first value of an interval becomes greater than the second,
         the function will swap them automatically.
          */
-        [[nodiscard]] interval custom_transfer(const std::function<T(const T&)> &fun,
-                                               const inp_type& MINUS_INF, const inp_type& PLUS_INF) const {
+        [[nodiscard]] interval custom_transfer(const std::function<T(const T &)> &fun,
+                                               const inp_type &MINUS_INF, const inp_type &PLUS_INF) const {
             interval b;
             custom_transfer_in(b, fun, to_point(MINUS_INF), to_point(PLUS_INF));
             return b;
         }
+
         /**
         ### _custom_transfer()
 
@@ -456,9 +510,9 @@ namespace interval {
           this interval will **not** be added.
          */
         [[nodiscard]] interval _custom_transfer(
-                const std::function<std::pair<inner_type, inner_type>
-                        (const inner_type&, const inner_type&)> &L_R,
-                const std::function<T(const T&)> &POINT) const {
+            const std::function<std::pair<inner_type, inner_type>
+                (const inner_type &, const inner_type &)> &L_R,
+            const std::function<T(const T &)> &POINT) const {
             interval b;
             custom_transfer_in(b, L_R, POINT);
             return b;
@@ -467,7 +521,9 @@ namespace interval {
         /// allow to change any not-type policy
         void apply_policy(const policy::empty_print_policy &policy) { empty_print = policy.empty_print; }
         /// allow to change any not-type policy
-        void apply_policy(const policy::minmax_print_policy &policy) { minmax_print = std::make_pair(policy.min, policy.max); }
+        void apply_policy(const policy::minmax_print_policy &policy) {
+            minmax_print = std::make_pair(policy.min, policy.max);
+        }
 
         // deprecated
 
@@ -479,34 +535,79 @@ namespace interval {
         }
 
         /// [[deprecated]] returns a new multitude with the points shifted forward by the distance val
-        [[nodiscard]] [[deprecated]] interval _plus(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; _plus_in(b, val); return b;}
-        /// [[deprecated]] shift the points forward by a distance of val
-        [[deprecated]] friend interval & _plus_self(interval &a, const T val)
-        {interval b; a._plus_in(b, val); a = std::move(b); return a;}
-        /// [[deprecated]] returns a new multitude with the points shifted forward by the distance val
-        [[nodiscard]] [[deprecated]] interval _minus(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; _plus_in(b, -val); return b;}
-        /// [[deprecated]] shift the points forward by a distance of val
-        [[deprecated]] friend interval & _minus_self(interval &a, const T val)
-        {interval b; a._plus_in(b, -val); a = std::move(b); return a;}
-        /// [[deprecated]] returns a new multitude with the points multiplied by a factor of val
-        [[nodiscard]] [[deprecated]] interval _mul(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; _multiply_in(b, val); return b;}
-        /// [[deprecated]] multiplies the points of a multitude by a factor of val
-        [[deprecated]] friend interval & _mul_self(interval &a, const T val)
-        {interval b; a._multiply_in(b, val); a = std::move(b); return a;}
-        /// [[deprecated]] returns a new multitude with the points divided by a factor of val
-        [[nodiscard]] [[deprecated]] interval _div(const T val) const requires type_policy::template is_arithmetic_v<T> {interval b; _division_in(b, val); return b;}
-        /// [[deprecated]] divides the points of a multitude by a factor of val
-        [[deprecated]] friend interval & _div_self(interval &a, const T val)
-        {interval b; a._division_in(b, val); a = std::move(b); return a;}
-    protected:
+        [[nodiscard]] [[deprecated]] interval _plus(const T val) const requires type_policy::template is_arithmetic_v<
+            T> {
+            interval b;
+            _plus_in(b, val);
+            return b;
+        }
 
+        /// [[deprecated]] shift the points forward by a distance of val
+        [[deprecated]] friend interval &_plus_self(interval &a, const T val) {
+            interval b;
+            a._plus_in(b, val);
+            a = std::move(b);
+            return a;
+        }
+
+        /// [[deprecated]] returns a new multitude with the points shifted forward by the distance val
+        [[nodiscard]] [[deprecated]] interval _minus(const T val) const requires type_policy::template is_arithmetic_v<
+            T> {
+            interval b;
+            _plus_in(b, -val);
+            return b;
+        }
+
+        /// [[deprecated]] shift the points forward by a distance of val
+        [[deprecated]] friend interval &_minus_self(interval &a, const T val) {
+            interval b;
+            a._plus_in(b, -val);
+            a = std::move(b);
+            return a;
+        }
+
+        /// [[deprecated]] returns a new multitude with the points multiplied by a factor of val
+        [[nodiscard]] [[deprecated]] interval _mul(const T val) const requires type_policy::template is_arithmetic_v<
+            T> {
+            interval b;
+            _multiply_in(b, val);
+            return b;
+        }
+
+        /// [[deprecated]] multiplies the points of a multitude by a factor of val
+        [[deprecated]] friend interval &_mul_self(interval &a, const T val) {
+            interval b;
+            a._multiply_in(b, val);
+            a = std::move(b);
+            return a;
+        }
+
+        /// [[deprecated]] returns a new multitude with the points divided by a factor of val
+        [[nodiscard]] [[deprecated]] interval _div(const T val) const requires type_policy::template is_arithmetic_v<
+            T> {
+            interval b;
+            _division_in(b, val);
+            return b;
+        }
+
+        /// [[deprecated]] divides the points of a multitude by a factor of val
+        [[deprecated]] friend interval &_div_self(interval &a, const T val) {
+            interval b;
+            a._division_in(b, val);
+            a = std::move(b);
+            return a;
+        }
+
+    protected:
         struct pair_less {
-            bool operator()(const inner_type& a, const inner_type& b) const noexcept {
+            bool operator()(const inner_type &a, const inner_type &b) const noexcept {
                 if (a.first != b.first) return a.first < b.first;
                 if (a.first != 1) return false;
                 return std::less<T>()(a.second, b.second);
             }
-            bool operator()(const std::pair<inner_type, inner_type>& a, const std::pair<inner_type, inner_type>& b) const noexcept {
+
+            bool operator()(const std::pair<inner_type, inner_type> &a,
+                            const std::pair<inner_type, inner_type> &b) const noexcept {
                 if (a.first.first != b.first.first) return a.first.first < b.first.first;
                 if (a.first.first != 1) {
                     if (a.second.first != b.second.first) return a.second.first < b.second.first;
@@ -543,7 +644,8 @@ namespace interval {
         }
 
         bool add_point_in(const inner_type &p) {
-            if (p.first != 1) throw std::range_error("point has undefined value (-INF or +INF)"); // you cannot add points -INF and +INF
+            if (p.first != 1) throw std::range_error("point has undefined value (-INF or +INF)");
+            // you cannot add points -INF and +INF
 
             // (x1; a); (a; x2) + {a} = (x1; x2)
             auto x = intervals.lower_bound({p, {}});
@@ -560,9 +662,7 @@ namespace interval {
             if (get_interval_that_include_this_point(p) != intervals.end()) return false;
 
             // {a} + {a} = {a}
-            if (points.count(p)) {
-                return false;
-            }
+            if (points.count(p)) { return false; }
 
             // something + {a} = something + {a} if {a} not in something
             points.insert(p);
@@ -570,7 +670,8 @@ namespace interval {
         }
 
         bool remove_point_in(const inner_type &p) {
-            if (p.first != 1) throw std::range_error("point has undefined value (-INF or +INF)"); // you cannot remove points -INF and +INF
+            if (p.first != 1) throw std::range_error("point has undefined value (-INF or +INF)");
+            // you cannot remove points -INF and +INF
             // (x1; x2) - {a} = (x1; a); (a; x2) if {a} in (x1, x2)
             auto x = get_interval_that_include_this_point(p);
             if (x != intervals.end()) {
@@ -669,7 +770,7 @@ namespace interval {
                 ret = true;
             }
 
-            point:
+        point:
             // something + (x1; x2) - (f; s) = something - (f; s) if (x1; x2) in (f; s)
             for (auto it = intervals.lower_bound({f, {}}); it != intervals.end() && it->first < s;) {
                 auto old = it++;
@@ -689,7 +790,8 @@ namespace interval {
             auto it2 = points.begin(); // {point}
             auto from = minimal<T>::data();
             while (it1 != intervals.end() || it2 != points.end()) {
-                if (it2 == points.end() || (it1 != intervals.end() && it1->first < *it2)) { // a < b < point (because point cannot be in (a, b)) -> (from; a) U (b; ...)
+                if (it2 == points.end() || (it1 != intervals.end() && it1->first < *it2)) {
+                    // a < b < point (because point cannot be in (a, b)) -> (from; a) U (b; ...)
                     if (from < it1->first) {
                         buf.intervals.insert(buf.intervals.end(), {from, it1->first});
                         if (it1->first != minimal<T>::data()) buf.points.insert(buf.points.end(), it1->first);
@@ -699,7 +801,8 @@ namespace interval {
                     from = it1->second;
                     ++it1;
                 }
-                else { // a > point -> (from; point) U (point; a)
+                else {
+                    // a > point -> (from; point) U (point; a)
                     if (from < *it2) buf.intervals.insert(buf.intervals.end(), {from, *it2});
                     from = *it2;
                     ++it2;
@@ -712,8 +815,10 @@ namespace interval {
             // if point was -INF or +INF, recover will return second elem to {}
             for (auto &[fst, snd] : intervals) {
                 buf.intervals.insert(buf.intervals.end(),
-                                      {recover(std::make_pair(fst.first, fst.second + val)),
-                                       recover(std::make_pair(snd.first, snd.second + val))});
+                                     {
+                                         recover(std::make_pair(fst.first, fst.second + val)),
+                                         recover(std::make_pair(snd.first, snd.second + val))
+                                     });
             }
             for (auto &i : points) {
                 buf.points.insert(buf.points.end(), recover(std::make_pair(i.first, i.second + val)));
@@ -736,9 +841,7 @@ namespace interval {
                          b = std::make_pair(snd.first, snd.second * val);
                     if (a != b) buf.intervals.insert(buf.intervals.end(), {a, b});
                 }
-                for (auto &i : points) {
-                    buf.points.insert(buf.points.end(), std::make_pair(i.first, i.second * val));
-                }
+                for (auto &i : points) { buf.points.insert(buf.points.end(), std::make_pair(i.first, i.second * val)); }
             }
             else {
                 for (auto &[fst, snd] : intervals) {
@@ -761,9 +864,7 @@ namespace interval {
                          b = std::make_pair(snd.first, snd.second / val);
                     if (a != b) buf.intervals.insert(buf.intervals.end(), {a, b});
                 }
-                for (auto &i : points) {
-                    buf.points.insert(buf.points.end(), std::make_pair(i.first, i.second / val));
-                }
+                for (auto &i : points) { buf.points.insert(buf.points.end(), std::make_pair(i.first, i.second / val)); }
             }
             else {
                 for (auto &[fst, snd] : intervals) {
@@ -791,44 +892,45 @@ namespace interval {
                 }
                 auto s = (fst.second % val + val) % val;
                 auto r = s + len; // l of interval is fst.second % val
-                if (r > val) { // l in [0, val); l + len not in [0, val) -> (l, val) U [0, (l + len) % val)
+                if (r > val) {
+                    // l in [0, val); l + len not in [0, val) -> (l, val) U [0, (l + len) % val)
                     buf.add_interval(s, val);
                     buf.add_point(T{});
                     buf.add_interval(T{}, r % val);
                 }
                 else buf.add_interval(s, r); // l and l + len in [0, val) -> (l, l + len)
             }
-            for (auto &i : points) {
-                buf.add_point((i.second % val + val) % val);
-            }
+            for (auto &i : points) { buf.add_point((i.second % val + val) % val); }
         }
 
-        void custom_transfer_in(interval &buf, const std::function<T(const T&)> &fun) const {
+        void custom_transfer_in(interval &buf, const std::function<T(const T &)> &fun) const {
             // if point was -INF or +INF, recover will return second elem to {}
             for (auto &[fst, snd] : intervals) {
-                auto x = recover(std::make_pair(fst.first, fst.first == 1 ? fun(fst.second):fst.second));
-                auto y = recover(std::make_pair(snd.first, snd.first == 1 ? fun(snd.second):snd.second));
+                auto x = recover(std::make_pair(fst.first, fst.first == 1 ? fun(fst.second) : fst.second));
+                auto y = recover(std::make_pair(snd.first, snd.first == 1 ? fun(snd.second) : snd.second));
                 buf.add_interval_in(std::min(x, y), std::max(x, y));
             }
             for (auto &i : points) {
-                buf.add_point_in(recover(std::make_pair(i.first, i.first == 1 ? fun(i.second):i.second)));
+                buf.add_point_in(recover(std::make_pair(i.first, i.first == 1 ? fun(i.second) : i.second)));
             }
         }
 
-        void custom_transfer_in(interval &buf, const std::function<T(const T&)> &fun, const inner_type& a, const inner_type& b) const {
+        void custom_transfer_in(interval &buf, const std::function<T(const T &)> &fun, const inner_type &a,
+                                const inner_type &b) const {
             for (auto &[fst, snd] : intervals) {
-                auto x = fst.first != 1 ? a:std::make_pair(fst.first, fun(fst.second));
-                auto y = snd.first != 1 ? b:std::make_pair(snd.first, fun(snd.second));
+                auto x = fst.first != 1 ? a : std::make_pair(fst.first, fun(fst.second));
+                auto y = snd.first != 1 ? b : std::make_pair(snd.first, fun(snd.second));
                 buf.add_interval_in(std::min(x, y), std::max(x, y));
             }
             for (auto &i : points) {
-                buf.add_point_in(recover(std::make_pair(i.first, i.first == 1 ? fun(i.second):i.second)));
+                buf.add_point_in(recover(std::make_pair(i.first, i.first == 1 ? fun(i.second) : i.second)));
             }
         }
+
         void custom_transfer_in(interval &buf,
                                 const std::function<std::pair<inner_type, inner_type>
-                                        (const inner_type&, const inner_type&)> &L_R,
-                                const std::function<T(const T&)> &POINT) const {
+                                    (const inner_type &, const inner_type &)> &L_R,
+                                const std::function<T(const T &)> &POINT) const {
             for (auto &[fst, snd] : intervals) {
                 auto x = L_R(fst, snd);
                 x.first = recover(x.first);
@@ -837,9 +939,7 @@ namespace interval {
                 if (x.second < x.first) throw std::overflow_error("right border of interval is less than left");
                 buf.add_interval_in(x.first, x.second);
             }
-            for (auto &i : points) {
-                buf.add_point_in(recover(std::make_pair(i.first, POINT(i.second))));
-            }
+            for (auto &i : points) { buf.add_point_in(recover(std::make_pair(i.first, POINT(i.second)))); }
         }
 
         [[nodiscard]] bool check_in(const inner_type &a, const inner_type &b) const {
@@ -848,19 +948,16 @@ namespace interval {
             auto x = intervals.upper_bound(std::make_pair(a, maximal<T>().data()));
             if (x == intervals.begin()) return false;
             --x;
-            if (!pair_less()(a, x->first) && !pair_less()(x->second, b)) {
-                return true;
-            }
+            if (!pair_less()(a, x->first) && !pair_less()(x->second, b)) { return true; }
             return false;
         }
 
         // deprecated versions of functions
 
-        void _invert_in(interval &buf) const { // old version
+        void _invert_in(interval &buf) const {
+            // old version
             buf.add_interval_in(minimal<T>().data(), maximal<T>().data());
-            for (auto &it : intervals) {
-                buf.remove_interval_in(it.first, it.second);
-            }
+            for (auto &it : intervals) { buf.remove_interval_in(it.first, it.second); }
             for (auto &it : points) buf.remove_point_in(it);
         }
 
@@ -870,9 +967,7 @@ namespace interval {
                 buf.intervals.emplace(recover(std::make_pair(fst.first, fst.second + val)),
                                       recover(std::make_pair(snd.first, snd.second + val)));
             }
-            for (auto &i : points) {
-                buf.points.insert(recover(std::make_pair(i.first, i.second + val)));
-            }
+            for (auto &i : points) { buf.points.insert(recover(std::make_pair(i.first, i.second + val))); }
         }
 
         void _multiply_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
@@ -886,27 +981,25 @@ namespace interval {
                 return;
             }
             for (auto &[fst, snd] : intervals) {
-                auto a = std::make_pair(val < 0 ? 2 - fst.first:fst.first, fst.second * val),
-                     b = std::make_pair(val < 0 ? 2 - snd.first:snd.first, snd.second * val);
+                auto a = std::make_pair(val < 0 ? 2 - fst.first : fst.first, fst.second * val),
+                     b = std::make_pair(val < 0 ? 2 - snd.first : snd.first, snd.second * val);
                 // if val < 0: fst < snd -> a > b
                 if (a != b) buf.intervals.emplace(std::min(a, b), std::max(a, b));
             }
-            for (auto &i : points) {
-                buf.points.insert(std::make_pair(i.first, i.second * val));
-            }
+            for (auto &i : points) { buf.points.insert(std::make_pair(i.first, i.second * val)); }
         }
+
         void _division_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
             // if point was -INF or +INF, second elem if set to 0 -> 0 / val = 0
             for (auto &[fst, snd] : intervals) {
-                auto a = std::make_pair(val < 0 ? 2 - fst.first:fst.first, fst.second / val),
-                     b = std::make_pair(val < 0 ? 2 - snd.first:snd.first, snd.second / val);
+                auto a = std::make_pair(val < 0 ? 2 - fst.first : fst.first, fst.second / val),
+                     b = std::make_pair(val < 0 ? 2 - snd.first : snd.first, snd.second / val);
                 // if val < 0: fst < snd -> a > b
                 if (a != b) buf.intervals.emplace(std::min(a, b), std::max(a, b));
             }
-            for (auto &i : points) {
-                buf.points.insert(std::make_pair(i.first, i.second / val));
-            }
+            for (auto &i : points) { buf.points.insert(std::make_pair(i.first, i.second / val)); }
         }
+
     private:
         [[nodiscard]] std::string print_in() const {
             auto point_iter = points.begin();
@@ -914,14 +1007,14 @@ namespace interval {
             std::string out;
 
             // convert (0; T-type elem) to "-INF" and (2; T-type elem) to "+INF". (1; T-type elem) prints normally
-            auto data = [this](const inner_type &p)->std::string {
+            auto data = [this](const inner_type &p)-> std::string {
                 switch (p.first) {
-                    case 0:
-                        return minmax_print.has_value() ? minmax_print.value().first : "-INF";
-                    case 2:
-                        return minmax_print.has_value() ? minmax_print.value().second : "+INF";
-                    default:
-                        return spec_to_string(p.second);
+                case 0:
+                    return minmax_print.has_value() ? minmax_print.value().first : "-INF";
+                case 2:
+                    return minmax_print.has_value() ? minmax_print.value().second : "+INF";
+                default:
+                    return spec_to_string(p.second);
                 }
             };
 
@@ -938,9 +1031,7 @@ namespace interval {
             auto print_buffer = [&data, &point_buffer, &out] {
                 if (!point_buffer.empty()) {
                     out += "{" + data(*point_buffer.front());
-                    for (auto i = 1; i < point_buffer.size(); ++i) {
-                        out += "; " + data(*point_buffer[i]);
-                    }
+                    for (auto i = 1; i < point_buffer.size(); ++i) { out += "; " + data(*point_buffer[i]); }
                     out += "} U ";
                 }
                 point_buffer.clear();
@@ -973,8 +1064,8 @@ namespace interval {
                         ++point_iter;
                         b2 = true;
                     }
-                    out += (b1 ? '[':'(') + data(interval_iter->first) + "; " +
-                           data(interval_iter->second) + (b2 ? ']':')') + " U ";
+                    out += (b1 ? '[' : '(') + data(interval_iter->first) + "; " +
+                        data(interval_iter->second) + (b2 ? ']' : ')') + " U ";
                     ++interval_iter;
                 }
             }
@@ -998,6 +1089,7 @@ namespace interval {
             ss << a;
             return ss.str();
         }
+
         [[nodiscard]] static std::string spec_to_string(const T &a) requires (type_policy::template is_string_v<T>) {
             std::stringstream ss; // emulate standard output
             ss << '"' << a << '"'; // for strings
@@ -1029,7 +1121,8 @@ namespace interval {
         }
 
         [[nodiscard]] std::optional<T> get_any_in // for degrees
-                (const std::set<std::pair<inner_type, inner_type>, pair_less> &a) const requires type_policy::template is_arithmetic_v<T> {
+        (const std::set<std::pair<inner_type, inner_type>, pair_less> &a) const requires type_policy::template
+            is_arithmetic_v<T> {
             for (auto &i : a) {
                 if (i.first.first == 0 && i.second.first == 2) return T{}; // (-INF; +INF) -> 0
                 // i.second.second - 1 < i.second.second and i.first.second + 1 > i.first.second
@@ -1038,7 +1131,8 @@ namespace interval {
                     return i.second.second - 1; // (-INF; x) -> x - 1
                 if (i.first.first == 1 && i.second.first == 2 && i.first.second + 1 > i.first.second)
                     return i.first.second + 1; // (x; +INF) -> x + 1
-                if (i.first.first == 1 && i.second.first == 1) { // (x1; x2) -> (x1 + x2) / 2
+                if (i.first.first == 1 && i.second.first == 1) {
+                    // (x1; x2) -> (x1 + x2) / 2
                     auto x = (i.second.second - i.first.second) / 2 + i.first.second;
                     if (x > i.first.second && x < i.second.second) return x;
                 }
@@ -1047,15 +1141,16 @@ namespace interval {
         }
 
         [[nodiscard]] static std::optional<std::string> get_any_in // for string
-                (const std::set<std::pair<inner_type, inner_type>, pair_less> &a)
-                    requires type_policy::template is_string_v<T> {
+        (const std::set<std::pair<inner_type, inner_type>, pair_less> &a)
+            requires type_policy::template is_string_v<T> {
             for (const auto &[fst, snd] : a) {
                 if (fst.first == 0 && snd.first == 2) return "text"; // (-INF; +INF) -> "text"
                 if (fst.first == 0 && snd.first == 1 && snd.second > "a") return "a";
                 // (-INF; x) -> "a"
                 if (fst.first == 1 && snd.first == 2) return 'z' + fst.second;
                 // (x; +INF) -> "z" + x (> x)
-                if (fst.first == 1 && snd.first == 1) { // (x1; x2) -> x1 + "a"
+                if (fst.first == 1 && snd.first == 1) {
+                    // (x1; x2) -> x1 + "a"
                     auto x = fst.second;
                     x += 'a';
                     if (x > fst.second && x < snd.second) return x;
@@ -1066,30 +1161,33 @@ namespace interval {
 
         [[nodiscard]] static std::optional<T> get_any_in // non-number types
         (const std::set<std::pair<inner_type, inner_type>, pair_less> &a)
-                    requires (!type_policy::template is_string_v<T> and !type_policy::template is_arithmetic_v<T>) {
+            requires (!type_policy::template is_string_v<T> and
+                !
+                type_policy::template is_arithmetic_v<T>
+            ) {
             if (a.size() == 1 && a.begin()->first.first == 0 && a.begin()->second.first == 2) return T{};
             return std::nullopt; // for unknown type I don`t know what I need to do
         }
 
         [[nodiscard]] static std::optional<T> get_any_functional
-                (const std::set<std::pair<inner_type, inner_type>, pair_less> &a,
-                const std::function<std::optional<T>(const T&)> &MINUS_INF_x,
-                const std::function<std::optional<T>(const T&)> &x_PLUS_INF,
-                const std::function<std::optional<T>(const T&, const T&)> &x_y, const std::optional<T>& MINUS_INF_PLUS_INF) {
+        (const std::set<std::pair<inner_type, inner_type>, pair_less> &a,
+         const std::function<std::optional<T>(const T &)> &MINUS_INF_x,
+         const std::function<std::optional<T>(const T &)> &x_PLUS_INF,
+         const std::function<std::optional<T>(const T &, const T &)> &x_y, const std::optional<T> &MINUS_INF_PLUS_INF) {
             for (auto &i : a) {
                 if (i.first.first == 0 && i.second.first == 2) return MINUS_INF_PLUS_INF; // (-INF; +INF)
                 if (i.first.first == 0 && i.second.first == 1)
                     if (auto x = MINUS_INF_x(i.second.second); x.has_value()) return x; // (-INF; x)
                 if (i.first.first == 1 && i.second.first == 2)
                     if (auto x = x_PLUS_INF(i.first.second); x.has_value()) return x; // (x; +INF)
-                if (i.first.first == 1 && i.second.first == 1) { // (x1; x2)
+                if (i.first.first == 1 && i.second.first == 1) {
+                    // (x1; x2)
                     if (auto x = x_y(i.first.second, i.second.second); x.has_value()) return x; // (x1; x2)
                 }
             }
             return std::nullopt;
         }
     };
-
 } // interval
 
 // template class interval::interval<int8_t>;

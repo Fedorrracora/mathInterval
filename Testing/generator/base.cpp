@@ -18,10 +18,11 @@ namespace generate_test {
             EXPECT_TRUE(fun1(a, b).to_string() == fun2(a, b).to_string()) << "bug in :" << a.to_string();
         }
     }
+
     void generate_test_base(const std::string &test_name,
                             const std::function<interval::interval<int>(const interval::interval<int> &)> &fun1,
                             const std::function<interval::interval<int>(const interval::interval<int> &)> &fun2) {
-        generate_test_base(test_name, [&fun1](const interval::interval<int> &a, int){return fun1(a);},
-                                     [&fun2](const interval::interval<int> &a, int){return fun2(a);});
+        generate_test_base(test_name, [&fun1](const interval::interval<int> &a, int) { return fun1(a); },
+                           [&fun2](const interval::interval<int> &a, int) { return fun2(a); });
     }
 }

@@ -9,9 +9,10 @@ namespace time_test {
     using fp = verifier_tests::fixed_printing;
     constexpr int HIGH = 1000, LOW = 10;
     constexpr int ATTITUDE = HIGH / LOW;
+
     void time_test_base(const std::string &name, const std::string &fun1_name, const std::string &fun2_name,
-                        const std::function<void(const interval::interval<int>&)> &fun1,
-                        const std::function<void(const interval::interval<int>&)> &fun2) {
+                        const std::function<void(const interval::interval<int> &)> &fun1,
+                        const std::function<void(const interval::interval<int> &)> &fun2) {
         auto info = verifier_tests::print_information("TIME TEST (" + name + ")");
         double cf1, cf2, cf3, cf4;
         for (const int D : {HIGH, LOW}) {
