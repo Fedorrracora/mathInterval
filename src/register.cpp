@@ -25,8 +25,8 @@ int main(const int argc, const char *argv[]) {
                              true, true, false))
                 changed = true, ++current_len;
         }
-        if (current_len >= 1) {
-            current_len -= 1;
+        if (current_len >= 4) {
+            current_len -= 4;
             std::cout << verifier_tests::to_table(formatter::vec, formatter::HEADER)
                 << std::endl;
             formatter::vec_reset();
@@ -37,4 +37,5 @@ int main(const int argc, const char *argv[]) {
             formatter::tests[now].func(a.value());
         a = line.get();
     }
+    if (current_len) { std::cout << verifier_tests::to_table(formatter::vec, formatter::HEADER) << std::endl; }
 }
