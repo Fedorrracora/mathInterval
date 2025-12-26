@@ -64,7 +64,7 @@ namespace args {
             int y = -1;
             bool no_skip = false;
             if (args[i].starts_with("--")) {
-                sub_index = 0;
+                if (sub_index) sub_index = 0, ++i;
                 x = args[i].substr(2);
                 for (auto j = 0; j < data.size(); ++j) {
                     if (data[j].name != "-" && data[j].name == x) {
@@ -99,7 +99,10 @@ namespace args {
                     }
                 }
             }
-            else { return static_cast<std::size_t>(i); }
+            else {
+                if (sub_index) ++i;
+                return static_cast<std::size_t>(i);
+            }
             if (y == -1) {
                 std::cerr << "unknown flag: ";
                 if (no_skip)
@@ -112,7 +115,16 @@ namespace args {
             }
             std::vector<std::string> vec;
             vec.reserve(data[y].nargs);
-            if (!no_skip || data[y].nargs) ++i;
+            if (data[y].nargs) {
+                if (no_skip && sub_index + 1 != args[i].size()) {
+                    std::cerr << "incorrect using flags" << std::endl;
+                    exit(EXIT_FAILURE);
+                }
+                ++i, sub_index = 0;
+            }
+            else {
+                if (!no_skip) ++i;
+            }
             for (auto j = 0; j < data[y].nargs; ++j) {
                 vec.push_back(args[i]);
                 ++i;
@@ -133,7 +145,7 @@ namespace args {
             return true;                                                                                               \
         }();                                                                                                           \
     }                                                                                                                  \
-    void args::ARGS_CONCAT_(func_, priority)(const std::vector<std::string> &string)
+    void args::ARGS_CONCAT_(func_, priority)(const std::vector<std::string> &input)
 
 #define ADD_ARG(ch, name, nargs, docx) ARGS_IN((#ch), (#name), (nargs), (docx), __COUNTER__)
 #endif // ARGS_H
