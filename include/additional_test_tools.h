@@ -12,10 +12,11 @@ namespace verifier_tests {
     /// simple struct for fixed size printing of float numbers
     struct fixed_printing {
         explicit fixed_printing(const double val) : val(val) {}
+
         double val;
     };
 
-    std::ostream& operator <<(std::ostream& os, const fixed_printing& v);
+    std::ostream &operator<<(std::ostream &os, const fixed_printing &v);
 
     /// print progress bar (s - master name)
     struct progress {
@@ -47,7 +48,7 @@ namespace verifier_tests {
     };
 
     /// format vector NxM with std::string to table (md format). Vector must have one line without elems (HEADER_LINE)
-    std::string to_table(std::vector<std::vector<std::string>>& vec, int HEADER_LINE = 1);
-}
+    std::string to_table(std::vector<std::vector<std::string>> &vec, int HEADER_LINE = 1);
+} // namespace verifier_tests
 
-#endif //MATHINTERVAL_ADDITIONAL_TEST_TOOLS_H
+#endif // MATHINTERVAL_ADDITIONAL_TEST_TOOLS_H

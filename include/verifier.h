@@ -80,6 +80,7 @@ namespace verify {
     template <typename T>
     struct near {
         T value, accuracy;
+
         near(T value, T accuracy) : value(value), accuracy(accuracy) {}
 
         [[nodiscard]] constexpr bool operator==(const near &a) const {

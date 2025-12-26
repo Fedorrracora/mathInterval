@@ -1,9 +1,9 @@
-#include <interval.h>
-#include <verifier.h>
 #include <additional_test_tools.h>
-#include <test_base/time_test_base.h>
-#include <iostream>
 #include <functional>
+#include <interval.h>
+#include <iostream>
+#include <test_base/time_test_base.h>
+#include <verifier.h>
 
 namespace time_test {
     using fp = verifier_tests::fixed_printing;
@@ -37,8 +37,10 @@ namespace time_test {
                 t2 = prog.stop();
             }
             const auto t = t2 / t1;
-            if (D == HIGH) cf1 = t1, cf2 = t2;
-            else cf3 = t1, cf4 = t2;
+            if (D == HIGH)
+                cf1 = t1, cf2 = t2;
+            else
+                cf3 = t1, cf4 = t2;
             std::cout << "speed coefficient: " << fp(t) << std::endl;
         }
         std::cout << fun1_name << " asymptotics coefficient: " << fp(cf1 / cf3 / ATTITUDE) << std::endl;
@@ -46,10 +48,11 @@ namespace time_test {
 #ifdef FORMATTER_ENABLED
         std::cout << "----- The following text is needed only for the formatter -----\n";
         std::cout << ITERATIONS << ' ' << HIGH << ' ' << LOW << '\n';
-        std::cout << fun1_name << ' ' << fp(cf1) << ' ' << fp(cf1 / ITERATIONS) << ' ' <<
-            fp(cf3) << ' ' << fp(cf3 / ITERATIONS) << ' ' << fp(cf1 / cf3 / ATTITUDE) << '\n';
-        std::cout << fun2_name << ' ' << fp(cf2) << ' ' << fp(cf2 / ITERATIONS) << ' ' <<
-            fp(cf4) << ' ' << fp(cf4 / ITERATIONS) << ' ' << fp(cf2 / cf4 / ATTITUDE) << '\n' << std::flush;
+        std::cout << fun1_name << ' ' << fp(cf1) << ' ' << fp(cf1 / ITERATIONS) << ' ' << fp(cf3) << ' '
+                  << fp(cf3 / ITERATIONS) << ' ' << fp(cf1 / cf3 / ATTITUDE) << '\n';
+        std::cout << fun2_name << ' ' << fp(cf2) << ' ' << fp(cf2 / ITERATIONS) << ' ' << fp(cf4) << ' '
+                  << fp(cf4 / ITERATIONS) << ' ' << fp(cf2 / cf4 / ATTITUDE) << '\n'
+                  << std::flush;
 #endif
     }
-}
+} // namespace time_test

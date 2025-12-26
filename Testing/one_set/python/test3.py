@@ -3,6 +3,7 @@ import verify_python as verify
 
 stp = (True, True, True)
 
+
 def test_multi_add():
     a = interval.Interval()
     line = verify.line_checker(verify.read_file("one_set/answers/test3.a"))
@@ -33,7 +34,8 @@ def test_multi_add():
     b = b or a.add_interval(10, 20)
     b = b or a.add_interval(1, 15)
     b = b or a.add_interval(25, 30)
-    assert verify.same(str(a), line.last, *stp) and not b, "error in step 5: adding intervals/points that not changing data"
+    assert verify.same(str(a), line.last,
+                       *stp) and not b, "error in step 5: adding intervals/points that not changing data"
 
     a.add_point(-1)
     a.add_point(0)

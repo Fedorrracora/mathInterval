@@ -1,15 +1,15 @@
 #ifndef interval_H
 #define interval_H
-#include <type_traits>
+#include <functional>
 #include <optional>
-#include <string>
-#include <utility>
-#include <variant>
 #include <set>
 #include <sstream>
 #include <stdexcept>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <variant>
 #include <vector>
-#include <functional>
 
 namespace interval {
     namespace detail {
@@ -18,7 +18,7 @@ namespace interval {
 
         /// standard type for policies
         struct standard_policy {};
-    }
+    } // namespace detail
 
     namespace policy {
         // type policies
@@ -79,18 +79,16 @@ namespace interval {
         struct empty_print_policy : detail::standard_policy {
             const std::string empty_print;
 
-            explicit empty_print_policy(std::string s) :
-                empty_print(std::move(s)) {}
+            explicit empty_print_policy(std::string s) : empty_print(std::move(s)) {}
         };
 
         /// allows to change how prints -INF and +INF
         struct minmax_print_policy : detail::standard_policy {
             const std::string min, max;
 
-            explicit minmax_print_policy(std::string min, std::string max) :
-                min(std::move(min)), max(std::move(max)) {}
+            explicit minmax_print_policy(std::string min, std::string max) : min(std::move(min)), max(std::move(max)) {}
         };
-    } // policy
+    } // namespace policy
 
     /// return always minimal element in any interval
     template <typename T>
@@ -104,8 +102,8 @@ namespace interval {
         [[nodiscard]] static std::pair<int, T> data() noexcept { return {2, {}}; }
     };
 
-    template <typename T, typename type_policy = policy::standard_type_policy> requires std::is_base_of_v<
-        detail::type_policy, type_policy>
+    template <typename T, typename type_policy = policy::standard_type_policy>
+        requires std::is_base_of_v<detail::type_policy, type_policy>
     class interval {
     public:
         using inner_type = std::pair<int, T>;
@@ -145,8 +143,8 @@ namespace interval {
         [[nodiscard]] bool empty() const noexcept { return points.empty() && intervals.empty(); }
         /// return true if this multitude is (-INF; +INF), else return false
         [[nodiscard]] bool full() const noexcept {
-            return intervals.size() == 1 && *intervals.begin() ==
-                std::make_pair(minimal<T>::data(), maximal<T>::data());
+            return intervals.size() == 1 &&
+                *intervals.begin() == std::make_pair(minimal<T>::data(), maximal<T>::data());
         }
 
         /// clear multitude data
@@ -196,8 +194,10 @@ namespace interval {
         /// adds elements of another multitude
         interval &operator+=(const interval &b) {
             if (this == &b) return *this;
-            for (auto &i : b.points) add_point_in(i);
-            for (auto &i : b.intervals) add_interval_in(i.first, i.second);
+            for (auto &i : b.points)
+                add_point_in(i);
+            for (auto &i : b.intervals)
+                add_interval_in(i.first, i.second);
             return *this;
         }
 
@@ -216,8 +216,10 @@ namespace interval {
                 clear();
                 return *this;
             }
-            for (auto &i : b.points) remove_point_in(i);
-            for (auto &i : b.intervals) remove_interval_in(i.first, i.second);
+            for (auto &i : b.points)
+                remove_point_in(i);
+            for (auto &i : b.intervals)
+                remove_interval_in(i.first, i.second);
             return *this;
         }
 
@@ -256,7 +258,9 @@ namespace interval {
         // transfer operations
 
         /// returns a new multitude with the points shifted forward by the distance val
-        [[nodiscard]] interval operator+(const T val) const requires type_policy::template is_arithmetic_v<T> {
+        [[nodiscard]] interval operator+(const T val) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             interval b;
             plus_in(b, val);
             return b;
@@ -271,7 +275,9 @@ namespace interval {
         }
 
         /// returns a new multitude with the points shifted backward by the distance val
-        [[nodiscard]] interval operator-(const T val) const requires type_policy::template is_arithmetic_v<T> {
+        [[nodiscard]] interval operator-(const T val) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             interval b;
             plus_in(b, -val);
             return b;
@@ -286,7 +292,9 @@ namespace interval {
         }
 
         /// returns a new multitude with the points multiplied by a factor of val
-        [[nodiscard]] interval operator*(const T val) const requires type_policy::template is_arithmetic_v<T> {
+        [[nodiscard]] interval operator*(const T val) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             interval b;
             multiply_in(b, val);
             return b;
@@ -301,7 +309,9 @@ namespace interval {
         }
 
         /// returns a new multitude with the points divided by a factor of val
-        [[nodiscard]] interval operator/(const T val) const requires type_policy::template is_arithmetic_v<T> {
+        [[nodiscard]] interval operator/(const T val) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             interval b;
             division_in(b, val);
             return b;
@@ -316,7 +326,9 @@ namespace interval {
         }
 
         /// returns a new multitude with points taken as the remainder of the division by val
-        [[nodiscard]] interval operator%(const T val) const requires type_policy::template is_integral_v<T> {
+        [[nodiscard]] interval operator%(const T val) const
+            requires type_policy::template
+        is_integral_v<T> {
             interval b;
             remainder_in(b, val);
             return b;
@@ -355,7 +367,8 @@ namespace interval {
         ---
 
         - If there is any point, it will be returned.
-        - If there is an interval `(-INF; +INF)`, the function will return `T{}`. If the flag is true, will return `std::nullopt`.
+        - If there is an interval `(-INF; +INF)`, the function will return `T{}`. If the flag is true, will return
+        `std::nullopt`.
         - If `T` is an integer or a non-integer digit,
           a smart algorithm will try to find any number in the intervals.
         - If `T` is `std::string`,
@@ -402,11 +415,10 @@ namespace interval {
         ⚠️ **Warning:**
         Do not forget to monitor for overflows.
          */
-        [[nodiscard]] std::optional<T> any(
-            const std::function<std::optional<T>(const T &)> &MINUS_INF_x,
-            const std::function<std::optional<T>(const T &)> &x_PLUS_INF,
-            const std::function<std::optional<T>(const T &, const T &)> &x_y,
-            const std::optional<T> &MINUS_INF_PLUS_INF) const {
+        [[nodiscard]] std::optional<T> any(const std::function<std::optional<T>(const T &)> &MINUS_INF_x,
+                                           const std::function<std::optional<T>(const T &)> &x_PLUS_INF,
+                                           const std::function<std::optional<T>(const T &, const T &)> &x_y,
+                                           const std::optional<T> &MINUS_INF_PLUS_INF) const {
             if (!points.empty()) return points.begin()->second; // if there is any point: return it
             return get_any_functional(intervals, MINUS_INF_x, x_PLUS_INF, x_y, MINUS_INF_PLUS_INF);
         }
@@ -455,8 +467,8 @@ namespace interval {
         If the first value of an interval becomes greater than the second,
         the function will swap them automatically.
          */
-        [[nodiscard]] interval custom_transfer(const std::function<T(const T &)> &fun,
-                                               const inp_type &MINUS_INF, const inp_type &PLUS_INF) const {
+        [[nodiscard]] interval custom_transfer(const std::function<T(const T &)> &fun, const inp_type &MINUS_INF,
+                                               const inp_type &PLUS_INF) const {
             interval b;
             custom_transfer_in(b, fun, to_point(MINUS_INF), to_point(PLUS_INF));
             return b;
@@ -510,8 +522,7 @@ namespace interval {
           this interval will **not** be added.
          */
         [[nodiscard]] interval _custom_transfer(
-            const std::function<std::pair<inner_type, inner_type>
-                (const inner_type &, const inner_type &)> &L_R,
+            const std::function<std::pair<inner_type, inner_type>(const inner_type &, const inner_type &)> &L_R,
             const std::function<T(const T &)> &POINT) const {
             interval b;
             custom_transfer_in(b, L_R, POINT);
@@ -535,8 +546,9 @@ namespace interval {
         }
 
         /// [[deprecated]] returns a new multitude with the points shifted forward by the distance val
-        [[nodiscard]] [[deprecated]] interval _plus(const T val) const requires type_policy::template is_arithmetic_v<
-            T> {
+        [[nodiscard]] [[deprecated]] interval _plus(const T val) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             interval b;
             _plus_in(b, val);
             return b;
@@ -551,8 +563,9 @@ namespace interval {
         }
 
         /// [[deprecated]] returns a new multitude with the points shifted forward by the distance val
-        [[nodiscard]] [[deprecated]] interval _minus(const T val) const requires type_policy::template is_arithmetic_v<
-            T> {
+        [[nodiscard]] [[deprecated]] interval _minus(const T val) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             interval b;
             _plus_in(b, -val);
             return b;
@@ -567,8 +580,9 @@ namespace interval {
         }
 
         /// [[deprecated]] returns a new multitude with the points multiplied by a factor of val
-        [[nodiscard]] [[deprecated]] interval _mul(const T val) const requires type_policy::template is_arithmetic_v<
-            T> {
+        [[nodiscard]] [[deprecated]] interval _mul(const T val) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             interval b;
             _multiply_in(b, val);
             return b;
@@ -583,8 +597,9 @@ namespace interval {
         }
 
         /// [[deprecated]] returns a new multitude with the points divided by a factor of val
-        [[nodiscard]] [[deprecated]] interval _div(const T val) const requires type_policy::template is_arithmetic_v<
-            T> {
+        [[nodiscard]] [[deprecated]] interval _div(const T val) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             interval b;
             _division_in(b, val);
             return b;
@@ -811,28 +826,31 @@ namespace interval {
             if (from < maximal<T>::data()) buf.intervals.insert(buf.intervals.end(), {from, maximal<T>::data()});
         }
 
-        void plus_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
+        void plus_in(interval &buf, const T &val) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             // if point was -INF or +INF, recover will return second elem to {}
             for (auto &[fst, snd] : intervals) {
                 buf.intervals.insert(buf.intervals.end(),
-                                     {
-                                         recover(std::make_pair(fst.first, fst.second + val)),
-                                         recover(std::make_pair(snd.first, snd.second + val))
-                                     });
+                                     {recover(std::make_pair(fst.first, fst.second + val)),
+                                      recover(std::make_pair(snd.first, snd.second + val))});
             }
             for (auto &i : points) {
                 buf.points.insert(buf.points.end(), recover(std::make_pair(i.first, i.second + val)));
             }
         }
 
-        void multiply_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
+        void multiply_in(interval &buf, const T &val) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             // if point was -INF or +INF second elem if set to 0 -> 0 * val = 0
             if (val == 0) {
                 if (!intervals.empty() || !points.empty()) {
                     buf.clear();
                     buf.points.emplace(1, T{});
                 }
-                else buf.clear();
+                else
+                    buf.clear();
                 return;
             }
             if (val > 0) {
@@ -841,7 +859,9 @@ namespace interval {
                          b = std::make_pair(snd.first, snd.second * val);
                     if (a != b) buf.intervals.insert(buf.intervals.end(), {a, b});
                 }
-                for (auto &i : points) { buf.points.insert(buf.points.end(), std::make_pair(i.first, i.second * val)); }
+                for (auto &i : points) {
+                    buf.points.insert(buf.points.end(), std::make_pair(i.first, i.second * val));
+                }
             }
             else {
                 for (auto &[fst, snd] : intervals) {
@@ -856,7 +876,9 @@ namespace interval {
             }
         }
 
-        void division_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
+        void division_in(interval &buf, const T &val) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             // if point was -INF or +INF, second elem if set to 0 -> 0 / val = 0
             if (val > 0) {
                 for (auto &[fst, snd] : intervals) {
@@ -864,7 +886,9 @@ namespace interval {
                          b = std::make_pair(snd.first, snd.second / val);
                     if (a != b) buf.intervals.insert(buf.intervals.end(), {a, b});
                 }
-                for (auto &i : points) { buf.points.insert(buf.points.end(), std::make_pair(i.first, i.second / val)); }
+                for (auto &i : points) {
+                    buf.points.insert(buf.points.end(), std::make_pair(i.first, i.second / val));
+                }
             }
             else {
                 for (auto &[fst, snd] : intervals) {
@@ -879,7 +903,9 @@ namespace interval {
             }
         }
 
-        void remainder_in(interval &buf, const T &val) const requires type_policy::template is_integral_v<T> {
+        void remainder_in(interval &buf, const T &val) const
+            requires type_policy::template
+        is_integral_v<T> {
             if (val <= 0) throw std::logic_error("the coefficient of the remainder of the division <= 0");
             for (auto &[fst, snd] : intervals) {
                 auto len = snd.second - fst.second;
@@ -898,9 +924,12 @@ namespace interval {
                     buf.add_point(T{});
                     buf.add_interval(T{}, r % val);
                 }
-                else buf.add_interval(s, r); // l and l + len in [0, val) -> (l, l + len)
+                else
+                    buf.add_interval(s, r); // l and l + len in [0, val) -> (l, l + len)
             }
-            for (auto &i : points) { buf.add_point((i.second % val + val) % val); }
+            for (auto &i : points) {
+                buf.add_point((i.second % val + val) % val);
+            }
         }
 
         void custom_transfer_in(interval &buf, const std::function<T(const T &)> &fun) const {
@@ -927,10 +956,10 @@ namespace interval {
             }
         }
 
-        void custom_transfer_in(interval &buf,
-                                const std::function<std::pair<inner_type, inner_type>
-                                    (const inner_type &, const inner_type &)> &L_R,
-                                const std::function<T(const T &)> &POINT) const {
+        void custom_transfer_in(
+            interval &buf,
+            const std::function<std::pair<inner_type, inner_type>(const inner_type &, const inner_type &)> &L_R,
+            const std::function<T(const T &)> &POINT) const {
             for (auto &[fst, snd] : intervals) {
                 auto x = L_R(fst, snd);
                 x.first = recover(x.first);
@@ -939,7 +968,9 @@ namespace interval {
                 if (x.second < x.first) throw std::overflow_error("right border of interval is less than left");
                 buf.add_interval_in(x.first, x.second);
             }
-            for (auto &i : points) { buf.add_point_in(recover(std::make_pair(i.first, POINT(i.second)))); }
+            for (auto &i : points) {
+                buf.add_point_in(recover(std::make_pair(i.first, POINT(i.second))));
+            }
         }
 
         [[nodiscard]] bool check_in(const inner_type &a, const inner_type &b) const {
@@ -957,27 +988,37 @@ namespace interval {
         void _invert_in(interval &buf) const {
             // old version
             buf.add_interval_in(minimal<T>().data(), maximal<T>().data());
-            for (auto &it : intervals) { buf.remove_interval_in(it.first, it.second); }
-            for (auto &it : points) buf.remove_point_in(it);
+            for (auto &it : intervals) {
+                buf.remove_interval_in(it.first, it.second);
+            }
+            for (auto &it : points)
+                buf.remove_point_in(it);
         }
 
-        void _plus_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
+        void _plus_in(interval &buf, const T &val) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             // if point was -INF or +INF, recover will return second elem to {}
             for (auto &[fst, snd] : intervals) {
                 buf.intervals.emplace(recover(std::make_pair(fst.first, fst.second + val)),
                                       recover(std::make_pair(snd.first, snd.second + val)));
             }
-            for (auto &i : points) { buf.points.insert(recover(std::make_pair(i.first, i.second + val))); }
+            for (auto &i : points) {
+                buf.points.insert(recover(std::make_pair(i.first, i.second + val)));
+            }
         }
 
-        void _multiply_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
+        void _multiply_in(interval &buf, const T &val) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             // if point was -INF or +INF second elem if set to 0 -> 0 * val = 0
             if (val == 0) {
                 if (!intervals.empty() || !points.empty()) {
                     buf.clear();
                     buf.points.emplace(1, T{});
                 }
-                else buf.clear();
+                else
+                    buf.clear();
                 return;
             }
             for (auto &[fst, snd] : intervals) {
@@ -986,10 +1027,14 @@ namespace interval {
                 // if val < 0: fst < snd -> a > b
                 if (a != b) buf.intervals.emplace(std::min(a, b), std::max(a, b));
             }
-            for (auto &i : points) { buf.points.insert(std::make_pair(i.first, i.second * val)); }
+            for (auto &i : points) {
+                buf.points.insert(std::make_pair(i.first, i.second * val));
+            }
         }
 
-        void _division_in(interval &buf, const T &val) const requires type_policy::template is_arithmetic_v<T> {
+        void _division_in(interval &buf, const T &val) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             // if point was -INF or +INF, second elem if set to 0 -> 0 / val = 0
             for (auto &[fst, snd] : intervals) {
                 auto a = std::make_pair(val < 0 ? 2 - fst.first : fst.first, fst.second / val),
@@ -997,7 +1042,9 @@ namespace interval {
                 // if val < 0: fst < snd -> a > b
                 if (a != b) buf.intervals.emplace(std::min(a, b), std::max(a, b));
             }
-            for (auto &i : points) { buf.points.insert(std::make_pair(i.first, i.second / val)); }
+            for (auto &i : points) {
+                buf.points.insert(std::make_pair(i.first, i.second / val));
+            }
         }
 
     private:
@@ -1007,7 +1054,7 @@ namespace interval {
             std::string out;
 
             // convert (0; T-type elem) to "-INF" and (2; T-type elem) to "+INF". (1; T-type elem) prints normally
-            auto data = [this](const inner_type &p)-> std::string {
+            auto data = [this](const inner_type &p) -> std::string {
                 switch (p.first) {
                 case 0:
                     return minmax_print.has_value() ? minmax_print.value().first : "-INF";
@@ -1031,7 +1078,9 @@ namespace interval {
             auto print_buffer = [&data, &point_buffer, &out] {
                 if (!point_buffer.empty()) {
                     out += "{" + data(*point_buffer.front());
-                    for (auto i = 1; i < point_buffer.size(); ++i) { out += "; " + data(*point_buffer[i]); }
+                    for (auto i = 1; i < point_buffer.size(); ++i) {
+                        out += "; " + data(*point_buffer[i]);
+                    }
                     out += "} U ";
                 }
                 point_buffer.clear();
@@ -1064,8 +1113,8 @@ namespace interval {
                         ++point_iter;
                         b2 = true;
                     }
-                    out += (b1 ? '[' : '(') + data(interval_iter->first) + "; " +
-                        data(interval_iter->second) + (b2 ? ']' : ')') + " U ";
+                    out += (b1 ? '[' : '(') + data(interval_iter->first) + "; " + data(interval_iter->second) +
+                        (b2 ? ']' : ')') + " U ";
                     ++interval_iter;
                 }
             }
@@ -1084,13 +1133,17 @@ namespace interval {
             return a;
         }
 
-        [[nodiscard]] static std::string spec_to_string(const T &a) requires (!type_policy::template is_string_v<T>) {
+        [[nodiscard]] static std::string spec_to_string(const T &a)
+            requires(!type_policy::template is_string_v<T>)
+        {
             std::stringstream ss; // emulate standard output
             ss << a;
             return ss.str();
         }
 
-        [[nodiscard]] static std::string spec_to_string(const T &a) requires (type_policy::template is_string_v<T>) {
+        [[nodiscard]] static std::string spec_to_string(const T &a)
+            requires(type_policy::template is_string_v<T>)
+        {
             std::stringstream ss; // emulate standard output
             ss << '"' << a << '"'; // for strings
             return ss.str();
@@ -1121,8 +1174,9 @@ namespace interval {
         }
 
         [[nodiscard]] std::optional<T> get_any_in // for degrees
-        (const std::set<std::pair<inner_type, inner_type>, pair_less> &a) const requires type_policy::template
-            is_arithmetic_v<T> {
+            (const std::set<std::pair<inner_type, inner_type>, pair_less> &a) const
+            requires type_policy::template
+        is_arithmetic_v<T> {
             for (auto &i : a) {
                 if (i.first.first == 0 && i.second.first == 2) return T{}; // (-INF; +INF) -> 0
                 // i.second.second - 1 < i.second.second and i.first.second + 1 > i.first.second
@@ -1141,8 +1195,9 @@ namespace interval {
         }
 
         [[nodiscard]] static std::optional<std::string> get_any_in // for string
-        (const std::set<std::pair<inner_type, inner_type>, pair_less> &a)
-            requires type_policy::template is_string_v<T> {
+            (const std::set<std::pair<inner_type, inner_type>, pair_less> &a)
+            requires type_policy::template
+        is_string_v<T> {
             for (const auto &[fst, snd] : a) {
                 if (fst.first == 0 && snd.first == 2) return "text"; // (-INF; +INF) -> "text"
                 if (fst.first == 0 && snd.first == 1 && snd.second > "a") return "a";
@@ -1160,20 +1215,19 @@ namespace interval {
         }
 
         [[nodiscard]] static std::optional<T> get_any_in // non-number types
-        (const std::set<std::pair<inner_type, inner_type>, pair_less> &a)
-            requires (!type_policy::template is_string_v<T> and
-                !
-                type_policy::template is_arithmetic_v<T>
-            ) {
+            (const std::set<std::pair<inner_type, inner_type>, pair_less> &a)
+            requires(!type_policy::template is_string_v<T> and !type_policy::template is_arithmetic_v<T>)
+        {
             if (a.size() == 1 && a.begin()->first.first == 0 && a.begin()->second.first == 2) return T{};
             return std::nullopt; // for unknown type I don`t know what I need to do
         }
 
-        [[nodiscard]] static std::optional<T> get_any_functional
-        (const std::set<std::pair<inner_type, inner_type>, pair_less> &a,
-         const std::function<std::optional<T>(const T &)> &MINUS_INF_x,
-         const std::function<std::optional<T>(const T &)> &x_PLUS_INF,
-         const std::function<std::optional<T>(const T &, const T &)> &x_y, const std::optional<T> &MINUS_INF_PLUS_INF) {
+        [[nodiscard]] static std::optional<T>
+        get_any_functional(const std::set<std::pair<inner_type, inner_type>, pair_less> &a,
+                           const std::function<std::optional<T>(const T &)> &MINUS_INF_x,
+                           const std::function<std::optional<T>(const T &)> &x_PLUS_INF,
+                           const std::function<std::optional<T>(const T &, const T &)> &x_y,
+                           const std::optional<T> &MINUS_INF_PLUS_INF) {
             for (auto &i : a) {
                 if (i.first.first == 0 && i.second.first == 2) return MINUS_INF_PLUS_INF; // (-INF; +INF)
                 if (i.first.first == 0 && i.second.first == 1)
@@ -1188,7 +1242,7 @@ namespace interval {
             return std::nullopt;
         }
     };
-} // interval
+} // namespace interval
 
 // template class interval::interval<int8_t>;
 // template class interval::interval<int16_t>;
@@ -1196,11 +1250,11 @@ namespace interval {
 // template class interval::interval<int64_t>;
 // template class interval::interval<u_int8_t>;
 // template class interval::interval<u_int16_t>;
-//template class interval::interval<u_int32_t>;
-//template class interval::interval<u_int64_t>;
-//template class interval::interval<float>;
-//template class interval::interval<double>;
-//template class interval::interval<long double>;
-//template class interval::interval<std::string>;
+// template class interval::interval<u_int32_t>;
+// template class interval::interval<u_int64_t>;
+// template class interval::interval<float>;
+// template class interval::interval<double>;
+// template class interval::interval<long double>;
+// template class interval::interval<std::string>;
 
-#endif //interval_H
+#endif // interval_H

@@ -1,8 +1,9 @@
-from pytest import raises
 import _mathInterval as interval
 import verify_python as verify
+from pytest import raises
 
 stp = (True, True, True)
+
 
 def test_add_interval():
     a = interval.Interval()

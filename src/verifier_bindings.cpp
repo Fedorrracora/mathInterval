@@ -8,10 +8,8 @@ PYBIND11_MODULE(verify_python, m) {
 some testing tools
 )doc";
     m.def("read_file", &verify::read_file, py::arg("filename"), "return string with content of file");
-    m.def("same", &verify::same, py::arg("a"), py::arg("b"),
-          py::arg("case_sensitive") = false,
-          py::arg("whitespace_sensitive") = false,
-          py::arg("boundary_sensitive") = false, R"doc(
+    m.def("same", &verify::same, py::arg("a"), py::arg("b"), py::arg("case_sensitive") = false,
+          py::arg("whitespace_sensitive") = false, py::arg("boundary_sensitive") = false, R"doc(
 return true if two strings are equal with some filters
 
 ---
@@ -25,8 +23,8 @@ return true if two strings are equal with some filters
         .def(py::init<std::string>(), py::arg("s"))
         .def("__call__", &verify::line_checker::operator(), "gets next line")
         .def("get", &verify::line_checker::get, "gets next line. If you run out of data, None is returned")
-        .def_property_readonly("last", [](const verify::line_checker& self) { return std::string(self.last); },
-                               "last read line");
+        .def_property_readonly(
+            "last", [](const verify::line_checker &self) { return std::string(self.last); }, "last read line");
     py::class_<verify::time_checker>(m, "time_checker", "helps keep track of time")
         .def(py::init<>())
         .def("start", &verify::time_checker::start, "start timing")

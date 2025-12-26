@@ -1,9 +1,9 @@
-#include <gtest/gtest.h>
-#include <interval.h>
-#include <verifier.h>
 #include <additional_test_tools.h>
 #include <functional>
+#include <gtest/gtest.h>
+#include <interval.h>
 #include <test_base/generate_test_base.h>
+#include <verifier.h>
 
 namespace generate_test {
     void generate_test_base(const std::string &test_name,
@@ -22,7 +22,8 @@ namespace generate_test {
     void generate_test_base(const std::string &test_name,
                             const std::function<interval::interval<int>(const interval::interval<int> &)> &fun1,
                             const std::function<interval::interval<int>(const interval::interval<int> &)> &fun2) {
-        generate_test_base(test_name, [&fun1](const interval::interval<int> &a, int) { return fun1(a); },
-                           [&fun2](const interval::interval<int> &a, int) { return fun2(a); });
+        generate_test_base(
+            test_name, [&fun1](const interval::interval<int> &a, int) { return fun1(a); },
+            [&fun2](const interval::interval<int> &a, int) { return fun2(a); });
     }
-}
+} // namespace generate_test

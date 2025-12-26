@@ -1,8 +1,8 @@
 #include <additional_test_tools.h>
 #include <iomanip>
-#include <verifier.h>
 #include <iostream>
 #include <utility>
+#include <verifier.h>
 #ifdef DISABLE_PROGRESS_BAR
 #define CONTROL_CHAR ""
 #else
@@ -13,9 +13,9 @@ constexpr int PRECISION = 10;
 namespace verifier_tests {
     namespace {
         int gen_val() { return verify::random_int_distribution(-MAX_VALUE, MAX_VALUE); }
-    }
+    } // namespace
 
-    std::ostream& operator <<(std::ostream& os, const fixed_printing& v) {
+    std::ostream &operator<<(std::ostream &os, const fixed_printing &v) {
         return os << std::fixed << std::setprecision(PRECISION) << v.val;
     }
 
@@ -38,9 +38,7 @@ namespace verifier_tests {
                 else if (verify::random_int_distribution(0, probability_coefficient) == 0) {
                     a.add_interval(val1, interval::maximal<int>());
                 }
-                else {
-                    a.add_interval(val1, val2);
-                }
+                else { a.add_interval(val1, val2); }
             }
         }
         return a;
@@ -60,13 +58,11 @@ namespace verifier_tests {
         std::cout << "===== " << test_name << " =====\n" << std::flush;
     }
 
-    print_information::~print_information() {
-        std::cout << "===== end of " << test_name << " =====\n" << std::flush;
-    }
+    print_information::~print_information() { std::cout << "===== end of " << test_name << " =====\n" << std::flush; }
 
 
-    progress::progress(const int iter, std::string s, const bool timer, const bool timer_verbose) : iterations(iter),
-        debug_iter(iter / 100), t(timer), t_verbose(timer_verbose), master_name(std::move(s)) {
+    progress::progress(const int iter, std::string s, const bool timer, const bool timer_verbose) :
+        iterations(iter), debug_iter(iter / 100), t(timer), t_verbose(timer_verbose), master_name(std::move(s)) {
         if (t) checker.start();
     }
 
@@ -88,27 +84,27 @@ namespace verifier_tests {
             checker.stop();
             if (t_verbose)
                 std::cout << CONTROL_CHAR << master_name << ": done (" << fixed_printing(checker.time()) << " sec, "
-                    << fixed_printing(checker.time() / iterations) << " sec for iteration)\n" << std::flush;
+                          << fixed_printing(checker.time() / iterations) << " sec for iteration)\n"
+                          << std::flush;
             else
-                std::cout << CONTROL_CHAR << master_name << ": done (" << fixed_printing(checker.time()) <<
-                    " sec)   \n" << std::flush;
+                std::cout << CONTROL_CHAR << master_name << ": done (" << fixed_printing(checker.time()) << " sec)   \n"
+                          << std::flush;
         }
-        else {
-            std::cout << CONTROL_CHAR << master_name << ": done          \n" << std::flush;
-        }
+        else { std::cout << CONTROL_CHAR << master_name << ": done          \n" << std::flush; }
     }
 
-    std::string to_table(std::vector<std::vector<std::string>>& vec, const int HEADER_LINE) {
+    std::string to_table(std::vector<std::vector<std::string>> &vec, const int HEADER_LINE) {
         vec[HEADER_LINE].resize(vec.front().size());
         for (auto depth = 0; depth < vec.front().size(); ++depth) {
             std::size_t max = 0;
-            for (auto& i : vec) {
+            for (auto &i : vec) {
                 verify::maxof(max, i[depth].size());
             }
-            for (auto& i : vec) {
-                while (i[depth].size() < max) i[depth] += ' ';
+            for (auto &i : vec) {
+                while (i[depth].size() < max)
+                    i[depth] += ' ';
             }
-            for (auto& i : vec[HEADER_LINE][depth]) {
+            for (auto &i : vec[HEADER_LINE][depth]) {
                 i = '-';
             }
         }
@@ -116,7 +112,7 @@ namespace verifier_tests {
         for (auto i = 0; i < vec.size(); ++i) {
             const char control_char = i == HEADER_LINE ? '-' : ' ';
             out += '|';
-            for (const auto& j : vec[i]) {
+            for (const auto &j : vec[i]) {
                 out += control_char;
                 out += j;
                 out += control_char;
@@ -126,4 +122,4 @@ namespace verifier_tests {
         }
         return out;
     }
-}
+} // namespace verifier_tests

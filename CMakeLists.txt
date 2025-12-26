@@ -21,10 +21,10 @@ target_include_directories(mathInterval INTERFACE
 )
 
 # python
-if(SKBUILD OR BUILD_PYTHON_BINDINGS)
+if (SKBUILD OR BUILD_PYTHON_BINDINGS)
     find_package(Python3 COMPONENTS Interpreter Development.Module REQUIRED)
 
-    if(TESTING AND NOT SKBUILD)
+    if (TESTING AND NOT SKBUILD)
         execute_process(
                 COMMAND ${Python3_EXECUTABLE} -c "import pytest"
                 RESULT_VARIABLE EXIT_CODE
@@ -33,8 +33,8 @@ if(SKBUILD OR BUILD_PYTHON_BINDINGS)
         )
         if (NOT EXIT_CODE STREQUAL "0")
             message(FATAL_ERROR "pytest is not installed. Install it using `pip install pytest` or disable testing.")
-        endif()
-    endif()
+        endif ()
+    endif ()
 
     add_subdirectory(extern/pybind11)
 
@@ -43,9 +43,9 @@ if(SKBUILD OR BUILD_PYTHON_BINDINGS)
     target_link_libraries(_mathInterval PRIVATE mathInterval)
 
     target_compile_definitions(_mathInterval PRIVATE INT_TYPE=long\ long FLOAT_TYPE=long\ double)
-endif()
+endif ()
 
-if(TESTING AND NOT SKBUILD)
+if (TESTING AND NOT SKBUILD)
     enable_testing()
     file(COPY Testing/one_set/answers DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/one_set)
     file(COPY Testing/custom_type/answers DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/custom_type)
@@ -53,9 +53,9 @@ if(TESTING AND NOT SKBUILD)
 
     #setup GoogleTest
     include(FetchContent)
-    if(POLICY CMP0135)
+    if (POLICY CMP0135)
         cmake_policy(SET CMP0135 NEW)
-    endif()
+    endif ()
     set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of GoogleTest")
     FetchContent_Declare(
             googletest
@@ -95,7 +95,7 @@ if(TESTING AND NOT SKBUILD)
             Testing/generator/test4.div_transfer.cpp
     )
 
-    if(NOT TESTING_BAR)
+    if (NOT TESTING_BAR)
         target_compile_definitions(test_target PRIVATE DISABLE_PROGRESS_BAR)
     endif ()
     target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE mathInterval PRIVATE verify)
@@ -103,7 +103,7 @@ if(TESTING AND NOT SKBUILD)
     target_compile_definitions(test_target PRIVATE RANDOM_GENERATOR=100000 CS=true WS=true BS=true ITERATIONS=1250)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-    if(BUILD_PYTHON_BINDINGS)
+    if (BUILD_PYTHON_BINDINGS)
         pybind11_add_module(verify_python src/verifier_bindings.cpp)
         target_link_libraries(verify_python PRIVATE verify)
         add_test(NAME PYTHON.ONE_SET.add_point COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -119,22 +119,22 @@ if(TESTING AND NOT SKBUILD)
         add_test(NAME PYTHON.MANY_SET.subset COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/many_set/python/test2.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.CUSTOM_TYPE.many_funcs COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/custom_type/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.CUSTOM_TYPE.custom_transfer COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/custom_type/python/test2.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-    endif()
+    endif ()
 
-    if(FORMATTER)
+    if (FORMATTER)
         target_compile_definitions(test_target PRIVATE FORMATTER_ENABLED)
         add_executable(formatter src/register.cpp Testing/time_test/time_test.register.cpp)
         target_link_libraries(formatter PRIVATE verify)
-    endif()
+    endif ()
 
-    if(TEST_WRITER)
+    if (TEST_WRITER)
         add_executable(writer src/writer.cpp)
         target_link_libraries(writer PRIVATE verify)
-    endif()
-endif()
+    endif ()
+endif ()
 
 # Python
-if(SKBUILD)
+if (SKBUILD)
     install(TARGETS _mathInterval
             LIBRARY DESTINATION ${SKBUILD_PROJECT_NAME}
             ARCHIVE DESTINATION ${SKBUILD_PROJECT_NAME}
@@ -143,8 +143,8 @@ if(SKBUILD)
     install(FILES src/__init__.py DESTINATION ${SKBUILD_PROJECT_NAME})
     install(DIRECTORY src/_mathInterval/ DESTINATION ${SKBUILD_PROJECT_NAME}/_mathInterval OPTIONAL)
 
-# C++
-else()
+    # C++
+else ()
     set(FINAL_MSG
             ""
             "=== building done ==="
@@ -152,7 +152,7 @@ else()
     )
     set(FINAL_DEPS mathInterval)
 
-    if(TESTING)
+    if (TESTING)
         list(APPEND FINAL_DEPS test_target verify gmock_main gmock)
         if (BUILD_PYTHON_BINDINGS)
             list(APPEND FINAL_DEPS _mathInterval)
@@ -161,19 +161,19 @@ else()
                     "-- Option BUILD_PYTHON_BINDINGS disabled. Python tests were not generated"
                     "Note that the BUILD_PYTHON_BINDINGS option is only used for testing. It cannot be used to install Python library in the system"
             )
-        endif()
+        endif ()
         list(APPEND FINAL_MSG
                 "-- For testing run: make test"
                 "-- For C++ only testing run: ./test_target"
                 "When you run ./test_target, you can see additional output"
         )
-        if(NOT TESTING_BAR)
+        if (NOT TESTING_BAR)
             list(APPEND FINAL_MSG
                     "-- Option TESTING_BAR disabled. Progress bar is disabled in all tests"
                     "This can be useful as the progress bar output breaks in some terminals"
             )
-        endif()
-        if(FORMATTER)
+        endif ()
+        if (FORMATTER)
             list(APPEND FINAL_DEPS formatter)
             list(APPEND FINAL_MSG
                     "-- Option FORMATTER enabled. Formatter executable built. This is only necessary for developers"
@@ -182,8 +182,8 @@ else()
                     "./test_target \\| tee ctest_output.txt"
                     "./formatter ctest_output.txt"
             )
-        endif()
-        if(TEST_WRITER)
+        endif ()
+        if (TEST_WRITER)
             list(APPEND FINAL_DEPS writer)
             list(APPEND FINAL_MSG
                     "-- Option TEST_WRITER enabled. Writer executable built. This is only necessary for developers"
@@ -191,13 +191,13 @@ else()
                     "You can use it like this \\(in bash\\):"
                     "./writer test.cpp \\| tee test.py"
             )
-        endif()
+        endif ()
     endif ()
 
     set(FINAL_CMD "")
-    foreach(line IN LISTS FINAL_MSG)
+    foreach (line IN LISTS FINAL_MSG)
         list(APPEND FINAL_CMD COMMAND ${CMAKE_COMMAND} -E echo "${line}")
-    endforeach()
+    endforeach ()
 
     add_custom_target(final_message ALL ${FINAL_CMD})
     add_dependencies(final_message ${FINAL_DEPS})
@@ -207,10 +207,10 @@ else()
     install(EXPORT mathIntervalTargets FILE mathIntervalTargets.cmake NAMESPACE mathInterval:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
     write_basic_package_version_file(mathIntervalConfigVersion.cmake VERSION 0.5.3 COMPATIBILITY AnyNewerVersion)
     configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/mathIntervalConfig.cmake.in
-                                  ${CMAKE_CURRENT_BINARY_DIR}/mathIntervalConfig.cmake
-                                  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
+            ${CMAKE_CURRENT_BINARY_DIR}/mathIntervalConfig.cmake
+            INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
     install(FILES
             ${CMAKE_CURRENT_BINARY_DIR}/mathIntervalConfig.cmake
             ${CMAKE_CURRENT_BINARY_DIR}/mathIntervalConfigVersion.cmake
             DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/mathInterval)
-endif()
+endif ()
