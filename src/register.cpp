@@ -4,23 +4,20 @@
 #include <register.h>
 #include <verifier.h>
 bool from_stdin = false, enable_progress = false;
-int table_columns = 4, progress_columns = 20, all_tests = -1, test = 0;
+int table_columns = 4, progress_columns = 20, all_tests = -1, test = 0, failed_tests = 0;
 ADD_ARG(r, raw, 0, "read from stdin; filename is not using") { from_stdin = true; }
-ADD_ARG(l, len, 1, "Sets the maximum number of tests in a single table. One test occupies two columns of the table (takes a single argument)") {
+ADD_ARG(l, len, 1,
+        "Sets the maximum number of tests in a single table. One test occupies two columns of the table (takes a "
+        "single argument)") {
     table_columns = std::stoi(input.front());
-    if (table_columns <= 0) {
-        throw std::invalid_argument("Incorrect table size");
-    }
+    if (table_columns <= 0) { throw std::invalid_argument("Incorrect table size"); }
 }
-ADD_ARG(b, bar, 0, "add progress bar") {
-    enable_progress = true;
-}
-ADD_ARG(B, bar-colums, 1, "add a progress bar and allows you to specify the number of columns (takes a single argument)") {
+ADD_ARG(b, bar, 0, "add progress bar") { enable_progress = true; }
+ADD_ARG(B, bar - colums, 1,
+        "add a progress bar and allows you to specify the number of columns (takes a single argument)") {
     enable_progress = true;
     progress_columns = std::stoi(input.front());
-    if (progress_columns <= 0) {
-        throw std::invalid_argument("Incorrect bar size");
-    }
+    if (progress_columns <= 0) { throw std::invalid_argument("Incorrect bar size"); }
 }
 ADD_ARG(-, help, 0, "print this help") {
     std::cout << "Usage: formatter [args] <filename>" << std::endl;
@@ -31,8 +28,10 @@ void print_progress() {
     if (!enable_progress || all_tests == -1) return;
     std::cout << "test " << test << "/" << all_tests << "[";
     for (auto i = 0; i < progress_columns; ++i) {
-        if (i < test * progress_columns / all_tests) std::cout << "#";
-        else std::cout << ".";
+        if (i < test * progress_columns / all_tests)
+            std::cout << "#";
+        else
+            std::cout << ".";
     }
     std::cout << "]\r" << std::flush;
 }
@@ -47,7 +46,7 @@ int main(const int argc, const char *argv[]) {
     verify::line_checker line(from_stdin ? "-" : verify::read_file(argv[lastI]));
     auto a = line.get();
     int now = -1;
-    bool changed = false;
+    bool changed = false, started_test = false;
     int current_len = 0;
     formatter::vec_reset();
     while (a != std::nullopt) {
@@ -55,7 +54,15 @@ int main(const int argc, const char *argv[]) {
             all_tests = std::stoi(verify::n_word(a.value(), 2));
             if (all_tests <= 0) throw std::invalid_argument("Incorrect number of tests");
         }
-        if (a.value().starts_with("[ RUN      ]")) ++test;
+        if (a.value().starts_with("[ RUN      ]")) ++test, started_test = true;
+        if (a.value().starts_with("[       OK ]")) started_test = false;
+        if (a.value().starts_with("[  FAILED  ]")) {
+            if (started_test) {
+                ++failed_tests;
+                std::cout << a.value() << std::endl;
+            }
+            started_test = false;
+        }
         for (auto i = 0; i < formatter::tests.size(); i++) {
             if (verify::same(a.value(), "===== " + formatter::tests[i].name + " =====", true, true, false)) now = i;
             if (verify::same(a.value(), "===== end of " + formatter::tests[i].name + " =====", true, true, false))
@@ -74,6 +81,7 @@ int main(const int argc, const char *argv[]) {
         print_progress();
     }
     if (current_len) { std::cout << verifier_tests::to_table(formatter::vec, formatter::HEADER) << std::endl; }
+    if (failed_tests) std::cout << failed_tests << " failed tests";
     for (auto i = 0; i < progress_columns + 8 + std::to_string(test).size() + std::to_string(all_tests).size(); ++i) {
         std::cout << ' ';
     }
