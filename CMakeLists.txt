@@ -46,6 +46,8 @@ if (SKBUILD OR BUILD_PYTHON_BINDINGS)
 endif ()
 
 if (TESTING AND NOT SKBUILD)
+    #for google test on clang
+    add_compile_options(-Wno-deprecated-declarations -Wcharacter-conversion)
     enable_testing()
     file(COPY Testing/one_set/answers DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/one_set)
     file(COPY Testing/custom_type/answers DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/custom_type)
@@ -67,7 +69,6 @@ if (TESTING AND NOT SKBUILD)
     add_library(verify SHARED src/verifier.cpp src/additional_test_tools.cpp)
     target_include_directories(verify PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
     target_compile_definitions(verify PRIVATE MAX_VALUE=1000000)
-    add_compile_options(-Wno-deprecated-declarations -Wcharacter-conversion)
 
     add_executable(test_target
             Testing/one_set/cpp/test1.add_point.cpp
