@@ -21,13 +21,17 @@ namespace args {
                    std::string docx,
                    std::function<void(const std::vector<std::string> &)> func) :
             ch(std::move(ch)), name(std::move(name)), func(std::move(func)), nargs(nargs), docx(std::move(docx)) {
+            if (this->ch.size() != 1) {
+                std::cerr << "-" << this->ch << " cannot be control char" << std::endl;
+                exit(EXIT_FAILURE);
+            }
             if (this->ch != "-" && names1.contains(this->ch)) {
                 std::cerr << "-" << this->ch << " already defined" << std::endl;
-                exit(1);
+                exit(EXIT_FAILURE);
             }
             if (this->name != "-" && names2.contains(this->name)) {
                 std::cerr << "--" << this->name << " already defined" << std::endl;
-                exit(1);
+                exit(EXIT_FAILURE);
             }
             names1.insert(this->ch);
             names2.insert(this->name);
@@ -42,13 +46,70 @@ namespace args {
         exit(EXIT_SUCCESS);
     }
 
-    inline void init(const int argc, const char *argv[], const bool help_op = true, const bool empty_print = false) {
-        std::vector<std::string> args(argv, argv + argc);
+    inline std::size_t init(const int argc, const char *argv[], const bool skip_unknown = false, const bool help_op = true, const bool empty_print = false) {
+        const std::vector<std::string> args(argv, argv + argc);
         if (empty_print) print_help();
         if (help_op) {
-            data.emplace_back("", "help", 0, "print help",
+            data.emplace_back("-", "help", 0, "print help",
                 [](const std::vector<std::string> &) { print_help(); });
         }
+        int sub_index = 0;
+        for (auto i = 1; i < argc; ) {
+            std::string x;
+            int y = -1;
+            if (args[i].starts_with("--")) {
+                sub_index = 0;
+                x = args[i].substr(2);
+                for (auto j = 0; j < data.size(); ++j) {
+                    if (data[j].name != "-" && data[j].name == x) {
+                        y = j;
+                        if (used[j]) {
+                            std::cerr << "flag repeated" << args[i] << std::endl;
+                            exit(EXIT_FAILURE);
+                        }
+                        used[j] = true;
+                        break;
+                    }
+                }
+            }
+            else if (args[i].starts_with("-")) {
+                if (sub_index + 1 < args[i].size()) {
+                    x = args[i].substr(++sub_index, 1);
+                }
+                else {
+                    ++i;
+                    continue;
+                }
+                for (auto j = 0; j < data.size(); ++j) {
+                    if (data[j].ch != "-" && data[j].ch == x) {
+                        y = j;
+                        if (used[j]) {
+                            std::cerr << "flag repeated" << args[i] << std::endl;
+                            exit(EXIT_FAILURE);
+                        }
+                        used[j] = true;
+                        break;
+                    }
+                }
+            }
+            else {
+                return static_cast<std::size_t>(i);
+            }
+            if (y == -1) {
+                std::cerr << "unknown flag " << args[i] << std::endl;
+                if (skip_unknown) continue;
+                exit(EXIT_FAILURE);
+            }
+            std::vector<std::string> vec;
+            vec.reserve(data[y].nargs);
+            ++i;
+            for (auto j = 0; j < data[y].nargs; ++j) {
+                vec.push_back(args[i]);
+                ++i;
+            }
+            data[y].func(vec);
+        }
+        return argc;
     }
 }
 
@@ -59,6 +120,7 @@ namespace args {                                                        \
     void ARGS_CONCAT_(func_,                                  \
     priority)(const std::vector<std::string> &);                 \
     static bool ARGS_CONCAT_(dummy_, priority) = []() {            \
+    used.emplace_back(), \
     data.emplace_back((ch), (name), (nargs), (docx),                                             \
     ARGS_CONCAT_(func_, priority));      \
     return true;                                                               \

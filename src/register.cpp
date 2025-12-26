@@ -3,12 +3,13 @@
 #include <iostream>
 #include <register.h>
 #include <verifier.h>
+// ADD_ARG(r, raw, 0, "read file from stdin") {
+    // std::cout << "goida";
+// }
 
 int main(const int argc, const char *argv[]) {
-    if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <filename>" << std::endl;
-        return 1;
-    }
+    // args::init(argc, argv);
+    // exit(0);
     verify::line_checker line(verify::read_file(argv[1]));
     auto a = line.get();
     int now = -1;
