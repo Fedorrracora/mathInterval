@@ -133,5 +133,11 @@ namespace verify {
 
     /// such python join
     [[nodiscard]] std::string join(std::string_view sep, const std::vector<std::string> &data);
+
+    /// object `T` will not be removed by optimization
+    template <typename T>
+    void DoNotOptimize(T& value) {
+        asm volatile("" : "+r,m"(value) : : "memory");
+    }
 } // namespace verify
 #endif // VERIFIER_H

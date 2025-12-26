@@ -11,8 +11,8 @@ namespace time_test {
     constexpr int ATTITUDE = HIGH / LOW;
 
     void time_test_base(const std::string &name, const std::string &fun1_name, const std::string &fun2_name,
-                        const std::function<void(const interval::interval<int> &)> &fun1,
-                        const std::function<void(const interval::interval<int> &)> &fun2) {
+                        const std::function<interval::interval<int>(const interval::interval<int> &)> &fun1,
+                        const std::function<interval::interval<int>(const interval::interval<int> &)> &fun2) {
         auto info = verifier_tests::print_information("TIME TEST (" + name + ")");
         double cf1, cf2, cf3, cf4;
         for (const int D : {HIGH, LOW}) {
@@ -23,7 +23,8 @@ namespace time_test {
                 auto prog = verifier_tests::progress(ITERATIONS, "testing with " + fun1_name, true, true);
                 for (auto iter = 0; iter < ITERATIONS; ++iter) {
                     prog.call(iter);
-                    fun1(a);
+                    auto x = fun1(a);
+                    verify::DoNotOptimize(x);
                 }
                 t1 = prog.stop();
             }
@@ -32,7 +33,8 @@ namespace time_test {
                 auto prog = verifier_tests::progress(ITERATIONS, "testing with " + fun2_name, true, true);
                 for (auto iter = 0; iter < ITERATIONS; ++iter) {
                     prog.call(iter);
-                    fun2(a);
+                    auto x = fun2(a);
+                    verify::DoNotOptimize(x);
                 }
                 t2 = prog.stop();
             }
