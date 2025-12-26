@@ -67,6 +67,7 @@ if (TESTING AND NOT SKBUILD)
     add_library(verify SHARED src/verifier.cpp src/additional_test_tools.cpp)
     target_include_directories(verify PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
     target_compile_definitions(verify PRIVATE MAX_VALUE=1000000)
+    target_compile_options(verify PRIVATE -Wno-deprecated-declarations)
 
     add_executable(test_target
             Testing/one_set/cpp/test1.add_point.cpp
