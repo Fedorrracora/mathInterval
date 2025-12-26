@@ -67,7 +67,7 @@ if (TESTING AND NOT SKBUILD)
     add_library(verify SHARED src/verifier.cpp src/additional_test_tools.cpp)
     target_include_directories(verify PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
     target_compile_definitions(verify PRIVATE MAX_VALUE=1000000)
-    target_compile_options(verify PRIVATE -Wno-deprecated-declarations -Wcharacter-conversation)
+    target_compile_options(verify PRIVATE -Wno-deprecated-declarations -Wcharacter-conversion)
 
     add_executable(test_target
             Testing/one_set/cpp/test1.add_point.cpp
@@ -100,7 +100,7 @@ if (TESTING AND NOT SKBUILD)
         target_compile_definitions(test_target PRIVATE DISABLE_PROGRESS_BAR)
     endif ()
     target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE mathInterval PRIVATE verify)
-    target_compile_options(test_target PRIVATE -Wno-deprecated-declarations -Wcharacter-conversation)
+    target_compile_options(test_target PRIVATE -Wno-deprecated-declarations -Wcharacter-conversion)
     target_compile_definitions(test_target PRIVATE RANDOM_GENERATOR=100000 CS=true WS=true BS=true ITERATIONS=1250)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
