@@ -1,16 +1,24 @@
-#include <args.h>
 #include <additional_test_tools.h>
+#include <args.h>
 #include <iostream>
 #include <register.h>
 #include <verifier.h>
-// ADD_ARG(r, raw, 0, "read file from stdin") {
-    // std::cout << "goida";
-// }
+bool from_stdin = false;
+ADD_ARG(r, raw, 0, "read from stdin; filename is not using") { from_stdin = true; }
+ADD_ARG(-, help, 0, "print this help") {
+    std::cout << "Usage: formatter [args] <filename>" << std::endl;
+    args::print_help();
+    exit(0);
+}
 
 int main(const int argc, const char *argv[]) {
-    // args::init(argc, argv);
-    // exit(0);
-    verify::line_checker line(verify::read_file(argv[1]));
+    auto lastI = args::init(argc, argv);
+    if (argc == 1 || (lastI == argc && !from_stdin)) {
+        std::cout << "Usage: formatter [args] <filename>" << std::endl;
+        args::print_help();
+        exit(1);
+    }
+    verify::line_checker line(from_stdin ? "-" : verify::read_file(argv[1]));
     auto a = line.get();
     int now = -1;
     bool changed = false;
@@ -18,19 +26,13 @@ int main(const int argc, const char *argv[]) {
     formatter::vec_reset();
     while (a != std::nullopt) {
         for (auto i = 0; i < formatter::tests.size(); i++) {
-            if (verify::same(a.value(),
-                             "===== " + formatter::tests[i].name + " =====", true,
-                             true, false))
-                now = i;
-            if (verify::same(a.value(),
-                             "===== end of " + formatter::tests[i].name + " =====",
-                             true, true, false))
+            if (verify::same(a.value(), "===== " + formatter::tests[i].name + " =====", true, true, false)) now = i;
+            if (verify::same(a.value(), "===== end of " + formatter::tests[i].name + " =====", true, true, false))
                 changed = true, ++current_len;
         }
         if (current_len >= 4) {
             current_len -= 4;
-            std::cout << verifier_tests::to_table(formatter::vec, formatter::HEADER)
-                << std::endl;
+            std::cout << verifier_tests::to_table(formatter::vec, formatter::HEADER) << std::endl;
             formatter::vec_reset();
         }
         if (changed)
