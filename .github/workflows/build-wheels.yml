@@ -74,13 +74,9 @@ jobs:
           cmake -DTESTING=ON -DTESTING_BAR=OFF -DFORMATTER=ON ..
           make
 
-      - name: Testing
+      - name: Testing && Formatting
         working-directory: build
-        run: ./test_target --gtest_filter="TIME_TEST*" --gtest_brief=1 | tee ctest_output.txt
-
-      - name: Formatting
-        working-directory: build
-        run: ./formatter ctest_output.txt | tee formatter_output.txt
+        run: ./test_target | ./formatter -b | tee formatter_output.txt
 
       - name: Write Summary
         env:
