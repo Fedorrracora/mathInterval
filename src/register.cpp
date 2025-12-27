@@ -3,47 +3,52 @@
 #include <iostream>
 #include <register.h>
 #include <verifier.h>
-bool from_stdin = false, enable_progress = false;
+bool from_stdin = true, enable_progress = true;
 int table_columns = 4, progress_columns = 20, all_tests = -1, test = 0, failed_tests = 0;
-ADD_ARG(r, raw, 0, "read from stdin; filename is not using") { from_stdin = true; }
+std::string filename;
+[[noreturn]] void help(const int exit_code) {
+    std::cout << "Usage: ./test_target | ./formatter [args]" << std::endl;
+    std::cout << "This tool formats output of test target" << std::endl;
+    args::print_args();
+    exit(exit_code);
+}
+ADD_ARG(f, file, 1, "read from file (takes a single argument)") {
+    from_stdin = false;
+    filename = input.front();
+}
 ADD_ARG(l, len, 1,
         "Sets the maximum number of tests in a single table. One test occupies two columns of the table (takes a "
         "single argument)") {
     table_columns = std::stoi(input.front());
     if (table_columns <= 0) { throw std::invalid_argument("Incorrect table size"); }
 }
-ADD_ARG(b, bar, 0, "add progress bar") { enable_progress = true; }
+ADD_ARG(b, bar, 0, "remove progress bar") { enable_progress = false; }
 ADD_ARG(B, bar - colums, 1,
-        "add a progress bar and allows you to specify the number of columns (takes a single argument)") {
-    enable_progress = true;
+        "add a progress bar and allows you to specify the number of columns (takes a single argument). It can be 0") {
+    if (!enable_progress) throw std::invalid_argument("bar already disabled");
     progress_columns = std::stoi(input.front());
-    if (progress_columns <= 0) { throw std::invalid_argument("Incorrect bar size"); }
+    if (progress_columns < 0) throw std::invalid_argument("Incorrect bar size");
 }
-ADD_ARG(-, help, 0, "print this help") {
-    std::cout << "Usage: formatter [args] <filename>" << std::endl;
-    print_help();
-    exit(0);
-}
+ADD_ARG(h, help, 0, "print this help") { help(EXIT_SUCCESS); }
 void print_progress() {
     if (!enable_progress || all_tests == -1) return;
-    std::cout << "test " << test << "/" << all_tests << "[";
-    for (auto i = 0; i < progress_columns; ++i) {
-        if (i < test * progress_columns / all_tests)
-            std::cout << "#";
-        else
-            std::cout << ".";
+    std::cout << "test " << test << "/" << all_tests;
+    if (progress_columns) {
+        std::cout << " [";
+        for (auto i = 0; i < progress_columns; ++i) {
+            if (i < test * progress_columns / all_tests)
+                std::cout << "#";
+            else
+                std::cout << ".";
+        }
+        std::cout << "]";
     }
-    std::cout << "]\r" << std::flush;
+    std::cout << "\r" << std::flush;
 }
 
 int main(const int argc, const char *argv[]) {
-    const auto lastI = args::init(argc, argv);
-    if (argc == 1 || (lastI != argc && from_stdin) || (lastI + 1 != argc && !from_stdin)) {
-        std::cout << "Usage: formatter [args] <filename>" << std::endl;
-        args::print_help();
-        exit(1);
-    }
-    verify::line_checker line(from_stdin ? "-" : verify::read_file(argv[lastI]));
+    if (const auto lastI = args::init(argc, argv); lastI != argc) { help(EXIT_FAILURE); }
+    verify::line_checker line(from_stdin ? "-" : verify::read_file(filename));
     auto a = line.get();
     int now = -1;
     bool changed = false, started_test = false;
@@ -82,7 +87,7 @@ int main(const int argc, const char *argv[]) {
     }
     if (current_len) { std::cout << verifier_tests::to_table(formatter::vec, formatter::HEADER) << std::endl; }
     if (failed_tests) std::cout << failed_tests << " failed tests";
-    for (auto i = 0; i < progress_columns + 8 + std::to_string(test).size() + std::to_string(all_tests).size(); ++i) {
+    for (auto i = 0; i < progress_columns + 9 + std::to_string(test).size() + std::to_string(all_tests).size(); ++i) {
         std::cout << ' ';
     }
     std::cout << std::endl;

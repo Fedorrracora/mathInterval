@@ -124,9 +124,13 @@ if (TESTING AND NOT SKBUILD)
     endif ()
 
     if (FORMATTER)
+        add_library(args STATIC src/args.cpp)
+        target_include_directories(args PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+
         target_compile_definitions(test_target PRIVATE FORMATTER_ENABLED)
         add_executable(formatter src/register.cpp Testing/time_test/time_test.register.cpp)
-        target_link_libraries(formatter PRIVATE verify)
+        target_link_libraries(formatter PRIVATE verify PRIVATE args)
     endif ()
 
     if (TEST_WRITER)
@@ -176,13 +180,13 @@ else ()
             )
         endif ()
         if (FORMATTER)
-            list(APPEND FINAL_DEPS formatter)
+            list(APPEND FINAL_DEPS formatter args)
             list(APPEND FINAL_MSG
-                    "-- Option FORMATTER enabled. Formatter executable built. This is only necessary for developers"
+                    "-- Option FORMATTER enabled. Formatter executable built"
                     "It is used to worm the output of TIME_TESTS. Takes the path to the test output file and formats them into a markdown table"
                     "You can use it like this \\(in bash\\):"
-                    "./test_target \\| tee ctest_output.txt"
-                    "./formatter ctest_output.txt"
+                    "./test_target \\| ./formatter"
+                    "For more information, you can use ./formatter --help"
             )
         endif ()
         if (TEST_WRITER)
