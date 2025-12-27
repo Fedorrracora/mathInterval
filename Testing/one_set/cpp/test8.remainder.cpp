@@ -4,7 +4,7 @@
 
 TEST(ONE_SET, remainder) {
     interval::interval<int> a;
-    verify::line_checker line(verify::read_file("one_set/answers/test8.a"));
+    verify::line_checker line(verify::read_file(DATA_DIR"one_set/answers/test8.a"));
     a.add_interval(1, 3);
     a %= 4;
     ASSERT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS))

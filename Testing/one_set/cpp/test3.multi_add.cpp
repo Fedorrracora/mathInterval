@@ -4,7 +4,7 @@
 
 TEST(ONE_SET, multi_add) {
     interval::interval<int> a;
-    verify::line_checker line(verify::read_file("one_set/answers/test3.a"));
+    verify::line_checker line(verify::read_file(DATA_DIR"one_set/answers/test3.a"));
     a.add_interval(1, 10);
     a.add_point(10);
     ASSERT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS)) << "error in step 1: adding border point\n";

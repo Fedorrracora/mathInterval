@@ -4,7 +4,7 @@
 
 TEST(ONE_SET, inverse) {
     interval::interval<int> a;
-    verify::line_checker line(verify::read_file("one_set/answers/test5.a"));
+    verify::line_checker line(verify::read_file(DATA_DIR"one_set/answers/test5.a"));
 
     a.add_interval(1, 2);
     EXPECT_TRUE(verify::same(a.inverse().to_string(), line(), CS, WS, BS)) << "error in step 1: inverse one interval\n";

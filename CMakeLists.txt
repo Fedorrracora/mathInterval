@@ -103,6 +103,7 @@ if (TESTING AND NOT SKBUILD)
     target_link_libraries(test_target PRIVATE GTest::gtest_main PRIVATE mathInterval PRIVATE verify)
     target_compile_definitions(test_target PRIVATE RANDOM_GENERATOR=100000 CS=true WS=true BS=true ITERATIONS=1250)
     gtest_discover_tests(test_target WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    target_compile_definitions(test_target PRIVATE DATA_DIR="${CMAKE_CURRENT_BINARY_DIR}/")
 
     if (BUILD_PYTHON_BINDINGS)
         pybind11_add_module(verify_python src/verifier_bindings.cpp)

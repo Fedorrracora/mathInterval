@@ -5,7 +5,7 @@
 
 TEST(ONE_SET, add_interval) {
     interval::interval<int> a;
-    verify::line_checker line(verify::read_file("one_set/answers/test2.a"));
+    verify::line_checker line(verify::read_file(DATA_DIR"one_set/answers/test2.a"));
     {
         bool b = true;
         b &= a.add_interval(1, 5);

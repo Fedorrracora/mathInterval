@@ -2,7 +2,7 @@
 using test_type = type_base::test_type;
 TEST(CUSTOM_TYPE, custom_transfer) {
     interval::interval<test_type> a;
-    verify::line_checker line(verify::read_file("custom_type/answers/test2.a"));
+    verify::line_checker line(verify::read_file(DATA_DIR"custom_type/answers/test2.a"));
     a.add_interval(test_type(1), test_type(2));
     a.add_interval(test_type(4), test_type(10));
     a.add_point(test_type(4));
