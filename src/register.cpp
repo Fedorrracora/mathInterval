@@ -4,7 +4,7 @@
 #include <register.h>
 #include <verifier.h>
 bool from_stdin = true, enable_progress = true;
-int table_columns = 4, progress_columns = 20, all_tests = -1, test = 0, failed_tests = 0;
+int table_columns = 4, progress_columns = -1, all_tests = -1, test = 0, failed_tests = 0;
 std::string filename;
 [[noreturn]] void help(const int exit_code) {
     std::cout << "Usage: ./test_target | ./formatter [args]" << std::endl;
@@ -57,6 +57,7 @@ int main(const int argc, const char *argv[]) {
     while (a != std::nullopt) {
         if (a.value().starts_with("[==========] Running ")) {
             all_tests = std::stoi(verify::n_word(a.value(), 2));
+            if (progress_columns == -1) progress_columns = all_tests;
             if (all_tests <= 0) throw std::invalid_argument("Incorrect number of tests");
         }
         if (a.value().starts_with("[ RUN      ]")) ++test, started_test = true;
