@@ -135,9 +135,15 @@ namespace verify {
     [[nodiscard]] std::string join(std::string_view sep, const std::vector<std::string> &data);
 
     /// object `T` will not be removed by optimization
-    template <typename T>
+    template <class T>
     void DoNotOptimize(T& value) {
+#if defined(_MSC_VER)
+        _ReadWriteBarrier();
+        (void)value;
+        _ReadWriteBarrier();
+#else
         asm volatile("" : "+r,m"(value) : : "memory");
+#endif
     }
 } // namespace verify
 #endif // VERIFIER_H
