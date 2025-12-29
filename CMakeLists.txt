@@ -13,6 +13,10 @@ option(TESTING_BAR "Enable progress bar in testing" ON)
 option(FORMATTER "Build tool for formatting test results to md. Using only in github workflows" OFF)
 option(TEST_WRITER "Helps format c++ tests to python. Developers Only" OFF)
 
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build." FORCE)
+endif()
+
 add_library(mathInterval INTERFACE)
 
 target_include_directories(mathInterval INTERFACE
