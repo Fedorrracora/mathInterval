@@ -1,0 +1,187 @@
+#ifndef MATHINTERVAL_BASE_H
+#define MATHINTERVAL_BASE_H
+#include <functional>
+#include <optional>
+#include <set>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <variant>
+#include <vector>
+namespace interval::detail {
+    /// allow to custom detecting type
+    struct type_policy {};
+    /// standard type for policies
+    struct standard_policy {};
+    /// standard type for print methods
+    struct standard_print_method {};
+    /// for concept
+    struct custom_type_policy_flag : type_policy {};
+
+    /// default interval::interval concept for type_policy
+    template <typename P>
+    concept type_policy_c = std::is_base_of_v<type_policy, P>;
+
+    /// std::set comparator of inner_type
+    template <typename T>
+    struct pair_less {
+        using inner_type = std::pair<int, T>;
+        // activate transparent policy
+        using is_transparent = void;
+
+        [[nodiscard]] bool operator()(const inner_type &a, const inner_type &b) const noexcept;
+        [[nodiscard]] bool operator()(const std::pair<inner_type, inner_type> &a,
+                                      const std::pair<inner_type, inner_type> &b) const noexcept;
+        [[nodiscard]] bool operator()(const T &a, const T &b) const noexcept;
+
+        /// comparing first element of `a` only. For lower_bound
+        [[nodiscard]] bool operator()(const std::pair<inner_type, inner_type> &a,
+                                      const inner_type &b) const noexcept;
+        /// comparing first element of `b` only. For lower_bound
+        [[nodiscard]] bool operator()(const inner_type &a,
+                                      const std::pair<inner_type, inner_type> &b) const noexcept;
+
+        /// a like point `(1; a)`
+        [[nodiscard]] bool operator()(const T &a, const inner_type &b) const noexcept;
+        /// b like point `(1; b)`
+        [[nodiscard]] bool operator()(const inner_type &a, const T &b) const noexcept;
+
+        /// a like point `(1; a)`. comparing first element of `b` only
+        [[nodiscard]] bool operator()(const T &a,
+                                      const std::pair<inner_type, inner_type> &b) const noexcept;
+        /// b like point `(1; b)`. comparing first element of `a` only
+        [[nodiscard]] bool operator()(const std::pair<inner_type, inner_type> &a,
+                                      const T &b) const noexcept;
+    };
+
+    /// concept for checking custom_type_policy
+    template <typename P>
+    concept custom_type_policy_c = std::is_base_of_v<custom_type_policy_flag, P> && !std::is_same_v<custom_type_policy_flag, P>;
+    template <typename P>
+    concept not_custom_type_policy_c = !custom_type_policy_c<P>;
+}
+
+namespace interval::detail::custom_type {
+    /// returns T{} unless overridden by type policies. The return value is used as a placeholder. Its value is never used
+    template <typename T, not_custom_type_policy_c>
+    T get_value() { return T{}; }
+    /// returns T{} unless overridden by type policies. The return value is used as a placeholder. Its value is never used
+    template <typename T, custom_type_policy_c type_policy>
+    T get_value();
+
+}
+
+namespace interval::type_policy {
+    /// standard type detection
+    struct standard_type_policy;
+    /// type detects as int
+    struct int_type_policy;
+    /// type detects as float
+    struct float_type_policy;
+    /// type detects as string
+    struct string_type_policy;
+    /// for custom control. These features are described in <mathInterval/type_policy.h>
+    template <typename T>
+    struct custom_type_policy;
+}
+
+namespace interval::print_policy {
+    /// for custom control. These features are described in <mathInterval/print_policy.h>
+    struct custom_print_policy;
+
+}
+
+namespace interval {
+    template <typename T, detail::type_policy_c type_policy = type_policy::standard_type_policy>
+    class interval {
+        using inner_type = std::pair<int, T>;
+    public:
+
+        /// return always minimal element in any interval
+        struct minimal_t {
+            [[nodiscard]] static std::pair<int, T> data() noexcept;
+        };
+        /// return always maximal element in any interval
+        struct maximal_t {
+            [[nodiscard]] static std::pair<int, T> data() noexcept;
+        };
+
+        [[nodiscard]] minimal_t minimal() const noexcept { (void)this; return {}; }
+        [[nodiscard]] maximal_t maximal() const noexcept { (void)this; return {}; }
+
+        // structure can receive data with minimal<T>, maximal<T>, T
+        using inp_type = std::variant<minimal_t, maximal_t, T>;
+        interval();
+        ~interval();
+
+        interval(const interval &other);
+        interval(interval &&other) noexcept;
+
+        interval &operator=(const interval &other);
+        interval &operator=(interval &&other) noexcept;
+
+        [[nodiscard]] bool operator==(const interval &b) const noexcept;
+        [[nodiscard]] bool operator!=(const interval &b) const noexcept;
+
+        // standard operations
+
+        /// return true if this point in multitude, else return false
+        [[nodiscard]] bool in(const T &a) const;
+        /// return true if this point in multitude, else return false
+        [[nodiscard]] bool in_v(const inp_type &a) const;
+
+        /// returns false if this point was inside this multitude, else return true
+        template <typename U>
+        bool add_point(U &&a);
+
+        /// return string with all data in mathematical style
+        [[nodiscard]] std::string to_string() const { return print_in(); }
+
+
+    protected:
+        using points_t = std::set<inner_type, detail::pair_less<T>>;
+        using intervals_t = std::set<std::pair<inner_type, inner_type>, detail::pair_less<T>>;
+        points_t points;
+        intervals_t intervals;
+
+        /// convert T-type object to pair inner-type {1; T-type elem};
+        /// if object is interval::minimal or interval::maximal, return their data
+        [[nodiscard]] static constexpr inner_type to_point(inp_type a);
+
+        /// does what it has to
+        [[nodiscard]] auto
+        get_interval_that_include_this_point(const inner_type &point) const -> intervals_t::const_iterator;
+        /// does what it has to
+        [[nodiscard]] auto
+        get_interval_that_include_this_point(const T &point) const -> intervals_t::const_iterator;
+
+        /// check that point is not `-INF` and `+INF`
+        template <typename U>
+        static void constexpr is_point_assert(const U &point);
+
+        bool add_point_in(inner_type p);
+
+    private:
+        static void constexpr is_point_assert_in(const inp_type &point);
+
+        void merge_intervals(const std::pair<inner_type, inner_type> &f, const std::pair<inner_type, inner_type> &s);
+
+        [[nodiscard]] std::string print_in() const;
+    };
+}
+
+// default realisations
+
+namespace interval::type_policy {
+    struct standard_type_policy : detail::type_policy {
+        template <typename T>
+        static constexpr bool is_arithmetic_v = std::is_arithmetic_v<T>;
+        template <typename T>
+        static constexpr bool is_integral_v = std::is_integral_v<T>;
+        template <typename T>
+        static constexpr bool is_string_v = std::is_same_v<std::string, T>;
+    };
+}
+#endif // MATHINTERVAL_BASE_H

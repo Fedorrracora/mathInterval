@@ -145,5 +145,22 @@ namespace verify {
         asm volatile("" : "+r,m"(value) : : "memory");
 #endif
     }
+
+    /// counts the number of copies of the object
+    struct copy_counter {
+        int value = 0;
+        // ReSharper disable once CppNonExplicitConvertingConstructor
+        copy_counter(int v); // NOLINT(*-explicit-constructor)
+        copy_counter(const copy_counter &other);
+        copy_counter(copy_counter &&other) noexcept;
+        copy_counter &operator=(int v);
+        copy_counter &operator=(const copy_counter &other);
+        copy_counter &operator=(copy_counter &&other) noexcept;
+        /// returns the number of new copies from the last call to `call()`
+        static int call();
+        auto operator<=>(const copy_counter &) const = default;
+    private:
+        inline static int copy_count = 0;
+    };
 } // namespace verify
 #endif // VERIFIER_H

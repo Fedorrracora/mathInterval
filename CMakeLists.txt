@@ -89,6 +89,7 @@ if (TESTING AND NOT SKBUILD)
             Testing/custom_type/cpp/base.cpp
             Testing/custom_type/cpp/test1.many_funcs.cpp
             Testing/custom_type/cpp/test2.custom_transfer.cpp
+            Testing/copy_count/copy_count.cpp
             Testing/time_test/base.cpp
             Testing/time_test/test1.inverse.cpp
             Testing/time_test/test2.plus_transfer.cpp

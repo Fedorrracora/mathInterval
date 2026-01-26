@@ -221,4 +221,24 @@ namespace verify {
         }
         return out;
     }
+
+    copy_counter::copy_counter(const int v) : value(v) {}
+    copy_counter &copy_counter::operator=(const int v) {
+        value = v;
+        return *this;
+    }
+    copy_counter::copy_counter(const copy_counter &other) : value(other.value) { ++copy_count; }
+    copy_counter &copy_counter::operator=(const copy_counter &other) {
+        value = other.value;
+        ++copy_count;
+        return *this;
+    }
+    copy_counter::copy_counter(copy_counter &&other) noexcept = default;
+    copy_counter &copy_counter::operator=(copy_counter &&other) noexcept = default;
+    int copy_counter::call() {
+        const int x = copy_count;
+        copy_count = 0;
+        return x;
+    }
+
 } // namespace verify
