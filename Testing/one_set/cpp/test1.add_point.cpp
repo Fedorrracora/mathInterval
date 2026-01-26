@@ -1,12 +1,13 @@
-#include <mathInterval/print_policy.h>
+#include <mathInterval/interval.h>
 #include <mathInterval/type_policy.h>
+#include <mathInterval/print_policy.h>
 #include <gtest/gtest.h>
 // #include <interval.h>
 #include <verifier.h>
-#include <mathInterval/interval.h>
 
 TEST(ONE_SET, add_point) {
     interval::interval<int> a;
+    auto ans = a.with_policy(interval::print_policy::custom_print_policy()).to_string();
     verify::line_checker line(verify::read_file(DATA_DIR"one_set/answers/test1.a"));
     {
         bool b = true;

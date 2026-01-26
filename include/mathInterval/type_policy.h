@@ -43,6 +43,7 @@ namespace interval::type_policy {
         /// The return value is used as a placeholder. Its value is never used.
         /// Useful if you don't have a standard constructor for the type you're using.
         virtual T default_value() = 0;
+        virtual std::string to_string(const T &el) = 0;
     };
 }
 
@@ -51,6 +52,10 @@ namespace interval::detail::custom_type {
     template <typename T, custom_type_policy_c type_policy>
     T get_value() {
         return type_policy().default_value();
+    }
+    template <typename T, custom_type_policy_c type_policy>
+    std::string to_str(T el) {
+        return type_policy().to_string(std::move(el));
     }
 }
 

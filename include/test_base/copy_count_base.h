@@ -10,6 +10,9 @@ namespace copy_count {
         verify::copy_counter default_value() override {
             return 3;
         }
+        std::string to_string(const verify::copy_counter &el) override {
+            return std::to_string(el.value);
+        }
     };
     using interval_t = interval::interval<verify::copy_counter, tp>;
     namespace detail {

@@ -1,22 +1,18 @@
 #ifndef MATHINTERVAL_BASE_H
 #define MATHINTERVAL_BASE_H
 #include <functional>
-#include <optional>
+#include <memory>
 #include <set>
 #include <sstream>
-#include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <utility>
 #include <variant>
-#include <vector>
 namespace interval::detail {
     /// allow to custom detecting type
     struct type_policy {};
-    /// standard type for policies
-    struct standard_policy {};
     /// standard type for print methods
-    struct standard_print_method {};
+    struct print_method;
     /// for concept
     struct custom_type_policy_flag : type_policy {};
 
@@ -61,6 +57,19 @@ namespace interval::detail {
     concept custom_type_policy_c = std::is_base_of_v<custom_type_policy_flag, P> && !std::is_same_v<custom_type_policy_flag, P>;
     template <typename P>
     concept not_custom_type_policy_c = !custom_type_policy_c<P>;
+
+    /// standard policy handler
+    template <typename T, type_policy_c type_policy>
+    class temp_policy_wrapper;
+
+    /// standard type for policies
+    struct standard_policy {
+        virtual ~standard_policy() = default;
+    private:
+        [[nodiscard]] virtual std::unique_ptr<standard_policy> clone() const = 0;
+        template <typename T, type_policy_c type_policy>
+        friend class temp_policy_wrapper;
+    };
 }
 
 namespace interval::detail::custom_type {
@@ -70,6 +79,14 @@ namespace interval::detail::custom_type {
     /// returns T{} unless overridden by type policies. The return value is used as a placeholder. Its value is never used
     template <typename T, custom_type_policy_c type_policy>
     T get_value();
+
+    /// use std::ostream operator << for interval::interval::to_string unless overridden by type policies.
+    template <typename T, not_custom_type_policy_c>
+    [[nodiscard]] std::string to_str(T el);
+
+    /// use std::ostream operator << for interval::interval::to_string unless overridden by type policies.
+    template <typename T, custom_type_policy_c type_policy>
+    [[nodiscard]] std::string to_str(T el);
 
 }
 
@@ -91,6 +108,10 @@ namespace interval::print_policy {
     /// for custom control. These features are described in <mathInterval/print_policy.h>
     struct custom_print_policy;
 
+    struct standard_print_method;
+    struct no_merge_print_method;
+    struct no_merge_point_to_end_print_method;
+    struct point_to_end_print_method;
 }
 
 namespace interval {
@@ -136,9 +157,11 @@ namespace interval {
         template <typename U>
         bool add_point(U &&a);
 
-        /// return string with all data in mathematical style
-        [[nodiscard]] std::string to_string() const { return print_in(); }
+        [[nodiscard]] detail::temp_policy_wrapper<T, type_policy>
+            with_policy(const detail::standard_policy &policy) const &;
 
+        /// return string with all data in mathematical style
+        [[nodiscard]] std::string to_string() const { return to_string_in(); }
 
     protected:
         using points_t = std::set<inner_type, detail::pair_less<T>>;
@@ -168,7 +191,7 @@ namespace interval {
 
         void merge_intervals(const std::pair<inner_type, inner_type> &f, const std::pair<inner_type, inner_type> &s);
 
-        [[nodiscard]] std::string print_in() const;
+        [[nodiscard]] std::string to_string_in() const;
     };
 }
 
@@ -183,5 +206,13 @@ namespace interval::type_policy {
         template <typename T>
         static constexpr bool is_string_v = std::is_same_v<std::string, T>;
     };
+}
+namespace interval::detail::custom_type {
+    template <typename T, not_custom_type_policy_c>
+    std::string to_str(const T el) {
+        std::stringstream ss;
+        ss << std::move(el);
+        return ss.str();
+    }
 }
 #endif // MATHINTERVAL_BASE_H

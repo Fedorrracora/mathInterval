@@ -195,6 +195,19 @@ namespace interval {
     return in(std::get<T>(a));
     }
 
+    // to string
+    template <typename T, detail::type_policy_c type_policy>
+    std::string interval<T, type_policy>::to_string_in() const {
+        return "abc";
+    }
+
+    // with policy
+    template <typename T, detail::type_policy_c type_policy>
+    detail::temp_policy_wrapper<T, type_policy>
+        interval<T, type_policy>::with_policy(const detail::standard_policy &policy) const & {
+        return detail::temp_policy_wrapper(*this).with_policy(policy);
+    }
+
 
 } // namespace interval
 
