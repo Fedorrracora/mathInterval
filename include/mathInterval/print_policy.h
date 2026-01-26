@@ -8,7 +8,7 @@ namespace interval::detail {
         [[nodiscard]] virtual constexpr int id() const = 0;
         virtual ~print_method() = default;
     };
-}
+} // namespace interval::detail
 namespace interval::print_policy {
     struct custom_print_policy final : detail::standard_policy {
         static constexpr std::nullopt_t default_value = std::nullopt;
@@ -26,7 +26,8 @@ namespace interval::print_policy {
             max_str = std::move(max);
             return *this;
         }
-        custom_print_policy &empty_s(std::string s) {
+        custom_print_policy &empty_s(std::optional<std::string> s) {
+            if (!s.has_value()) s = "*Empty*";
             empty = std::move(s);
             return *this;
         }
@@ -39,8 +40,19 @@ namespace interval::print_policy {
         [[nodiscard]] std::unique_ptr<standard_policy> clone() const override {
             return std::make_unique<custom_print_policy>(*this);
         }
+        bool push(const std::unique_ptr<standard_policy> &el) override {
+            auto x = dynamic_cast<custom_print_policy *>(el.get());
+            if (x != nullptr) {
+                if (x->min_str != std::nullopt) min_str = x->min_str;
+                if (x->max_str != std::nullopt) max_str = x->max_str;
+                if (x->empty != std::nullopt) empty = x->empty;
+                if (x->method_id != -1) method_id = x->method_id;
+                return true;
+            }
+            return false;
+        }
         std::optional<std::string> min_str, max_str, empty;
-        int method_id = 0;
+        int method_id = -1;
     };
 
     struct standard_print_method final : detail::print_method {
@@ -56,5 +68,5 @@ namespace interval::print_policy {
         [[nodiscard]] constexpr int id() const override { return 3; }
     };
 
-}
+} // namespace interval::print_policy
 #endif // MATHINTERVAL_PRINT_POLICY_H
