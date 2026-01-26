@@ -2,6 +2,7 @@
 #define MATHINTERVAL_BASE_H
 #include <functional>
 #include <memory>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <string>
@@ -71,6 +72,12 @@ namespace interval::detail {
     };
 } // namespace interval::detail
 
+namespace interval::detail {
+    struct default_config {
+        constexpr static auto min_str = "-INF", max_str = "+INF", empty = "*Empty*", sep = "; ", unite = " U ";
+    };
+}
+
 namespace interval::detail::custom_type {
     /// returns T{} unless overridden by type policies. The return value is used as a placeholder. Its value is never
     /// used
@@ -123,19 +130,21 @@ namespace interval {
         using inner_type = std::pair<int, T>;
 
     public:
-        /// return always minimal element in any interval
+        /// type of minimal obj
         struct minimal_t {
             [[nodiscard]] static std::pair<int, T> data() noexcept;
         };
-        /// return always maximal element in any interval
+        /// type of maximal obj
         struct maximal_t {
             [[nodiscard]] static std::pair<int, T> data() noexcept;
         };
 
+        /// return always minimal element in any interval
         [[nodiscard]] minimal_t minimal() const noexcept {
             (void)this;
             return {};
         }
+        /// return always maximal element in any interval
         [[nodiscard]] maximal_t maximal() const noexcept {
             (void)this;
             return {};
@@ -156,6 +165,9 @@ namespace interval {
         [[nodiscard]] bool operator!=(const interval &b) const noexcept;
 
         // standard operations
+
+        /// return true if this multitude is empty, else return false
+        [[nodiscard]] bool empty() const noexcept;
 
         /// return true if this point in multitude, else return false
         [[nodiscard]] bool in(const T &a) const;
@@ -199,7 +211,15 @@ namespace interval {
 
         void merge_intervals(const std::pair<inner_type, inner_type> &f, const std::pair<inner_type, inner_type> &s);
 
-        [[nodiscard]] std::string to_string_in() const;
+        static std::string to_string_symbol(const inner_type &a, const std::string &min, const std::string &max);
+
+        [[nodiscard]] std::string to_string_in(
+        const std::string &min,
+        const std::string &max,
+        const std::string &empty,
+        const std::string &sep,
+        const std::string &unite,
+        int id) const;
     };
 } // namespace interval
 

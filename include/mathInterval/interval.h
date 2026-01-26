@@ -183,6 +183,12 @@ namespace interval {
         return true;
     }
 
+    // empty
+
+    template <typename T, detail::type_policy_c type_policy>
+    bool interval<T, type_policy>::empty() const noexcept { return points.empty() && intervals.empty(); }
+
+
     // in
 
     template <typename T, detail::type_policy_c type_policy>
@@ -191,14 +197,35 @@ namespace interval {
     }
     template <typename T, detail::type_policy_c type_policy>
     bool interval<T, type_policy>::in_v(const inp_type &a) const {
-    is_point_assert(a);
-    return in(std::get<T>(a));
+        is_point_assert(a);
+        return in(std::get<T>(a));
     }
 
     // to string
     template <typename T, detail::type_policy_c type_policy>
-    std::string interval<T, type_policy>::to_string_in() const {
-        return "abc";
+    std::string interval<T, type_policy>::to_string_symbol(const inner_type &a, const std::string &min,
+                                                           const std::string &max) {
+        if (a.first == 1) [[likely]] {
+            return detail::custom_type::to_str<T, type_policy>(a.second);
+        }
+        if (a.first == 0) return min;
+        if (a.first == 2) return max;
+        throw std::runtime_error("point or border of interval has undefined value");
+    }
+
+
+    template <typename T, detail::type_policy_c type_policy>
+    std::string interval<T, type_policy>::to_string_in(
+        const std::string &min,
+        const std::string &max,
+        const std::string &empty,
+        const std::string &sep,
+        const std::string &unite,
+        const int id
+        ) const {
+        if (this->empty()) return empty;
+        std::string s1, s2;
+
     }
 
     // with policy
