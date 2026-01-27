@@ -182,7 +182,7 @@ namespace interval {
         with_policy(const detail::standard_policy &policy) const &;
 
         /// return string with all data in mathematical style
-        [[nodiscard]] std::string to_string() const { return to_string_in(); }
+        [[nodiscard]] std::string to_string() const;
 
     protected:
         using points_t = std::set<inner_type, detail::pair_less<T>>;

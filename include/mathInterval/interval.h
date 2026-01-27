@@ -203,6 +203,18 @@ namespace interval {
 
     // to string
     template <typename T, detail::type_policy_c type_policy>
+    std::string interval<T, type_policy>::to_string() const {
+        return to_string_in(
+            detail::default_config::min_str,
+            detail::default_config::max_str,
+            detail::default_config::empty,
+            detail::default_config::sep,
+            detail::default_config::unite,
+            0
+            );
+    }
+
+    template <typename T, detail::type_policy_c type_policy>
     std::string interval<T, type_policy>::to_string_symbol(const inner_type &a, const std::string &min,
                                                            const std::string &max) {
         if (a.first == 1) [[likely]] {
@@ -224,8 +236,76 @@ namespace interval {
         const int id
         ) const {
         if (this->empty()) return empty;
-        std::string s1, s2;
+        std::string s1;
+        const bool point_str = id == 2 || id == 3;
+        const bool merge = id != 1 && id != 2;
 
+        auto interval_iterator = intervals.begin();
+        auto point_iterator = points.begin();
+        std::vector<std::reference_wrapper<const inner_type>> point_buffer;
+        auto print_sep = [&unite](std::string &s) {
+            if (!s.empty()) s += unite;
+        };
+        auto drop_buffer = [&point_buffer, &print_sep, &sep, &min, &max](std::string &s) {
+            if (point_buffer.empty()) return;
+            print_sep(s);
+            s += '{';
+            s += to_string_symbol(point_buffer.front(), min, max);
+            for (auto i = 1; i < point_buffer.size(); ++i) {
+                s += sep;
+                s += to_string_symbol(point_buffer[i].get(), min, max);
+            }
+            s += '}';
+            point_buffer.clear();
+        };
+        auto print_interval = [&print_sep, &sep, &min, &max, &interval_iterator](std::string &s, bool b1, bool b2) {
+            print_sep(s);
+            s += b1 ? '[':'(';
+            s += to_string_symbol(interval_iterator->first, min, max);
+            s += sep;
+            s += to_string_symbol(interval_iterator->second, min, max);
+            s += b2 ? ']':')';
+        };
+        while (point_iterator != points.end() && interval_iterator != intervals.end()) {
+            if (merge && *point_iterator == interval_iterator->first) {
+                if (!point_str) drop_buffer(s1);
+                ++point_iterator;
+                bool b;
+                if (point_iterator != points.end() && *point_iterator == interval_iterator->second) {
+                    ++point_iterator;
+                    b = true;
+                }
+                else b = false;
+                print_interval(s1, true, b);
+                ++interval_iterator;
+            }
+            else if (*point_iterator <= interval_iterator->first) {
+                point_buffer.push_back(std::ref(*point_iterator));
+                ++point_iterator;
+            }
+            else {
+                if (!point_str) drop_buffer(s1);
+                bool b;
+                if (merge && *point_iterator == interval_iterator->second) {
+                    ++point_iterator;
+                    b = true;
+                }
+                else b = false;
+                print_interval(s1, false, b);
+                ++interval_iterator;
+            }
+        }
+        while (point_iterator != points.end()) {
+            point_buffer.push_back(std::ref(*point_iterator));
+            ++point_iterator;
+        }
+        while (interval_iterator != intervals.end()) {
+            if (!point_str) drop_buffer(s1);
+            print_interval(s1, false, false);
+            ++interval_iterator;
+        }
+        drop_buffer(s1);
+        return s1;
     }
 
     // with policy
