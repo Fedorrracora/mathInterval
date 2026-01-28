@@ -72,10 +72,8 @@ namespace interval::detail {
     };
 } // namespace interval::detail
 
-namespace interval::detail {
-    struct default_config {
-        constexpr static auto min_str = "-INF", max_str = "+INF", empty = "*Empty*", sep = "; ", unite = " U ";
-    };
+namespace interval::detail::default_config {
+    constexpr static auto min_str = "-INF", max_str = "+INF", empty = "*Empty*", sep = "; ", unite = " U ";
 }
 
 namespace interval::detail::custom_type {
@@ -117,7 +115,6 @@ namespace interval::type_policy {
 namespace interval::print_policy {
     /// for custom control. These features are described in <mathInterval/print_policy.h>
     struct custom_print_policy;
-
     struct standard_print_method;
     struct no_merge_print_method;
     struct no_merge_point_to_end_print_method;
@@ -150,7 +147,7 @@ namespace interval {
             return {};
         }
 
-        // structure can receive data with minimal<T>, maximal<T>, T
+        /// structure can receive data with minimal<T>, maximal<T>, T
         using inp_type = std::variant<minimal_t, maximal_t, T>;
         interval();
         ~interval();
@@ -172,11 +169,19 @@ namespace interval {
         /// return true if this point in multitude, else return false
         [[nodiscard]] bool in(const T &a) const;
         /// return true if this point in multitude, else return false
+        /// can accept interval::inp_type (for compatibility)
         [[nodiscard]] bool in_v(const inp_type &a) const;
 
         /// returns false if this point was inside this multitude, else return true
-        template <typename U>
-        bool add_point(U &&a);
+        bool add_point(const T &a);
+        /// returns false if this point was inside this multitude, else return true
+        bool add_point(T &&a);
+        /// returns false if this point was inside this multitude, else return true
+        /// can accept interval::inp_type (for compatibility)
+        bool add_point_v(const inp_type &a);
+        /// returns false if this point was inside this multitude, else return true
+        /// can accept interval::inp_type (for compatibility)
+        bool add_point_v(inp_type &&a);
 
         [[nodiscard]] detail::temp_policy_wrapper<T, type_policy>
         with_policy(const detail::standard_policy &policy) const &;
@@ -187,6 +192,8 @@ namespace interval {
     protected:
         using points_t = std::set<inner_type, detail::pair_less<T>>;
         using intervals_t = std::set<std::pair<inner_type, inner_type>, detail::pair_less<T>>;
+
+        /// all stored data
         points_t points;
         intervals_t intervals;
 
@@ -213,6 +220,7 @@ namespace interval {
 
         static std::string to_string_symbol(const inner_type &a, const std::string &min, const std::string &max);
 
+        /// These features are described in <mathInterval/print_policy.h>
         [[nodiscard]] std::string to_string_in(
         const std::string &min,
         const std::string &max,
@@ -220,6 +228,14 @@ namespace interval {
         const std::string &sep,
         const std::string &unite,
         int id) const;
+
+        /// wrapper between add_point and add_point_in. U must be T
+        template <typename U>
+        bool add_point_lazy(U &&a);
+
+        /// wrapper between add_point_v and add_point_in. U must be inp_type
+        template <typename U>
+        bool add_point_lazy_v(U &&a);
     };
 } // namespace interval
 

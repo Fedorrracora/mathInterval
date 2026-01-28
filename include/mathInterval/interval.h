@@ -99,7 +99,7 @@ namespace interval {
     // some technical details
 
     template <typename T, detail::type_policy_c type_policy>
-    constexpr interval<T, type_policy>::inner_type interval<T, type_policy>::to_point(inp_type a)  {
+    constexpr interval<T, type_policy>::inner_type interval<T, type_policy>::to_point(inp_type a) {
         auto y = std::get_if<minimal_t>(&a);
         if (y != nullptr) return y->data();
         auto z = std::get_if<maximal_t>(&a);
@@ -150,11 +150,29 @@ namespace interval {
 
     template <typename T, detail::type_policy_c type_policy>
     template <typename U>
-    bool interval<T, type_policy>::add_point(U &&a) {
+    bool interval<T, type_policy>::add_point_lazy(U &&a) {
         is_point_assert(a);
         if (in(a)) return false;
         return add_point_in(to_point(std::forward<U>(a)));
     }
+    template <typename T, detail::type_policy_c type_policy>
+    template <typename U>
+    bool interval<T, type_policy>::add_point_lazy_v(U &&a) {
+        is_point_assert(a);
+        if (in_v(a)) return false;
+        return add_point_in(to_point(std::forward<U>(a)));
+    }
+
+    template <typename T, detail::type_policy_c type_policy>
+    bool interval<T, type_policy>::add_point(const T &a) { return add_point_lazy(a); }
+    template <typename T, detail::type_policy_c type_policy>
+    bool interval<T, type_policy>::add_point(T &&a) { return add_point_lazy(std::move(a)); }
+
+    template <typename T, detail::type_policy_c type_policy>
+    bool interval<T, type_policy>::add_point_v(const inp_type &a) { return add_point_lazy_v(a); }
+    template <typename T, detail::type_policy_c type_policy>
+    bool interval<T, type_policy>::add_point_v(inp_type &&a) { return add_point_lazy_v(std::move(a)); }
+
 
     template <typename T, detail::type_policy_c type_policy>
     bool interval<T, type_policy>::add_point_in(inner_type p) {
