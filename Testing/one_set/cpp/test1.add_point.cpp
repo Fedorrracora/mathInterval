@@ -1,13 +1,9 @@
 #include <mathInterval/interval.h>
-#include <mathInterval/type_policy.h>
-#include <mathInterval/print_policy.h>
 #include <gtest/gtest.h>
-// #include <interval.h>
 #include <verifier.h>
 
 TEST(ONE_SET, add_point) {
     interval::interval<int> a;
-    auto ans = a.with_policy(interval::print_policy::custom_print_policy()).to_string();
     verify::line_checker line(verify::read_file(DATA_DIR"one_set/answers/test1.a"));
     {
         bool b = true;
@@ -25,8 +21,8 @@ TEST(ONE_SET, add_point) {
         EXPECT_TRUE(verify::same(a.to_string(), line.last, CS, WS, BS) && !b)
             << "error in step 2: adding cross points\n";
     }
-    // EXPECT_ANY_THROW(a.add_point(a.minimal())) << "error in step 3: throw intervals\n";
-    // EXPECT_ANY_THROW(a.add_point(a.maximal())) << "error in step 4: throw intervals\n";
+    EXPECT_ANY_THROW(a.add_point_v(a.minimal())) << "error in step 3: throw intervals\n";
+    EXPECT_ANY_THROW(a.add_point_v(a.maximal())) << "error in step 4: throw intervals\n";
     ASSERT_TRUE(verify::same(a.to_string(), line.last, CS, WS, BS))
         << "error in steps 3-4: throw points: saving data\n";
     {

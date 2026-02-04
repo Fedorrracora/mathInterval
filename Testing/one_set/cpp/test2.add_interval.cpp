@@ -1,6 +1,6 @@
 #include <climits>
 #include <gtest/gtest.h>
-#include <interval.h>
+#include <mathInterval/interval.h>
 #include <verifier.h>
 
 TEST(ONE_SET, add_interval) {
@@ -18,13 +18,11 @@ TEST(ONE_SET, add_interval) {
         bool b = false;
         b |= a.add_interval(11, 11);
         b |= a.add_interval(1, 1);
-        b |= a.remove_interval(11, 11);
-        b |= a.remove_interval(-1, -1);
         EXPECT_TRUE(verify::same(a.to_string(), line.last, CS, WS, BS) && !b)
             << "error in step 2: adding/removing empty intervals\n";
     }
     EXPECT_ANY_THROW(a.add_interval(0, -1)) << "error in step 3: throw intervals\n";
-    EXPECT_ANY_THROW(a.add_interval(0, interval::minimal<int>())) << "error in step 4: throw intervals\n";
+    EXPECT_ANY_THROW(a.add_interval(0, a.minimal())) << "error in step 4: throw intervals\n";
     ASSERT_TRUE(verify::same(a.to_string(), line.last, CS, WS, BS))
         << "error in steps 3-4: throw intervals: saving data\n";
     {
@@ -58,12 +56,12 @@ TEST(ONE_SET, add_interval) {
             << "error in step 9: adding cross intervals\n";
     }
     {
-        bool b = a.add_interval(15, interval::maximal<int>());
+        bool b = a.add_interval(15, a.maximal());
         ASSERT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS) && b)
             << "error in step 10: adding cross infinity intervals\n";
     }
     {
-        bool b = a.add_interval(interval::minimal<int>(), 12);
+        bool b = a.add_interval(a.minimal(), 12);
         ASSERT_TRUE(verify::same(a.to_string(), line(), CS, WS, BS) && b)
             << "error in step 11: adding cross infinity intervals\n";
     }
@@ -73,8 +71,11 @@ TEST(ONE_SET, add_interval) {
             << "error in step 12: adding cross intervals\n";
     }
     {
-        bool b = a.add_interval(interval::minimal<int>(), interval::maximal<int>());
+        bool b = a.add_interval(a.minimal(), a.maximal());
         ASSERT_TRUE(verify::same(a.to_string(), line.last, CS, WS, BS) && !b)
             << "error in step 13: adding independent infinity intervals\n";
     }
+    int x = 0;
+    std::pair(x, 5);
+
 }

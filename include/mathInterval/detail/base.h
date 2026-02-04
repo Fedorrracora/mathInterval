@@ -183,6 +183,10 @@ namespace interval {
         /// can accept interval::inp_type (for compatibility)
         bool add_point_v(inp_type &&a);
 
+        /// returns false if all this interval was inside this multitude, else return true
+        bool add_interval(const inp_type &a, const inp_type &b) { return add_interval_in(to_point(a), to_point(b)); }
+
+
         [[nodiscard]] detail::temp_policy_wrapper<T, type_policy>
         with_policy(const detail::standard_policy &policy) const &;
 
@@ -212,6 +216,8 @@ namespace interval {
         static void constexpr is_point_assert(const U &point);
 
         bool add_point_in(inner_type p);
+
+        bool add_interval_in(inner_type f, inner_type s);
 
     private:
         static void constexpr is_point_assert_in(const inp_type &point);

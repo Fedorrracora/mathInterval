@@ -45,7 +45,7 @@ namespace interval {
 
     template <typename T>
     bool detail::pair_less<T>::operator()(const T &a, const inner_type &b) const noexcept {
-        if (b.first != 1) return b.first == 0;
+        if (b.first != 1) return b.first == 2;
         return pair_less()(a, b.second);
     }
     template <typename T>
@@ -120,7 +120,7 @@ namespace interval {
     template <typename T, detail::type_policy_c type_policy>
     auto interval<T, type_policy>::get_interval_that_include_this_point(const inner_type &point) const ->
     intervals_t::const_iterator {
-        if (point.first != 1) throw std::range_error("point has undefined value (-INF or +INF)");
+        if (point.first != 1) return intervals.end();
         return get_interval_that_include_this_point(point.second);
     }
 
@@ -146,7 +146,7 @@ namespace interval {
     }
 
 
-    // default operations
+    // add_point
 
     template <typename T, detail::type_policy_c type_policy>
     template <typename U>
@@ -178,7 +178,6 @@ namespace interval {
     bool interval<T, type_policy>::add_point_in(inner_type p) {
         if (p.first != 1) throw std::range_error("point has undefined value (-INF or +INF)");
         // you cannot add points -INF and +INF
-
         // (x1; a); (a; x2) + {a} = (x1; x2)
         auto x = intervals.lower_bound(p);
         if (x != intervals.end() && x->first == p && x != intervals.begin()) {
@@ -189,17 +188,69 @@ namespace interval {
                 return true;
             }
         }
-
         // (x1; x2) + {a} = (x1; x2) if a in (x1; x2)
         if (get_interval_that_include_this_point(p) != intervals.end()) return false;
-
         // {a} + {a} = {a}
-        if (points.count(p)) { return false; }
-
+        if (points.contains(p)) return false;
         // something + {a} = something + {a} if {a} not in something
         points.insert(std::move(p));
         return true;
     }
+
+    // add_interval
+
+    template <typename T, detail::type_policy_c type_policy>
+    bool interval<T, type_policy>::add_interval_in(inner_type f, inner_type s) {
+        // (a; a) == empty
+        if (f == s) return false;
+        if (detail::pair_less<T>()(s, f)) throw std::logic_error("right border of interval is less than left");
+        auto x = get_interval_that_include_this_point(f), y = get_interval_that_include_this_point(s);
+        if (x != intervals.end() && x == y) return false;
+        // (x1; x2); (x3; x4) + (f; s) = (x1; x2); (x3; x4) + (x1; s) if {f} in (x1; x2)
+        if (x != intervals.end()) f = x->first;
+        if (y != intervals.end()) s = y->second;
+
+        if (intervals.contains({f, s})) return false;
+
+        // (f; x1); (x2; x3); (x4; s) + (f; s) = empty + (f; s)
+        for (auto it = intervals.lower_bound(f); it != intervals.end() && it->first < s;) {
+            auto old = it++;
+            intervals.erase(old);
+        }
+
+        // // something + (f; s) = something + (f; s) if (f; s) not in something
+        // intervals.emplace(f, s);
+
+        // (f; s) + {s} + (s; x) = (f; x)
+        x = intervals.lower_bound(s);
+        if (x != intervals.end()) {
+            if (x->first == s && points.contains(s)) {
+                points.erase(s);
+                s = x->second;
+                intervals.erase(x);
+            }
+        }
+
+        // (x; f) + {f} + (f; s) = (x; s)
+        x = intervals.lower_bound(f);
+        if (x != intervals.begin()) {
+            --x;
+            if (x->second == f && points.contains(f)) {
+                points.erase(f);
+                f = x->first;
+                intervals.erase(x);
+            }
+        }
+
+        // (f; s) + {x} = (f; s) if x in (f; s)
+        for (auto it = points.upper_bound(f); it != points.end() && *it < s;) {
+            auto old = it++;
+            points.erase(old);
+        }
+        intervals.emplace(std::move(f), std::move(s));
+        return true;
+    }
+
 
     // empty
 
@@ -211,7 +262,7 @@ namespace interval {
 
     template <typename T, detail::type_policy_c type_policy>
     bool interval<T, type_policy>::in(const T &a) const {
-        return points.count(a) || get_interval_that_include_this_point(a) != intervals.end();
+        return points.contains(a) || get_interval_that_include_this_point(a) != intervals.end();
     }
     template <typename T, detail::type_policy_c type_policy>
     bool interval<T, type_policy>::in_v(const inp_type &a) const {
