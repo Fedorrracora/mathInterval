@@ -69,6 +69,35 @@ namespace interval {
     template <typename T, detail::type_policy_c type_policy>
     std::pair<int, T> interval<T, type_policy>::maximal_t::data() noexcept { return {2, detail::custom_type::get_value<T, type_policy>()}; }
 
+    // T_cast
+
+    template <typename T, detail::type_policy_c type_policy>
+    template <typename U>
+    constexpr decltype(auto) interval<T, type_policy>::T_cast(U &&el) {
+        static_assert(std::convertible_to<U, inp_type>, "value must be T or inp_type");
+        if constexpr (std::is_same_v<std::decay_t<T>, std::decay_t<U>>) {
+            return std::forward<U>(el);
+        }
+        else if constexpr (std::is_same_v<std::decay_t<inp_type>, std::decay_t<U>>) {
+            is_point_assert_in(el);
+            return std::get<T>(std::forward<U>(el));
+        }
+        else {
+            static_assert(std::convertible_to<U, T>, "value cannot be -INF and +INF");
+            return T(std::forward<U>(el));
+        }
+    }
+
+    template <typename T, detail::type_policy_c type_policy>
+    constexpr interval<T, type_policy>::inner_type interval<T, type_policy>::T_point_cast(T &&el) {
+        return {1, std::move(el)};
+    }
+    template <typename T, detail::type_policy_c type_policy>
+        constexpr interval<T, type_policy>::inner_type interval<T, type_policy>::T_point_cast(const T &el) {
+        return {1, el};
+    }
+
+
     // default zone
 
     template <typename T, detail::type_policy_c type_policy>
@@ -142,7 +171,7 @@ namespace interval {
     }
     template <typename T, detail::type_policy_c type_policy>
     constexpr void interval<T, type_policy>::is_point_assert_in(const inp_type &point) {
-        if (std::get_if<T>(&point) == nullptr) throw std::range_error("point has undefined value (-INF or +INF)");
+        if (std::get_if<T>(&point) == nullptr) throw std::range_error("value cannot be -INF and +INF");
     }
 
 
@@ -150,29 +179,11 @@ namespace interval {
 
     template <typename T, detail::type_policy_c type_policy>
     template <typename U>
-    bool interval<T, type_policy>::add_point_lazy(U &&a) {
-        is_point_assert(a);
-        if (in(a)) return false;
-        return add_point_in(to_point(std::forward<U>(a)));
+    bool interval<T, type_policy>::add_point(U &&a) {
+        decltype(auto) x = T_cast(std::forward<U>(a));
+        if (in(x)) return false;
+        return add_point_in(T_point_cast(std::forward<decltype(x)>(x)));
     }
-    template <typename T, detail::type_policy_c type_policy>
-    template <typename U>
-    bool interval<T, type_policy>::add_point_lazy_v(U &&a) {
-        is_point_assert(a);
-        if (in_v(a)) return false;
-        return add_point_in(to_point(std::forward<U>(a)));
-    }
-
-    template <typename T, detail::type_policy_c type_policy>
-    bool interval<T, type_policy>::add_point(const T &a) { return add_point_lazy(a); }
-    template <typename T, detail::type_policy_c type_policy>
-    bool interval<T, type_policy>::add_point(T &&a) { return add_point_lazy(std::move(a)); }
-
-    template <typename T, detail::type_policy_c type_policy>
-    bool interval<T, type_policy>::add_point_v(const inp_type &a) { return add_point_lazy_v(a); }
-    template <typename T, detail::type_policy_c type_policy>
-    bool interval<T, type_policy>::add_point_v(inp_type &&a) { return add_point_lazy_v(std::move(a)); }
-
 
     template <typename T, detail::type_policy_c type_policy>
     bool interval<T, type_policy>::add_point_in(inner_type p) {

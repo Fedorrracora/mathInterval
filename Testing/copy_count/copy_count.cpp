@@ -55,52 +55,63 @@ TEST(COPY_COUNT, copy_count) {
         verify::DoNotOptimize(ans);
     });
 
-    copy_count::detail::data.emplace_back("add_point (new element)", []()->copy_count::interval_t {
+    // add_point
+    copy_count::detail::data.emplace_back("add_point (new element, T)", []()->copy_count::interval_t {
+        return {};
+    }, 0, [](copy_count::interval_t a)->void {
+        a.add_point(verify::copy_counter(4));
+    }, 1, [](copy_count::interval_t a)->void {
+        verify::copy_counter x = 4;
+        a.add_point(x);
+    });
+    copy_count::detail::data.emplace_back("add_point (new element, castable)", []()->copy_count::interval_t {
         return {};
     }, 0, [](copy_count::interval_t a)->void {
         a.add_point(4);
+    }, 0, [](copy_count::interval_t a)->void {
+        int x = 4;
+        a.add_point(x);
+    });
+    copy_count::detail::data.emplace_back("add_point (new element, inp_type)", []()->copy_count::interval_t {
+        return {};
+    }, 0, [](copy_count::interval_t a)->void {
+        a.add_point(copy_count::interval_t::inp_type(4));
     }, 1, [](copy_count::interval_t a)->void {
+        const copy_count::interval_t::inp_type x = 4;
+        a.add_point(x);
+    });
+    copy_count::detail::data.emplace_back("add_point (already exist, T)", []()->copy_count::interval_t {
+        auto x = copy_count::interval_t();
+        x.add_point(4);
+        return x;
+    }, 0, [](copy_count::interval_t a)->void {
+        a.add_point(verify::copy_counter(4));
+    }, 0, [](copy_count::interval_t a)->void {
         verify::copy_counter x = 4;
         a.add_point(x);
     });
-    copy_count::detail::data.emplace_back("add_point (already exist)", []()->copy_count::interval_t {
+    copy_count::detail::data.emplace_back("add_point (already exist, castable)", []()->copy_count::interval_t {
         auto x = copy_count::interval_t();
         x.add_point(4);
         return x;
     }, 0, [](copy_count::interval_t a)->void {
         a.add_point(4);
     }, 0, [](copy_count::interval_t a)->void {
-        verify::copy_counter x = 4;
+        int x = 4;
         a.add_point(x);
     });
-    copy_count::detail::data.emplace_back("add_point_v (new element)", []()->copy_count::interval_t {
-            return {};
-        }, 0, [](copy_count::interval_t a)->void {
-            a.add_point_v(4);
-        }, 1, [](copy_count::interval_t a)->void {
-            verify::copy_counter x = 4;
-            a.add_point_v(x);
-        });
-    copy_count::detail::data.emplace_back("add_point_v (already exist, castable)", []()->copy_count::interval_t {
+    copy_count::detail::data.emplace_back("add_point (already exist, inp_type)", []()->copy_count::interval_t {
         auto x = copy_count::interval_t();
         x.add_point(4);
         return x;
     }, 0, [](copy_count::interval_t a)->void {
-        a.add_point_v(4);
-    }, 1, [](copy_count::interval_t a)->void {
-        verify::copy_counter x = 4;
-        a.add_point_v(x);
-    });
-    copy_count::detail::data.emplace_back("add_point_v (already exist)", []()->copy_count::interval_t {
-        auto x = copy_count::interval_t();
-        x.add_point(4);
-        return x;
-    }, 0, [](copy_count::interval_t a)->void {
-        a.add_point_v(4);
+        a.add_point(copy_count::interval_t::inp_type(4));
     }, 0, [](copy_count::interval_t a)->void {
         const copy_count::interval_t::inp_type x = 4;
-        a.add_point_v(x);
+        a.add_point(x);
     });
+
+
 
     std::vector<std::vector<std::string>> table = {
         {"line", "name", "copy counter (rvalue)", "copy counter (lvalue)", "status"},

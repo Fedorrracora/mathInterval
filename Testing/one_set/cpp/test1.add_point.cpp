@@ -2,8 +2,10 @@
 #include <gtest/gtest.h>
 #include <verifier.h>
 
+using interval_t = interval::interval<int>;
+
 TEST(ONE_SET, add_point) {
-    interval::interval<int> a;
+    interval_t a;
     verify::line_checker line(verify::read_file(DATA_DIR"one_set/answers/test1.a"));
     {
         bool b = true;
@@ -21,8 +23,8 @@ TEST(ONE_SET, add_point) {
         EXPECT_TRUE(verify::same(a.to_string(), line.last, CS, WS, BS) && !b)
             << "error in step 2: adding cross points\n";
     }
-    EXPECT_ANY_THROW(a.add_point_v(a.minimal())) << "error in step 3: throw intervals\n";
-    EXPECT_ANY_THROW(a.add_point_v(a.maximal())) << "error in step 4: throw intervals\n";
+    EXPECT_ANY_THROW(a.add_point(interval_t::inp_type(a.minimal()))) << "error in step 3: throw intervals\n";
+    EXPECT_ANY_THROW(a.add_point(interval_t::inp_type(a.maximal()))) << "error in step 4: throw intervals\n";
     ASSERT_TRUE(verify::same(a.to_string(), line.last, CS, WS, BS))
         << "error in steps 3-4: throw points: saving data\n";
     {

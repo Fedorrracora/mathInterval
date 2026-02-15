@@ -2,7 +2,6 @@
 #define MATHINTERVAL_BASE_H
 #include <functional>
 #include <memory>
-#include <optional>
 #include <set>
 #include <sstream>
 #include <string>
@@ -172,16 +171,9 @@ namespace interval {
         /// can accept interval::inp_type (for compatibility)
         [[nodiscard]] bool in_v(const inp_type &a) const;
 
+        template <typename U>
         /// returns false if this point was inside this multitude, else return true
-        bool add_point(const T &a);
-        /// returns false if this point was inside this multitude, else return true
-        bool add_point(T &&a);
-        /// returns false if this point was inside this multitude, else return true
-        /// can accept interval::inp_type (for compatibility)
-        bool add_point_v(const inp_type &a);
-        /// returns false if this point was inside this multitude, else return true
-        /// can accept interval::inp_type (for compatibility)
-        bool add_point_v(inp_type &&a);
+        bool add_point(U &&a);
 
         /// returns false if all this interval was inside this multitude, else return true
         bool add_interval(const inp_type &a, const inp_type &b) { return add_interval_in(to_point(a), to_point(b)); }
@@ -201,6 +193,22 @@ namespace interval {
         points_t points;
         intervals_t intervals;
 
+        /**
+        * @brief cast el to T&/T&&. El must be T or inp_type (check with static_assert).
+        *
+        * - if el has type T&/T&&, return it
+        * - if el has type inp_type&/inp_type&& with point, checking for a point and return T&/T&&
+        * - if el castable to T, return T&&
+        * - else fail static_assert (el is -INF of +INF)
+        *
+        * @return T& or T&&
+        */
+        template <typename U>
+        [[nodiscard]] static constexpr decltype(auto) T_cast(U &&el);
+
+        [[nodiscard]] static constexpr inner_type T_point_cast(T &&el);
+        [[nodiscard]] static constexpr inner_type T_point_cast(const T &el);
+
         /// convert T-type object to pair inner-type {1; T-type elem};
         /// if object is interval::minimal or interval::maximal, return their data
         [[nodiscard]] static constexpr inner_type to_point(inp_type a);
@@ -215,8 +223,10 @@ namespace interval {
         template <typename U>
         static void constexpr is_point_assert(const U &point);
 
+        /// like add_point, but accepts type inner_type
         bool add_point_in(inner_type p);
 
+        /// like add_interval, but accepts type inner_type
         bool add_interval_in(inner_type f, inner_type s);
 
     private:
@@ -234,14 +244,6 @@ namespace interval {
         const std::string &sep,
         const std::string &unite,
         int id) const;
-
-        /// wrapper between add_point and add_point_in. U must be T
-        template <typename U>
-        bool add_point_lazy(U &&a);
-
-        /// wrapper between add_point_v and add_point_in. U must be inp_type
-        template <typename U>
-        bool add_point_lazy_v(U &&a);
     };
 } // namespace interval
 
