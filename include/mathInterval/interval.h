@@ -88,6 +88,15 @@ namespace interval {
         }
     }
 
+    template<typename T, detail::type_policy_c type_policy>
+    template<typename U>
+    constexpr decltype(auto) interval<T, type_policy>::sub_inner_cast(U &&el) {
+        static_assert(std::convertible_to<U, inp_type>, "value must be T, inp_type or +INF/-INF");
+        if constexpr (std::is_same_v<std::decay_t<T>, std::decay_t<U>>) {
+            return std::forward<U>(el);
+        }
+    }
+
     template <typename T, detail::type_policy_c type_policy>
     template <typename U>
     constexpr interval<T, type_policy>::inner_type interval<T, type_policy>::T_point_cast(U &&el) {
@@ -170,6 +179,21 @@ namespace interval {
         if (std::get_if<T>(&point) == nullptr) throw std::range_error("value cannot be -INF and +INF");
     }
 
+    template<typename T, detail::type_policy_c type_policy>
+    constexpr void interval<T, type_policy>::correct_range_assert(const inner_type &l, const inner_type &r) {
+        if (l > r) throw std::range_error("right border of interval is less than left");
+    }
+
+    template<typename T, detail::type_policy_c type_policy>
+    constexpr void interval<T, type_policy>::correct_range_assert(const sub_inner &l, const sub_inner &r) {
+        if (l.first != r.first) {
+            if (l.first > r.first)
+                throw std::range_error("right border of interval is less than left");
+        }
+        else if (*l.second > *r.second) {
+            throw std::range_error("right border of interval is less than left");
+        }
+    }
 
     // add_point
 
@@ -272,6 +296,16 @@ namespace interval {
     bool interval<T, type_policy>::in(const U &a) const {
         decltype(auto) x = T_cast(a);
         return points.contains(x) || get_interval_that_include_this_point(x) != intervals.end();
+    }
+
+    template<typename T, detail::type_policy_c type_policy>
+    bool interval<T, type_policy>::contains_in(inner_type f, inner_type s) {
+        correct_range_assert(f, s);
+        if (f == s) return true;
+        auto x = intervals.upper_bound(f);
+        if (x == intervals.begin()) return false;
+        --x;
+        return f >= x->first && x->second <= s;
     }
 
     // to string

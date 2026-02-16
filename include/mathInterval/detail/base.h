@@ -123,8 +123,10 @@ namespace interval::print_policy {
 namespace interval {
     template <typename T, detail::type_policy_c type_policy = type_policy::standard_type_policy>
     class interval {
+        /// all struct data is stored in this type
         using inner_type = std::pair<int, T>;
-
+        /// for some checks and minimization of requests
+        using sub_inner = std::pair<int, T*>;
     public:
         /// type of minimal obj
         struct minimal_t {
@@ -166,8 +168,13 @@ namespace interval {
         [[nodiscard]] bool empty() const noexcept;
 
         template <typename U>
-        /// return true if this point in multitude, else return false
+        /// return true if this point is in multitude, else return false
         [[nodiscard]] bool in(const U &a) const;
+
+        // template <typename U1, typename U2>
+        /// return true if this interval is in multitude, else return false
+        /// todo: write in(f; s) and in(std::pair) operations
+        // [[nodiscard]] bool in(const U1 &a, const U2 &b) const;
 
         template <typename U>
         /// returns false if this point was inside this multitude, else return true
@@ -208,6 +215,21 @@ namespace interval {
         /// allow you to cast T object to inner_type
         [[nodiscard]] static constexpr inner_type T_point_cast(U &&el);
 
+        /// todo
+        template <typename U>
+        /**
+        * @brief cast el to sub_inner. El must be T or inp_type (check with static_assert).
+        *
+        * - if el has type T&/T&&, return it
+        * - if el has type inp_type&/inp_type&& with point, checking for a point and return T&/T&&
+        * - if el castable to T, return T&&
+        * - else fail static_assert (el is -INF of +INF)
+        *
+        * @return T& or T&&
+        */
+        [[nodiscard]] static constexpr decltype(auto) sub_inner_cast(U &&el);
+
+
         /// convert T-type object to pair inner-type {1; T-type elem};
         /// if object is interval::minimal or interval::maximal, return their data
         [[nodiscard]] static constexpr inner_type to_point(inp_type a);
@@ -221,6 +243,15 @@ namespace interval {
         /// check that point is not `-INF` and `+INF`
         template <typename U>
         static void constexpr is_point_assert(const U &point);
+
+        /// check, that (l; r) is correct interval (l <= r)
+        static void constexpr correct_range_assert(const inner_type &l, const inner_type &r);
+
+        /// check, that (l; r) is correct interval (l <= r)
+        static void constexpr correct_range_assert(const sub_inner &l, const sub_inner &r);
+
+        /// like in, but accepts type inner_type
+        bool contains_in(inner_type f, inner_type s);
 
         /// like add_point, but accepts type inner_type
         bool add_point_in(inner_type p);
