@@ -166,10 +166,8 @@ namespace interval {
         [[nodiscard]] bool empty() const noexcept;
 
         /// return true if this point in multitude, else return false
-        [[nodiscard]] bool in(const T &a) const;
-        /// return true if this point in multitude, else return false
-        /// can accept interval::inp_type (for compatibility)
-        [[nodiscard]] bool in_v(const inp_type &a) const;
+        template <typename U>
+        [[nodiscard]] bool in(const U &a) const;
 
         template <typename U>
         /// returns false if this point was inside this multitude, else return true

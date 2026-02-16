@@ -272,13 +272,10 @@ namespace interval {
     // in
 
     template <typename T, detail::type_policy_c type_policy>
-    bool interval<T, type_policy>::in(const T &a) const {
-        return points.contains(a) || get_interval_that_include_this_point(a) != intervals.end();
-    }
-    template <typename T, detail::type_policy_c type_policy>
-    bool interval<T, type_policy>::in_v(const inp_type &a) const {
-        is_point_assert(a);
-        return in(std::get<T>(a));
+    template <typename U>
+    bool interval<T, type_policy>::in(const U &a) const {
+        decltype(auto) x = T_cast(a);
+        return points.contains(x) || get_interval_that_include_this_point(x) != intervals.end();
     }
 
     // to string

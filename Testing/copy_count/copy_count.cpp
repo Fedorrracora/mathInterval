@@ -24,36 +24,37 @@ std::pair<std::vector<std::string>, bool> line(const copy_count::detail::inner_t
 }
 
 TEST(COPY_COUNT, copy_count) {
-    copy_count::detail::data.emplace_back("in (point)", []()->copy_count::interval_t {
+    copy_count::detail::data.emplace_back("in (point, T)", []()->copy_count::interval_t {
         return {};
     }, 0, [](const copy_count::interval_t& a)->void {
-        auto ans = a.in(4);
+        auto ans = a.in(verify::copy_counter(4));
         verify::DoNotOptimize(ans);
     }, 0, [](const copy_count::interval_t& a)->void {
         const verify::copy_counter x = 4;
         auto ans = a.in(x);
         verify::DoNotOptimize(ans);
     });
-    copy_count::detail::data.emplace_back("in_v (point)", []()->copy_count::interval_t {
+    copy_count::detail::data.emplace_back("in (point, castable)", []()->copy_count::interval_t {
         return {};
     }, 0, [](const copy_count::interval_t& a)->void {
-        auto ans = a.in_v(copy_count::interval_t::inp_type(4));
+        auto ans = a.in(4);
         verify::DoNotOptimize(ans);
     }, 0, [](const copy_count::interval_t& a)->void {
+        constexpr int x = 4;
+        auto ans = a.in(x);
+        verify::DoNotOptimize(ans);
+    });
+    copy_count::detail::data.emplace_back("in (point, inp_type)", []()->copy_count::interval_t {
+        return {};
+    }, 0, [](const copy_count::interval_t &a)->void {
+        auto ans = a.in(copy_count::interval_t::inp_type(4));
+        verify::DoNotOptimize(ans);
+    }, 0, [](const copy_count::interval_t &a)->void {
         const copy_count::interval_t::inp_type x = 4;
-        auto ans = a.in_v(x);
+        auto ans = a.in(x);
         verify::DoNotOptimize(ans);
     });
-    copy_count::detail::data.emplace_back("in_v (point, castable)", []()->copy_count::interval_t {
-        return {};
-    }, 0, [](const copy_count::interval_t& a)->void {
-        auto ans = a.in_v(4);
-        verify::DoNotOptimize(ans);
-    }, 1, [](const copy_count::interval_t& a)->void {
-        const verify::copy_counter x = 4;
-        auto ans = a.in_v(x);
-        verify::DoNotOptimize(ans);
-    });
+
 
     // add_point
     copy_count::detail::data.emplace_back("add_point (new element, T)", []()->copy_count::interval_t {
@@ -69,7 +70,7 @@ TEST(COPY_COUNT, copy_count) {
     }, 0, [](copy_count::interval_t a)->void {
         a.add_point(4);
     }, 0, [](copy_count::interval_t a)->void {
-        int x = 4;
+        constexpr int x = 4;
         a.add_point(x);
     });
     copy_count::detail::data.emplace_back("add_point (new element, inp_type)", []()->copy_count::interval_t {
@@ -97,7 +98,7 @@ TEST(COPY_COUNT, copy_count) {
     }, 0, [](copy_count::interval_t a)->void {
         a.add_point(4);
     }, 0, [](copy_count::interval_t a)->void {
-        int x = 4;
+        constexpr int x = 4;
         a.add_point(x);
     });
     copy_count::detail::data.emplace_back("add_point (already exist, inp_type)", []()->copy_count::interval_t {
