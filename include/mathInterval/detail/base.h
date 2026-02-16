@@ -165,8 +165,8 @@ namespace interval {
         /// return true if this multitude is empty, else return false
         [[nodiscard]] bool empty() const noexcept;
 
-        /// return true if this point in multitude, else return false
         template <typename U>
+        /// return true if this point in multitude, else return false
         [[nodiscard]] bool in(const U &a) const;
 
         template <typename U>
@@ -176,7 +176,7 @@ namespace interval {
         /// returns false if all this interval was inside this multitude, else return true
         bool add_interval(const inp_type &a, const inp_type &b) { return add_interval_in(to_point(a), to_point(b)); }
 
-
+        /// allows you to temporarily apply policies to an object
         [[nodiscard]] detail::temp_policy_wrapper<T, type_policy>
         with_policy(const detail::standard_policy &policy) const &;
 
@@ -191,6 +191,7 @@ namespace interval {
         points_t points;
         intervals_t intervals;
 
+        template <typename U>
         /**
         * @brief cast el to T&/T&&. El must be T or inp_type (check with static_assert).
         *
@@ -201,11 +202,11 @@ namespace interval {
         *
         * @return T& or T&&
         */
-        template <typename U>
         [[nodiscard]] static constexpr decltype(auto) T_cast(U &&el);
 
-        [[nodiscard]] static constexpr inner_type T_point_cast(T &&el);
-        [[nodiscard]] static constexpr inner_type T_point_cast(const T &el);
+        template <typename U>
+        /// allow you to cast T object to inner_type
+        [[nodiscard]] static constexpr inner_type T_point_cast(U &&el);
 
         /// convert T-type object to pair inner-type {1; T-type elem};
         /// if object is interval::minimal or interval::maximal, return their data

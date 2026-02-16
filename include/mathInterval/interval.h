@@ -89,14 +89,10 @@ namespace interval {
     }
 
     template <typename T, detail::type_policy_c type_policy>
-    constexpr interval<T, type_policy>::inner_type interval<T, type_policy>::T_point_cast(T &&el) {
-        return {1, std::move(el)};
+    template <typename U>
+    constexpr interval<T, type_policy>::inner_type interval<T, type_policy>::T_point_cast(U &&el) {
+        return {1, std::forward<U>(el)};
     }
-    template <typename T, detail::type_policy_c type_policy>
-        constexpr interval<T, type_policy>::inner_type interval<T, type_policy>::T_point_cast(const T &el) {
-        return {1, el};
-    }
-
 
     // default zone
 
