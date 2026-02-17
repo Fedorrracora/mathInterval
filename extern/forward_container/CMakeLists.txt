@@ -37,6 +37,7 @@ if(FBP_TESTING)
 
     add_executable(forward_container_test_target Testing/test.cpp)
     target_link_libraries(forward_container_test_target PRIVATE GTest::gtest_main PRIVATE forward_container)
+    set_target_properties(forward_container_test_target PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Tests)
     gtest_discover_tests(forward_container_test_target)
 endif()
 
