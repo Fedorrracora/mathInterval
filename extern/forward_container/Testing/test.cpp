@@ -15,5 +15,4 @@ TEST(FORWARD_CONTAINER, all_tests) {
             << "error in step 3: rvalue with call\n";
     EXPECT_TRUE(std::move(cont).get() == using_s && s == "a")
             << "error in step 4: get from rvalue\n";
-
 }

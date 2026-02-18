@@ -1,7 +1,7 @@
 #ifndef MATHINTERVAL_INTERVAL_H
 #define MATHINTERVAL_INTERVAL_H
 #include <mathInterval/detail/base.h>
-
+#include <vector>
 namespace interval {
     // pair_less
 

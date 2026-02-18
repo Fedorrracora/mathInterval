@@ -1,5 +1,5 @@
-#ifndef FORWARD_CONTAINER_H
-#define FORWARD_CONTAINER_H
+#ifndef FBP_FORWARD_CONTAINER_H
+#define FBP_FORWARD_CONTAINER_H
 namespace fbp {
     template <typename T>
     struct forward_container {
@@ -45,4 +45,4 @@ namespace fbp {
         const T *link;
     };
 }
-#endif // FORWARD_CONTAINER_H
+#endif // FBP_FORWARD_CONTAINER_H

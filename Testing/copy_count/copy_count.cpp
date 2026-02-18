@@ -127,7 +127,4 @@ TEST(COPY_COUNT, copy_count) {
     const auto table_str = verifier_tests::to_table(table);
     std::cout << table_str << std::endl;
     ASSERT_TRUE(all_correct);
-    // interval::interval<int> x;
-    // interval::interval<int>::inp_type y(3);
-    // auto out = x.in_v(y);
 }

@@ -1,0 +1,58 @@
+PROJECT_NAME           = "@PROJECT_NAME@"
+PROJECT_NUMBER         = "@PROJECT_VERSION@"
+OUTPUT_DIRECTORY       = "@DOC_OUTPUT_DIR@"
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+
+INPUT                  = @CMAKE_SOURCE_DIR@/include \
+                         @CMAKE_SOURCE_DIR@/src \
+                         @CMAKE_SOURCE_DIR@/extern/forward_container \
+                         @CMAKE_SOURCE_DIR@/docs \
+                         @CMAKE_SOURCE_DIR@/Testing \
+                         @CMAKE_SOURCE_DIR@/CMakeLists.txt \
+                         @CMAKE_SOURCE_DIR@/extern/forward_container/CMakeLists.txt \
+                         @CMAKE_SOURCE_DIR@/README.md \
+                         @CMAKE_SOURCE_DIR@/README.ru.md \
+                         @CMAKE_SOURCE_DIR@/LICENSE
+
+RECURSIVE              = YES
+FILE_PATTERNS          = *.cpp *.cxx *.cc *.c *.h *.hpp *.hh *.md *.py *.a *LICENSE *CMakeLists.txt
+
+# EXAMPLE_PATH           = @CMAKE_SOURCE_DIR@/examples
+
+EXCLUDE                = @CMAKE_SOURCE_DIR@/extern/pybind11 @CMAKE_SOURCE_DIR@/README_pip.md
+EXCLUDE_PATTERNS       = */build/* */dist/* */cmake-build-debug/*
+
+MARKDOWN_SUPPORT       = YES
+EXTENSION_MAPPING      = md=markdown
+
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+REFERENCES_RELATION    = YES
+GENERATE_TREEVIEW      = YES
+
+HAVE_DOT               = YES
+CALL_GRAPH             = NO
+CALLER_GRAPH           = NO
+
+INCLUDE_PATH           = @CMAKE_SOURCE_DIR@/include \
+                         @CMAKE_SOURCE_DIR@/extern/forward_container/include
+
+EXTRACT_ALL            = NO
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+
+WARN_IF_UNDOCUMENTED   = YES
+WARN_NO_PARAMDOC       = NO
+WARN_LOGFILE           = doxywarn.log
+
+HTML_OUTPUT            = html
+GENERATE_HTMLHELP      = NO
+
+STRIP_FROM_PATH        = @CMAKE_SOURCE_DIR@
+FULL_PATH_NAMES        = NO
+SHORT_NAMES            = NO
+
+# Examples and groupings
+ALPHABETICAL_INDEX     = YES

@@ -1,6 +1,5 @@
 #ifndef MATHINTERVAL_BASE_H
 #define MATHINTERVAL_BASE_H
-#include <functional>
 #include <memory>
 #include <set>
 #include <sstream>
@@ -24,7 +23,7 @@ namespace interval::detail {
     template <typename T>
     struct pair_less {
         using inner_type = std::pair<int, T>;
-        // activate transparent policy
+        /// activate transparent policy
         using is_transparent = void;
 
         [[nodiscard]] bool operator()(const inner_type &a, const inner_type &b) const noexcept;
@@ -76,14 +75,14 @@ namespace interval::detail::default_config {
 }
 
 namespace interval::detail::custom_type {
-    /// returns T{} unless overridden by type policies. The return value is used as a placeholder. Its value is never
-    /// used
+    /// returns T{} unless overridden by type policies. The return value is used as a placeholder.
+    /// Its value is never used
     template <typename T, not_custom_type_policy_c>
     T get_value() {
         return T{};
     }
-    /// returns T{} unless overridden by type policies. The return value is used as a placeholder. Its value is never
-    /// used
+    /// returns T{} unless overridden by type policies. The return value is used as a placeholder.
+    /// Its value is never used
     template <typename T, custom_type_policy_c type_policy>
     T get_value();
 
@@ -200,13 +199,21 @@ namespace interval {
 
         template <typename U>
         /**
-        * @brief cast el to T&/T&&. El must be T or inp_type (check with static_assert).
+        * @brief cast el to T&/T&&.
+        *
+        * @param el must be T or inp_type (check with static_assert).
         *
         * - if el has type T&/T&&, return it
         * - if el has type inp_type&/inp_type&& with point, checking for a point and return T&/T&&
         * - if el castable to T, return T&&
         * - else fail static_assert (el is -INF of +INF)
         *
+        * It is recommended to use this function as follows
+        * @code
+        * decltype(auto) x = T_cast(std::forward<U>(elem));
+        * ...
+        * return std::forward<decltype(x)>(x);
+        * @endcode
         * @return T& or T&&
         */
         [[nodiscard]] static constexpr decltype(auto) T_cast(U &&el);

@@ -22,6 +22,7 @@ target_include_directories(forward_container INTERFACE
 )
 
 if(FBP_TESTING)
+    enable_testing()
     #setup GoogleTest
     include(FetchContent)
     if (POLICY CMP0135)
