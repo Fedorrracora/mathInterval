@@ -13,9 +13,9 @@ namespace verify {
     /**
      return true if two strings are equal with some filters
 
-     - case_sensitive - does what it should
-     - whitespace_sensitive - repetitions of spaces, enter and special characters decodes such one space
-     - boundary_sensitive - remove all spaces, enters and special characters from begin and end of the string
+     - case_sensitive - does what it should.
+     - whitespace_sensitive - repetitions of spaces, enter and special characters decodes such one space.
+     - boundary_sensitive - remove all spaces, enters and special characters from begin and end of the string.
      */
     bool same(const std::string &a, const std::string &b, bool case_sensitive = false,
               bool whitespace_sensitive = false, bool boundary_sensitive = false);

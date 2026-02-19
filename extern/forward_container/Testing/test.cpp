@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <string>
-#include <forward_container/forward_container.h>
+#include <fbp/forward_container.h>
 TEST(FORWARD_CONTAINER, all_tests) {
     const std::string using_s = "abc";
     fbp::forward_container cont(using_s);

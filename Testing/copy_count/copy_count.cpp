@@ -112,6 +112,37 @@ TEST(COPY_COUNT, copy_count) {
         a.add_point(x);
     });
 
+    copy_count::detail::data.emplace_back("in (interval, T)", []()->copy_count::interval_t {
+        return {};
+    }, 0, [](const copy_count::interval_t &a)->void {
+        auto ans = a.in(verify::copy_counter(4), verify::copy_counter(5));
+        verify::DoNotOptimize(ans);
+    }, 0, [](const copy_count::interval_t &a)->void {
+        const verify::copy_counter x = 4, y = 5;
+        auto ans = a.in(x, y);
+        verify::DoNotOptimize(ans);
+    });
+    copy_count::detail::data.emplace_back("in (interval, castable)", []()->copy_count::interval_t {
+        return {};
+    }, 0, [](const copy_count::interval_t &a)->void {
+        auto ans = a.in(4, 5);
+        verify::DoNotOptimize(ans);
+    }, 0, [](const copy_count::interval_t &a)->void {
+        constexpr int x = 4, y = 5;
+        auto ans = a.in(x, y);
+        verify::DoNotOptimize(ans);
+    });
+    copy_count::detail::data.emplace_back("in (interval, inp_type)", []()->copy_count::interval_t {
+        return {};
+    }, 0, [](const copy_count::interval_t &a)->void {
+        auto ans = a.in(copy_count::interval_t::inp_type(4), copy_count::interval_t::inp_type(5));
+        verify::DoNotOptimize(ans);
+    }, 0, [](const copy_count::interval_t &a)->void {
+        const copy_count::interval_t::inp_type x = 4, y = 5;
+        auto ans = a.in(x, y);
+        verify::DoNotOptimize(ans);
+    });
+
 
 
     std::vector<std::vector<std::string>> table = {

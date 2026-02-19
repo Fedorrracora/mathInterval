@@ -3,6 +3,7 @@
 namespace fbp {
     template <typename T>
     struct forward_container {
+        forward_container() : val(nullptr), link(nullptr) {}
         explicit forward_container(const T &el) : val(nullptr), link(&el) {}
         explicit forward_container(T &&el) : val(new T(std::move(el))), link(val) {}
         forward_container(const forward_container &other) = delete;
@@ -21,13 +22,20 @@ namespace fbp {
             }
             return *this;
         }
+        [[nodiscard]] bool operator==(const forward_container &other) const {
+            return *link == *other.link;
+        }
         [[nodiscard]] auto operator<=>(const forward_container &other) const {
             return *link <=> *other.link;
+        }
+        [[nodiscard]] bool operator==(const T &other) const {
+            return *link == other;
         }
         [[nodiscard]] auto operator<=>(const T &other) const {
             return *link <=> other;
         }
-        const T &call() const { return *link; }
+        [[nodiscard]] const T &call() const { return *link; }
+        [[nodiscard]] const T &operator*() const { return *link; }
         [[nodiscard]] T get() && {
             if (val) {
                 T tmp = std::move(*val);

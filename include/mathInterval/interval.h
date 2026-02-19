@@ -72,6 +72,24 @@ namespace interval {
     // T_cast
 
     template <typename T, detail::type_policy_c type_policy>
+    /// for std::visit. Cast interval::inp_type to sub_inner
+    struct sub_inner_visitor {
+        using minimal_t = interval<T, type_policy>::minimal_t;
+        using maximal_t = interval<T, type_policy>::maximal_t;
+        using forward_container_t = fbp::forward_container<T>;
+        using sub_inner = std::pair<int, forward_container_t>;
+        template<typename U>
+        [[nodiscard]] sub_inner operator()(U&& el) const {
+            if constexpr (std::is_same_v<std::decay_t<U>, minimal_t>)
+                return {0, forward_container_t()};
+            else if constexpr (std::is_same_v<std::decay_t<U>, maximal_t>)
+                return {2, forward_container_t()};
+            else
+                return {1, forward_container_t(std::forward<U>(el))};
+        }
+    };
+
+    template <typename T, detail::type_policy_c type_policy>
     template <typename U>
     constexpr decltype(auto) interval<T, type_policy>::T_cast(U &&el) {
         static_assert(std::convertible_to<U, inp_type>, "value must be T or inp_type");
@@ -90,10 +108,13 @@ namespace interval {
 
     template<typename T, detail::type_policy_c type_policy>
     template<typename U>
-    constexpr decltype(auto) interval<T, type_policy>::sub_inner_cast(U &&el) {
+    constexpr interval<T, type_policy>::sub_inner interval<T, type_policy>::sub_inner_cast(U &&el) {
         static_assert(std::convertible_to<U, inp_type>, "value must be T, inp_type or +INF/-INF");
-        if constexpr (std::is_same_v<std::decay_t<T>, std::decay_t<U>>) {
-            return std::forward<U>(el);
+        if constexpr (std::is_same_v<std::decay_t<inp_type>, std::decay_t<U>>) {
+            return std::visit(sub_inner_visitor<T, type_policy>(), std::forward<U>(el));
+        }
+        else {
+            return sub_inner_visitor<T, type_policy>()(std::forward<U>(el));
         }
     }
 
@@ -186,13 +207,7 @@ namespace interval {
 
     template<typename T, detail::type_policy_c type_policy>
     constexpr void interval<T, type_policy>::correct_range_assert(const sub_inner &l, const sub_inner &r) {
-        if (l.first != r.first) {
-            if (l.first > r.first)
-                throw std::range_error("right border of interval is less than left");
-        }
-        else if (*l.second > *r.second) {
-            throw std::range_error("right border of interval is less than left");
-        }
+        if (l > r) throw std::range_error("right border of interval is less than left");
     }
 
     // add_point
@@ -299,10 +314,29 @@ namespace interval {
     }
 
     template<typename T, detail::type_policy_c type_policy>
-    bool interval<T, type_policy>::contains_in(inner_type f, inner_type s) {
+    bool interval<T, type_policy>::contains_in(inner_type f, inner_type s) const {
         correct_range_assert(f, s);
         if (f == s) return true;
         auto x = intervals.upper_bound(f);
+        if (x == intervals.begin()) return false;
+        --x;
+        return f >= x->first && x->second <= s;
+    }
+
+    template<typename T, detail::type_policy_c type_policy>
+    template<typename U1, typename U2>
+    bool interval<T, type_policy>::in(const U1 &a, const U2 &b) const {
+        return contains_in(sub_inner_cast(a), sub_inner_cast(b));
+    }
+
+    template<typename T, detail::type_policy_c type_policy>
+    bool interval<T, type_policy>::contains_in(sub_inner f, sub_inner s) const {
+        correct_range_assert(f, s);
+        if (f == s) return true;
+        decltype(intervals.begin()) x;
+        if (f.first == 1) x = intervals.upper_bound(*f.second);
+        else if (f.first == 0) x = intervals.begin();
+        else x = intervals.end();
         if (x == intervals.begin()) return false;
         --x;
         return f >= x->first && x->second <= s;

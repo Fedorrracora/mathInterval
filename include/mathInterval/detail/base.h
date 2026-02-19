@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <utility>
 #include <variant>
+#include <fbp/forward_container.h>
 namespace interval::detail {
     /// allow to custom detecting type
     struct type_policy {};
@@ -78,9 +79,7 @@ namespace interval::detail::custom_type {
     /// returns T{} unless overridden by type policies. The return value is used as a placeholder.
     /// Its value is never used
     template <typename T, not_custom_type_policy_c>
-    T get_value() {
-        return T{};
-    }
+    T get_value() { return T{}; }
     /// returns T{} unless overridden by type policies. The return value is used as a placeholder.
     /// Its value is never used
     template <typename T, custom_type_policy_c type_policy>
@@ -125,7 +124,7 @@ namespace interval {
         /// all struct data is stored in this type
         using inner_type = std::pair<int, T>;
         /// for some checks and minimization of requests
-        using sub_inner = std::pair<int, T*>;
+        using sub_inner = std::pair<int, fbp::forward_container<T>>;
     public:
         /// type of minimal obj
         struct minimal_t {
@@ -170,10 +169,10 @@ namespace interval {
         /// return true if this point is in multitude, else return false
         [[nodiscard]] bool in(const U &a) const;
 
-        // template <typename U1, typename U2>
+        template <typename U1, typename U2>
         /// return true if this interval is in multitude, else return false
         /// todo: write in(f; s) and in(std::pair) operations
-        // [[nodiscard]] bool in(const U1 &a, const U2 &b) const;
+        [[nodiscard]] bool in(const U1 &a, const U2 &b) const;
 
         template <typename U>
         /// returns false if this point was inside this multitude, else return true
@@ -234,7 +233,7 @@ namespace interval {
         *
         * @return T& or T&&
         */
-        [[nodiscard]] static constexpr decltype(auto) sub_inner_cast(U &&el);
+        [[nodiscard]] static constexpr sub_inner sub_inner_cast(U &&el);
 
 
         /// convert T-type object to pair inner-type {1; T-type elem};
@@ -257,8 +256,11 @@ namespace interval {
         /// check, that (l; r) is correct interval (l <= r)
         static void constexpr correct_range_assert(const sub_inner &l, const sub_inner &r);
 
-        /// like in, but accepts type inner_type
-        bool contains_in(inner_type f, inner_type s);
+        /// like in, but for inner_type
+        bool contains_in(inner_type f, inner_type s) const;
+
+        /// like in, but for sub_inner
+        bool contains_in(sub_inner f, sub_inner s) const;
 
         /// like add_point, but accepts type inner_type
         bool add_point_in(inner_type p);
