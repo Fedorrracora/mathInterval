@@ -238,9 +238,9 @@ jobs:
         with:
           pr-mode: false
           args: --baseline=qodana.sarif.json
-        env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_806153236 }}
-          QODANA_ENDPOINT: 'https://qodana.cloud'
+#        env:
+#          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_806153236 }}
+#          QODANA_ENDPOINT: 'https://qodana.cloud'
 
   upload_to_pypi:
     if: github.event_name == 'release' && github.event.action == 'published'
