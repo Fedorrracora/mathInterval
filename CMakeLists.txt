@@ -55,6 +55,8 @@ if (SKBUILD OR BUILD_PYTHON_BINDINGS)
     target_link_libraries(_mathInterval PRIVATE mathInterval)
 
     target_compile_definitions(_mathInterval PRIVATE INT_TYPE=long\ long FLOAT_TYPE=long\ double)
+
+    set_target_properties(_mathInterval PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 endif ()
 
 if (TESTING AND NOT SKBUILD)
@@ -81,6 +83,7 @@ if (TESTING AND NOT SKBUILD)
     add_library(verify SHARED src/verifier.cpp src/additional_test_tools.cpp)
     target_include_directories(verify PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
     target_compile_definitions(verify PRIVATE MAX_VALUE=1000000)
+    set_target_properties(verify PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
     add_executable(test_target
             Testing/one_set/cpp/test1.add_point.cpp
@@ -109,6 +112,8 @@ if (TESTING AND NOT SKBUILD)
             Testing/generator/test3.mul_transfer.cpp
             Testing/generator/test4.div_transfer.cpp
     )
+    set_target_properties(test_target PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Tests)
+
 
     if (NOT TESTING_BAR)
         target_compile_definitions(test_target PRIVATE DISABLE_PROGRESS_BAR)
@@ -121,6 +126,7 @@ if (TESTING AND NOT SKBUILD)
     if (BUILD_PYTHON_BINDINGS)
         pybind11_add_module(verify_python src/verifier_bindings.cpp)
         target_link_libraries(verify_python PRIVATE verify)
+        set_target_properties(verify_python PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
         add_test(NAME PYTHON.ONE_SET.add_point COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.ONE_SET.add_interval COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test2.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.ONE_SET.multi_add COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/one_set/python/test3.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -134,21 +140,40 @@ if (TESTING AND NOT SKBUILD)
         add_test(NAME PYTHON.MANY_SET.subset COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/many_set/python/test2.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.CUSTOM_TYPE.many_funcs COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/custom_type/python/test1.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
         add_test(NAME PYTHON.CUSTOM_TYPE.custom_transfer COMMAND ${Python3_EXECUTABLE} -m pytest ${CMAKE_SOURCE_DIR}/Testing/custom_type/python/test2.py WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+
+        get_property(all_tests DIRECTORY PROPERTY TESTS)
+        foreach(t ${all_tests})
+            if(DEFINED ENV{PYTHONPATH})
+                set(_env_py "$ENV{PYTHONPATH}")
+            else()
+                set(_env_py "")
+            endif()
+
+            if(_env_py STREQUAL "")
+                set(new_env "PYTHONPATH=${CMAKE_BINARY_DIR}/lib")
+            else()
+                set(new_env "PYTHONPATH=${CMAKE_BINARY_DIR}/lib:${_env_py}")
+            endif()
+
+            set_tests_properties(${t} PROPERTIES ENVIRONMENT "${new_env}")
+        endforeach()
     endif ()
 
     if (FORMATTER)
         add_library(args STATIC src/args.cpp)
         target_include_directories(args PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
+        set_target_properties(args PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
         target_compile_definitions(test_target PRIVATE FORMATTER_ENABLED)
         add_executable(formatter src/register.cpp Testing/time_test/time_test.register.cpp)
         target_link_libraries(formatter PRIVATE verify PRIVATE args)
+        set_target_properties(formatter PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
     endif ()
 
     if (TEST_WRITER)
         add_executable(writer src/writer.cpp)
         target_link_libraries(writer PRIVATE verify)
+        set_target_properties(writer PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
     endif ()
 endif ()
 
