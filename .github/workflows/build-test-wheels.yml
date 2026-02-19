@@ -108,7 +108,7 @@ jobs:
         working-directory: build
         run: pybind11-stubgen _mathInterval
         env:
-          PYTHONPATH: $PYTHONPATH:.
+          PYTHONPATH: $PYTHONPATH:./lib/
 
       - name: add py.typed
         run: cp -r src/py.typed build/stubs/py.typed
@@ -176,7 +176,7 @@ jobs:
           fetch-depth: 0  # a full history is required for pull request analysis
           submodules: recursive
       - name: 'Qodana Scan'
-        uses: JetBrains/qodana-action@v2025.2
+        uses: JetBrains/qodana-action@v2025.3
         with:
           pr-mode: false
           args: --baseline=qodana.sarif.json
