@@ -24,6 +24,7 @@ namespace interval::detail {
     template <typename T>
     struct pair_less {
         using inner_type = std::pair<int, T>;
+        using sub_inner = std::pair<int, fbp::forward_container<T>>;
         /// activate transparent policy
         using is_transparent = void;
 
@@ -46,6 +47,20 @@ namespace interval::detail {
         [[nodiscard]] bool operator()(const T &a, const std::pair<inner_type, inner_type> &b) const noexcept;
         /// b like point `(1; b)`. comparing first element of `a` only
         [[nodiscard]] bool operator()(const std::pair<inner_type, inner_type> &a, const T &b) const noexcept;
+
+
+        /// comparing first element of `a` only. For lower_bound
+        [[nodiscard]] bool operator()(const std::pair<inner_type, inner_type> &a, const sub_inner &b) const noexcept;
+        /// comparing first element of `b` only. For lower_bound
+        [[nodiscard]] bool operator()(const sub_inner &a, const std::pair<inner_type, inner_type> &b) const noexcept;
+
+        [[nodiscard]] bool operator()(const inner_type &a, const sub_inner &b) const noexcept;
+        [[nodiscard]] bool operator()(const sub_inner &a, const inner_type &b) const noexcept;
+
+        /// a like point `(1; a)`
+        [[nodiscard]] bool operator()(const T &a, const sub_inner &b) const noexcept;
+        /// b like point `(1; b)`
+        [[nodiscard]] bool operator()(const sub_inner &a, const T &b) const noexcept;
     };
 
     /// concept for checking custom_type_policy
@@ -171,8 +186,11 @@ namespace interval {
 
         template <typename U1, typename U2>
         /// return true if this interval is in multitude, else return false
-        /// todo: write in(f; s) and in(std::pair) operations
         [[nodiscard]] bool in(const U1 &a, const U2 &b) const;
+
+        template <typename U1, typename U2>
+        /// return true if there is any data in this interval, else return false
+        [[nodiscard]] bool any_in(const U1 &a, const U2 &b) const;
 
         template <typename U>
         /// returns false if this point was inside this multitude, else return true
@@ -202,10 +220,10 @@ namespace interval {
         *
         * @param el must be T or inp_type (check with static_assert).
         *
-        * - if el has type T&/T&&, return it
-        * - if el has type inp_type&/inp_type&& with point, checking for a point and return T&/T&&
-        * - if el castable to T, return T&&
-        * - else fail static_assert (el is -INF of +INF)
+        * - if el has type T&/T&&, return it.
+        * - if el has type inp_type&/inp_type&& with point, checking for a point and return T&/T&&.
+        * - if el castable to T, return T&&.
+        * - else fail static_assert (el is -INF of +INF).
         *
         * It is recommended to use this function as follows
         * @code
@@ -221,17 +239,23 @@ namespace interval {
         /// allow you to cast T object to inner_type
         [[nodiscard]] static constexpr inner_type T_point_cast(U &&el);
 
-        /// todo
         template <typename U>
         /**
-        * @brief cast el to sub_inner. El must be T or inp_type (check with static_assert).
+        * @brief cast el to sub_inner.
         *
-        * - if el has type T&/T&&, return it
-        * - if el has type inp_type&/inp_type&& with point, checking for a point and return T&/T&&
-        * - if el castable to T, return T&&
-        * - else fail static_assert (el is -INF of +INF)
+        * @param el must be T or inp_type (check with static_assert).
         *
-        * @return T& or T&&
+        * - if el has type T&/T&&, return sub_inner with T&/T&&
+        * - if el has type -INF or +INF, return associated sub_inner
+        * - if el has type inp_type&/inp_type&& with point, return sub_inner with T&/T&&
+        * - if el has type inp_type&/inp_type&& with -INF or +INF, return associated sub_inner
+        * - if el castable to T, return sub_inner with T&&
+        *
+        * It is recommended to use this function as follows
+        * @code
+        * auto x = T_cast(std::forward<U>(elem));
+        * @endcode
+        * @return sub_inner
         */
         [[nodiscard]] static constexpr sub_inner sub_inner_cast(U &&el);
 
@@ -258,9 +282,13 @@ namespace interval {
 
         /// like in, but for inner_type
         bool contains_in(inner_type f, inner_type s) const;
-
         /// like in, but for sub_inner
         bool contains_in(sub_inner f, sub_inner s) const;
+
+        /// like any_in, but for inner_type
+        bool contains_any_in(inner_type f, inner_type s) const;
+        /// like any_in, but for sub_inner
+        bool contains_any_in(sub_inner f, sub_inner s) const;
 
         /// like add_point, but accepts type inner_type
         bool add_point_in(inner_type p);

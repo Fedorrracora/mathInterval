@@ -63,6 +63,41 @@ namespace interval {
         return pair_less()(a.first, b);
     }
 
+    template <typename T>
+    bool detail::pair_less<T>::operator()(const std::pair<inner_type, inner_type> &a,
+                                      const sub_inner &b) const noexcept {
+        return pair_less()(a.first, b);
+    }
+    template <typename T>
+    bool detail::pair_less<T>::operator()(const sub_inner &a,
+                                          const std::pair<inner_type, inner_type> &b) const noexcept {
+        return pair_less()(a, b.first);
+    }
+
+    template <typename T>
+    bool detail::pair_less<T>::operator()(const T &a, const sub_inner &b) const noexcept {
+        if (b.first != 1) return b.first == 2;
+        return pair_less()(a, *b.second);
+    }
+    template <typename T>
+    bool detail::pair_less<T>::operator()(const sub_inner &a, const T &b) const noexcept {
+        if (a.first != 1) return a.first == 0;
+        return pair_less()(*a.second, b);
+    }
+
+    template <typename T>
+    bool detail::pair_less<T>::operator()(const inner_type &a, const sub_inner &b) const noexcept {
+        if (a.first != b.first) return a.first < b.first;
+        if (a.first == b.first && a.first != 1) return false;
+        return pair_less()(a.second, *b.second);
+    }
+    template <typename T>
+    bool detail::pair_less<T>::operator()(const sub_inner &a, const inner_type &b) const noexcept {
+        if (a.first != b.first) return a.first < b.first;
+        if (a.first == b.first && a.first != 1) return false;
+        return pair_less()(*a.second, b.second);
+    }
+
     // minmax
     template <typename T, detail::type_policy_c type_policy>
     std::pair<int, T> interval<T, type_policy>::minimal_t::data() noexcept { return {0, detail::custom_type::get_value<T, type_policy>()}; }
@@ -322,25 +357,56 @@ namespace interval {
         --x;
         return f >= x->first && x->second <= s;
     }
+    template<typename T, detail::type_policy_c type_policy>
+    bool interval<T, type_policy>::contains_in(sub_inner f, sub_inner s) const {
+        correct_range_assert(f, s);
+        if (f == s) return true;
+        auto x = intervals.upper_bound(f);
+        if (x == intervals.begin()) return false;
+        --x;
+        return f >= x->first && x->second <= s;
+    }
+
+    template<typename T, detail::type_policy_c type_policy>
+    bool interval<T, type_policy>::contains_any_in(inner_type f, inner_type s) const {
+        correct_range_assert(f, s);
+        if (f == s) return false;
+        auto x = intervals.upper_bound(f);
+        if (x != intervals.end() && x->first < s) return true;
+        if (x != intervals.begin()) {
+            --x;
+            return f >= x->first && x->second <= s;
+        }
+        auto y = points.upper_bound(f);
+        if (y != points.end() && *y < s) return true;
+        return false;
+    }
+    template<typename T, detail::type_policy_c type_policy>
+    bool interval<T, type_policy>::contains_any_in(sub_inner f, sub_inner s) const {
+        correct_range_assert(f, s);
+        if (f == s) return false;
+        auto x = intervals.upper_bound(f);
+        if (x != intervals.end() && x->first < s) return true;
+        if (x != intervals.begin()) {
+            --x;
+            return f >= x->first && x->second <= s;
+        }
+        auto y = points.upper_bound(f);
+        if (y != points.end() && *y < s) return true;
+        return false;
+    }
 
     template<typename T, detail::type_policy_c type_policy>
     template<typename U1, typename U2>
     bool interval<T, type_policy>::in(const U1 &a, const U2 &b) const {
         return contains_in(sub_inner_cast(a), sub_inner_cast(b));
     }
-
     template<typename T, detail::type_policy_c type_policy>
-    bool interval<T, type_policy>::contains_in(sub_inner f, sub_inner s) const {
-        correct_range_assert(f, s);
-        if (f == s) return true;
-        decltype(intervals.begin()) x;
-        if (f.first == 1) x = intervals.upper_bound(*f.second);
-        else if (f.first == 0) x = intervals.begin();
-        else x = intervals.end();
-        if (x == intervals.begin()) return false;
-        --x;
-        return f >= x->first && x->second <= s;
+    template<typename U1, typename U2>
+    bool interval<T, type_policy>::any_in(const U1 &a, const U2 &b) const {
+        return contains_any_in(sub_inner_cast(a), sub_inner_cast(b));
     }
+
 
     // to string
     template <typename T, detail::type_policy_c type_policy>
